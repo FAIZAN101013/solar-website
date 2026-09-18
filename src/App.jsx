@@ -137,9 +137,9 @@ const PHOTOS = {
     creditHref: `${WIKI}File:Rooftop_Solar_Panels.jpg`,
   },
   battery: {
-    src: `${WIKI}Special:FilePath/Two_Tesla_power_wall_3_devices_installed_inside_in_a_residential_home.jpg?width=1600`,
-    credit: 'Photo: Rsparks3 · Wikimedia Commons · CC0',
-    creditHref: `${WIKI}File:Two_Tesla_power_wall_3_devices_installed_inside_in_a_residential_home.jpg`,
+    src: `${WIKI}Special:FilePath/SonnenBatterie_R_E.jpg?width=1600`,
+    credit: 'Photo: E. R. · Wikimedia Commons · CC BY-SA 4.0',
+    creditHref: `${WIKI}File:SonnenBatterie_R_E.jpg`,
   },
   install: {
     src: `${WIKI}Special:FilePath/Roof_top_installation_4.jpg?width=1600`,
@@ -422,13 +422,25 @@ function useScrollEffects() {
         )
       }
 
-      // 4. services: vertical scroll drives the horizontal track
+      // 4. services: the section pins while vertical scroll runs the four cards
+      //    across; it releases once the last card is in view
+      const services = byId('services')
       const sc = byId('svc-scroller')
-      if (sc) {
+      if (services && sc) {
+        const travel = () => sc.scrollWidth - sc.clientWidth
         gsap.to(sc, {
-          scrollLeft: () => sc.scrollWidth - sc.clientWidth,
+          scrollLeft: travel,
           ease: 'none',
-          scrollTrigger: { trigger: sc, start: 'top 55%', end: 'bottom 5%', scrub: 1.2, invalidateOnRefresh: true },
+          scrollTrigger: {
+            trigger: services,
+            start: 'top top',
+            // pin for a bit more than the track's own travel so the pass feels unhurried
+            end: () => '+=' + Math.max(Math.round(travel() * 2.2), 1),
+            pin: true,
+            anticipatePin: 1,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
         })
       }
 
@@ -567,8 +579,18 @@ export default function App() {
 
 function Header({ menuOpen, onToggleMenu, go }) {
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
+    let lastY = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 80)
+      // Hide while reading downwards so the pill never sits on the copy;
+      // any upward nudge (or the top of the page) brings it straight back.
+      if (y < 120 || y < lastY - 6) setHidden(false)
+      else if (y > lastY + 6) setHidden(true)
+      lastY = y
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -577,7 +599,11 @@ function Header({ menuOpen, onToggleMenu, go }) {
   const menuLink =
     'rounded-full px-[18px] py-3.5 font-display text-[17px] font-bold tracking-[-0.01em] hover:bg-grey hover:text-ink'
   return (
-    <header className="fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)]">
+    <header
+      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
+        hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
+      }`}
+    >
       <div className="flex w-max max-w-full flex-col items-stretch gap-2.5">
         <div
           id="nav-pill"
@@ -951,14 +977,14 @@ function Benefits() {
 
 function Services() {
   return (
-    <section id="services" className="bg-grey px-pad py-sec">
+    <section id="services" className="bg-grey px-pad pt-[clamp(72px,9vw,120px)] pb-[clamp(56px,7vw,96px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
           <div className={IDX}>04 — Services</div>
         </div>
 
-        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(48px,6vw,88px)] overflow-x-auto">
+        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] overflow-x-auto">
           <div className="flex w-max gap-[clamp(16px,2vw,28px)] px-pad pt-1 pb-2">
             {SERVICES.map((sv) => (
               <a
