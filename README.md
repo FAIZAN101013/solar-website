@@ -27,6 +27,13 @@ npm run preview
 - `src/components/Logo.jsx` — brand mark as inline SVG (orange dot arc and wordmark).
 - `public/hero.webm`, `public/hero.mp4`, `public/hero-poster.jpg` — the hero background film (1080p, muted) and its poster frame. The 4K master lives in `media-src/` (not committed); re-encode with ffmpeg if it changes.
 
+## Responsive notes
+
+Desktop-only patterns fall back cleanly on phones and tablets (below 1024px): the services track swipes
+natively with scroll snap instead of pinning, the how-solar-works intro is static rather than sticky, and the
+benefits photo pins in the top part of the screen with the copy scrolling beneath it. The nav pill drops its
+quote button under 640px because the fixed bottom bar carries it.
+
 ## Placeholders
 
 Copy in square brackets (`[XX]`, `[Customer name]`, `[Regions served]`) and the estimator assumptions in

@@ -499,19 +499,32 @@ function useScrollEffects() {
       const sc = byId('svc-scroller')
       const svcTrack = byId('svc-track')
       if (services && sc && svcTrack) {
-        const travel = () => Math.max(0, svcTrack.scrollWidth - sc.clientWidth)
-        gsap.to(svcTrack, {
-          x: () => -travel(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: services,
-            start: 'top top',
-            end: () => '+=' + Math.max(Math.round(travel() * 2.4), 1),
-            pin: true,
-            anticipatePin: 1,
-            scrub: 1,
-            invalidateOnRefresh: true,
-          },
+        const mm = gsap.matchMedia()
+        mm.add('(min-width: 1024px)', () => {
+          const travel = () => Math.max(0, svcTrack.scrollWidth - sc.clientWidth)
+          gsap.to(svcTrack, {
+            x: () => -travel(),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: services,
+              start: 'top top',
+              // pin for a bit more than the track's own travel so the pass feels unhurried
+              end: () => '+=' + Math.max(Math.round(travel() * 2.4), 1),
+              pin: true,
+              anticipatePin: 1,
+              scrub: 1,
+              invalidateOnRefresh: true,
+            },
+          })
+        })
+        // phones and tablets: swipe the track natively
+        mm.add('(max-width: 1023px)', () => {
+          sc.style.overflowX = 'auto'
+          sc.style.scrollSnapType = 'x mandatory'
+          return () => {
+            sc.style.overflowX = ''
+            sc.style.scrollSnapType = ''
+          }
         })
       }
 
@@ -532,7 +545,7 @@ function useScrollEffects() {
       // 5. large photographs drift inside their frames
       gsap.utils.toArray('[data-parallax]').forEach((el) =>
         gsap.fromTo(
-          el,
+          el.querySelector('img') || el,
           { yPercent: -7, scale: 1.1 },
           {
             yPercent: 7,
@@ -728,7 +741,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
             <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
           </a>
           <div className="flex shrink-0 items-center gap-2">
-            <a href="#quote" className={`${BTN_LIME} h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px]`}>
+            <a href="#quote" className={`${BTN_LIME} h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px] max-sm:hidden`}>
               Get a Free Quote
             </a>
             <button
@@ -836,7 +849,7 @@ function Hero({ showMobileBar }) {
               <Sun />
               Consultation · Design · Install · Support
             </div>
-            <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(40px,7vw,108px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
+            <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(36px,6.2vw,92px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
               Designed around the way you <Orange>live</Orange>.
             </h2>
             <div className="mt-[clamp(24px,3vw,40px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,56px)]">
@@ -897,7 +910,7 @@ function Intro() {
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
-          className="m-0 max-w-[19ch] font-display text-[clamp(38px,6.4vw,104px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
+          className="m-0 max-w-[19ch] font-display text-[clamp(34px,5.6vw,88px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
         >
           <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
         </h2>
@@ -923,7 +936,7 @@ function DesignedAroundYou() {
           <div className={IDX_MUTED}>01 — Site &amp; roof</div>
         </div>
 
-        <div className={`${FRAME_LG} aspect-video min-h-[300px]`}>
+        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-video sm:min-h-[300px]`}>
           <div data-parallax="1" className={PARALLAX}>
             <ImageSlot
               {...PHOTOS.house}
@@ -941,7 +954,7 @@ function DesignedAroundYou() {
             </p>
           </div>
 
-          <div className="plate-rise mt-[clamp(-96px,-6vw,-40px)] mr-[clamp(0px,2vw,32px)] min-w-0 max-w-[520px] grow basis-[380px] rounded-3xl bg-white p-[clamp(28px,3vw,44px)] shadow-card">
+          <div className="plate-rise mt-6 mr-[clamp(0px,2vw,32px)] min-w-0 max-w-[520px] grow basis-[380px] md:mt-[clamp(-96px,-6vw,-40px)] rounded-3xl bg-white p-[clamp(28px,3vw,44px)] shadow-card">
             <h3 className={H3}>Every roof is <Orange>different</Orange>.</h3>
             <p className="mt-[18px] mb-0 text-base leading-[1.65] text-ink/70 text-pretty">
               Orientation, pitch, shading and usable area decide what your roof can generate.{' '}
@@ -964,9 +977,9 @@ function HowSolarWorks() {
   return (
     <section id="flow" className="bg-grey px-pad py-sec">
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
-        <div className="sticky top-[clamp(128px,12vw,150px)] min-w-0 max-w-[480px] grow basis-[360px]">
+        <div className="min-w-0 max-w-[480px] grow basis-[360px] lg:sticky lg:top-[clamp(128px,12vw,150px)]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
-          <h2 className="mt-5 mb-0 font-display text-[clamp(34px,4.6vw,72px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
+          <h2 className="mt-5 mb-0 font-display text-[clamp(30px,4vw,60px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
             Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
@@ -1111,7 +1124,7 @@ function Services() {
           <div className={IDX}>04 — Services</div>
         </div>
 
-        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] overflow-hidden">
+        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] scroll-px-pad overflow-hidden">
           <div id="svc-track" className="flex w-max gap-[clamp(16px,2vw,28px)] px-pad pt-1 pb-2 will-change-transform">
             {SERVICES.map((sv) => {
               const photo = PHOTOS[sv.photo]
@@ -1119,7 +1132,7 @@ function Services() {
                 <a
                   key={sv.num}
                   href="#quote"
-                  className="group relative flex min-h-[400px] w-[clamp(260px,32vw,360px)] flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
+                  className="group relative flex min-h-[380px] w-[clamp(250px,30vw,340px)] snap-start flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
                 >
                   <img
                     src={photo.src}
@@ -1163,7 +1176,7 @@ function CustomerStory() {
           <div className={KICKER}>Customer story</div>
           <div className={IDX_MUTED}>05 — In their words</div>
         </div>
-        <div className={`${FRAME_LG} aspect-[21/9] min-h-[280px]`}>
+        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-[21/9] sm:min-h-[280px]`}>
           <div data-parallax="1" className={PARALLAX}>
             <ImageSlot
               {...PHOTOS.story}
@@ -1172,7 +1185,7 @@ function CustomerStory() {
             />
           </div>
         </div>
-        <blockquote className="rv mx-0 mt-[clamp(40px,5vw,72px)] mb-0 max-w-[15ch] font-display text-[clamp(30px,4.6vw,72px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
+        <blockquote className="rv mx-0 mt-[clamp(40px,5vw,72px)] mb-0 max-w-[15ch] font-display text-[clamp(28px,4vw,60px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
           “[Approved customer quote goes here.]”
         </blockquote>
         <div className="rvs mt-[clamp(28px,3vw,40px)] flex flex-wrap items-center gap-4 text-[15px] leading-normal">
@@ -1337,34 +1350,34 @@ function Estimator({ bill, onBill }) {
   const growth = 0.45 + 0.55 * (sizeKw / 15)
   const assumptions = `$${rate.toFixed(2)} per kWh, ${yieldPerKw} kWh per kW each year, $${costPerKw} per kW installed, ${offsetPct}% of usage offset.`
 
-  const tile = 'rounded-[20px] border border-white/10 bg-white/6 p-5'
+  const tile = 'rounded-[18px] border border-white/10 bg-white/6 p-4'
   const tileLabel = 'text-xs font-semibold tracking-[0.08em] text-white/50 uppercase'
   const tileValue =
-    'mt-2 font-display text-[clamp(28px,3vw,40px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
+    'mt-1.5 font-display text-[clamp(26px,2.6vw,34px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
   const tileSub = 'mt-2 text-xs text-white/45'
 
   return (
     <section className="bg-white px-pad pt-[clamp(72px,9vw,140px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} text-[clamp(30px,4.2vw,62px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
+          <h2 className={`${H2} text-[clamp(28px,3.8vw,54px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
           <div className={IDX}>07 — Estimate</div>
         </div>
 
         <div
           id="estimate-panel"
-          className="rvs relative mt-[clamp(40px,5vw,72px)] overflow-hidden rounded-[32px] bg-ink text-white"
+          className="rvs relative mt-[clamp(28px,4vw,52px)] overflow-hidden rounded-[32px] bg-ink text-white"
         >
           <div className="pointer-events-none absolute -top-40 -right-32 h-[520px] w-[520px] rounded-full bg-lime/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-48 -left-24 h-[420px] w-[420px] rounded-full bg-sky/25 blur-3xl" />
 
-          <div className="relative grid gap-[clamp(28px,4vw,64px)] p-[clamp(24px,3.5vw,56px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="relative grid gap-[clamp(24px,3vw,48px)] p-[clamp(22px,3vw,40px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div>
               <div className="text-[13px] font-semibold tracking-[0.12em] text-white/55 uppercase">
                 Your average monthly power bill
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <strong className="font-display text-[clamp(52px,6vw,88px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
+                <strong className="font-display text-[clamp(48px,5vw,72px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
                   ${bill}
                 </strong>
                 <span className="text-[15px] text-white/55">per month</span>
@@ -1383,17 +1396,17 @@ function Estimator({ bill, onBill }) {
                 <span>$80</span>
                 <span>$600</span>
               </div>
-              <p className="mt-6 mb-0 max-w-[380px] text-sm leading-[1.6] text-white/60 text-pretty">
+              <p className="mt-5 mb-0 max-w-[380px] text-sm leading-[1.6] text-white/60 text-pretty">
                 Indicative only, and rounded. <span className="text-orange">A real design</span> uses your usage
                 profile, roof and tariff.
               </p>
-              <a href="#quote" className={`${BTN_LIME} mt-8 h-[54px] px-[26px] text-base`}>
+              <a href="#quote" className={`${BTN_LIME} mt-6 h-[52px] px-[24px] text-base`}>
                 Get an exact quote
                 <Arrow />
               </a>
             </div>
 
-            <div className="grid content-start gap-4">
+            <div className="grid content-start gap-3">
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className={tile}>
                   <div className={tileLabel}>System size</div>
@@ -1448,7 +1461,7 @@ function Estimator({ bill, onBill }) {
                     <AnimatedNumber value={annualGen} format={fmtKwh} />
                   </span>
                 </div>
-                <div className="mt-4 flex h-[92px] items-end gap-1.5" aria-hidden="true">
+                <div className="mt-3 flex h-[64px] items-end gap-1.5" aria-hidden="true">
                   {SEASON.map((w, i) => (
                     <div
                       key={MONTHS[i] + i}
@@ -1469,7 +1482,7 @@ function Estimator({ bill, onBill }) {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-dashed border-white/25 px-5 py-[18px] text-[13px] leading-[1.6] text-white/55">
+              <div className="rounded-2xl border border-dashed border-white/25 px-4 py-3 text-[12px] leading-[1.55] text-white/55">
                 Placeholder assumptions awaiting your confirmation: {assumptions}
               </div>
             </div>
@@ -1522,7 +1535,7 @@ function Quote({ sent, onSent }) {
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-none text-[clamp(36px,5.4vw,86px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
+          <h2 className={`${H2} rv max-w-none text-[clamp(34px,4.8vw,72px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
             Let's design a solar solution <Amber>around your home</Amber>.
           </p>
