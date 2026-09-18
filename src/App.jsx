@@ -9,12 +9,51 @@ gsap.registerPlugin(ScrollTrigger)
 /* ── content ─────────────────────────────────────────────────────────── */
 
 const FLOW = [
-  { num: '01', title: 'Sun', body: 'Free energy, every daylight hour.' },
-  { num: '02', title: 'Panels', body: 'PV cells turn sunlight into DC electricity.' },
-  { num: '03', title: 'Inverter', body: 'DC becomes the AC power your home runs on.' },
-  { num: '04', title: 'Your home', body: 'The switchboard sends it to your circuits.' },
-  { num: '05', title: 'Battery', body: 'Stores the excess for after sunset.' },
-  { num: '06', title: 'Grid', body: 'What is left over is exported and measured.' },
+  {
+    num: '01',
+    title: 'Sun',
+    body: 'Every daylight hour puts free energy on your roof. Output drops by roughly a quarter to a half in winter or heavy cloud, and a good design allows for that.',
+  },
+  {
+    num: '02',
+    title: 'Panels',
+    body: 'Photovoltaic cells turn that sunlight into DC electricity. How much depends on the roof: its orientation, pitch, shading and usable area.',
+  },
+  {
+    num: '03',
+    title: 'Inverter',
+    body: 'Converts the DC into the mains AC electricity your appliances run on, and reports live production so you and we can see the system working.',
+  },
+  {
+    num: '04',
+    title: 'Your home',
+    body: 'The switchboard sends solar power to your circuits first. Only what the panels cannot cover is drawn from the grid.',
+  },
+  {
+    num: '05',
+    title: 'Battery',
+    body: 'Surplus daytime energy charges the battery, so the evening — when a home uses most of its power — runs on sunlight too. Some systems can also keep essentials running through a blackout.',
+  },
+  {
+    num: '06',
+    title: 'Grid',
+    body: 'Anything left over is exported and measured by an import/export meter. You stay connected with a two-way link: buy when you need more, sell when you make more.',
+  },
+]
+
+const SYSTEM_TYPES = [
+  {
+    title: 'Panels only',
+    body: 'The simplest system. Energy has to be used as it is made, so if the house is empty by day the surplus is exported and evenings come from the grid.',
+    tag: 'Lower upfront cost',
+    tagClass: 'bg-grey text-ink/70',
+  },
+  {
+    title: 'Panels + battery',
+    body: 'Store the surplus and use it when it suits you, not when it is generated. Battery prices have fallen a long way, which is why most new systems now include one.',
+    tag: 'Most new installs',
+    tagClass: 'bg-lime text-ink',
+  },
 ]
 
 const SERVICES = [
@@ -323,18 +362,6 @@ function useScrollEffects() {
     const byId = (id) => document.getElementById(id)
 
     const ctx = gsap.context(() => {
-      // the nav steps aside only while the dark estimator panel is under it
-      const panel = byId('estimate-panel')
-      if (panel) {
-        ScrollTrigger.create({
-          trigger: panel,
-          start: 'top 150px',
-          end: 'bottom 20px',
-          onToggle: ({ isActive }) =>
-            window.dispatchEvent(new CustomEvent('nav-hide', { detail: isActive })),
-        })
-      }
-
       const heroTrack = byId('home')
       const stage = byId('hero-stage')
       const primary = byId('hero-primary')
@@ -488,6 +515,20 @@ function useScrollEffects() {
         })
       }
 
+      // the nav steps aside only while the dark estimator panel is under it.
+      // Created after the services pin so its start/end include the pin's spacer.
+      const panel = byId('estimate-panel')
+      if (panel) {
+        ScrollTrigger.create({
+          trigger: panel,
+          start: 'top 150px',
+          end: 'bottom 20px',
+          refreshPriority: -1,
+          onToggle: ({ isActive }) =>
+            window.dispatchEvent(new CustomEvent('nav-hide', { detail: isActive })),
+        })
+      }
+
       // 5. large photographs drift inside their frames
       gsap.utils.toArray('[data-parallax]').forEach((el) =>
         gsap.fromTo(
@@ -527,11 +568,14 @@ function useScrollEffects() {
     window.addEventListener('mousemove', onMove, { passive: true })
 
     const refresh = () => ScrollTrigger.refresh()
+    const raf = requestAnimationFrame(refresh)
+    if (document.fonts?.ready) document.fonts.ready.then(refresh)
     window.addEventListener('load', refresh)
 
     return () => {
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('load', refresh)
+      cancelAnimationFrame(raf)
       ctx.revert()
     }
   }, [])
@@ -953,10 +997,26 @@ function HowSolarWorks() {
                 <h3 className="m-0 font-display text-[clamp(22px,2.4vw,30px)] font-bold tracking-[-0.025em]">
                   {f.title}
                 </h3>
-                <p className="mt-2.5 mb-0 max-w-[420px] text-base leading-[1.6] text-ink/66 text-pretty">{f.body}</p>
+                <p className="mt-2.5 mb-0 max-w-[460px] text-base leading-[1.6] text-ink/66 text-pretty">{f.body}</p>
               </div>
             </div>
           ))}
+
+          <div data-stagger="1" className="mt-2 grid gap-4 sm:grid-cols-2">
+            {SYSTEM_TYPES.map((t) => (
+              <div key={t.title} className="rounded-2xl border border-ink/8 bg-white p-6">
+                <span className={`inline-flex min-h-7 items-center rounded-full px-3 text-xs font-semibold ${t.tagClass}`}>
+                  {t.tag}
+                </span>
+                <h4 className="mt-4 mb-0 font-display text-[20px] font-bold tracking-[-0.02em]">{t.title}</h4>
+                <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-ink/66 text-pretty">{t.body}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 mb-0 max-w-[560px] text-[14px] leading-[1.6] text-ink/55 text-pretty">
+            A common misconception is that solar means going off-grid. Most solar homes keep their grid
+            connection, and simply have a small <Amber>power station on the roof</Amber> doing the first shift.
+          </p>
         </div>
       </div>
     </section>
