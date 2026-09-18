@@ -22,21 +22,25 @@ const SERVICES = [
     num: '01',
     title: 'Residential Solar',
     body: 'Panel systems sized to your roof, your usage and the way your household runs.',
+    photo: 'house',
   },
   {
     num: '02',
     title: 'Battery Storage',
     body: 'Store what your roof makes during the day and use it through the evening.',
+    photo: 'battery',
   },
   {
     num: '03',
     title: 'Commercial Solar',
     body: 'Larger arrays for businesses, sheds and farms where daytime load is high.',
+    photo: 'benefit',
   },
   {
     num: '04',
     title: 'Solar Consultation',
     body: 'Roof analysis, sun mapping and an energy profile before price enters the conversation.',
+    photo: 'crew',
   },
 ]
 
@@ -137,14 +141,14 @@ const PHOTOS = {
     creditHref: `${WIKI}File:Rooftop_Solar_Panels.jpg`,
   },
   battery: {
-    src: `${WIKI}Special:FilePath/SonnenBatterie_R_E.jpg?width=1600`,
-    credit: 'Photo: E. R. · Wikimedia Commons · CC BY-SA 4.0',
-    creditHref: `${WIKI}File:SonnenBatterie_R_E.jpg`,
+    src: 'https://images.pexels.com/photos/37929911/pexels-photo-37929911.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    credit: 'Photo: Magda Ehlers · Pexels',
+    creditHref: 'https://www.pexels.com/photo/high-efficiency-residential-power-inverter-setup-37929911/',
   },
   install: {
-    src: `${WIKI}Special:FilePath/Roof_top_installation_4.jpg?width=1600`,
-    credit: 'Photo: Cocreatr · Wikimedia Commons · CC BY-SA 2.0',
-    creditHref: `${WIKI}File:Roof_top_installation_4.jpg`,
+    src: 'https://images.pexels.com/photos/28812508/pexels-photo-28812508.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    credit: 'Photo: Hanna Alves · Pexels',
+    creditHref: 'https://www.pexels.com/photo/construction-worker-climbing-ladder-at-worksite-28812508/',
   },
   crew: {
     src: `${WIKI}Special:FilePath/Technicians_working_on_a_solar_panel_installation_(9229).jpg?width=1600`,
@@ -301,9 +305,12 @@ function useScrollEffects() {
       const intro = byId('next')
 
       if (reduced) {
-        // no pinned sequence: a plain viewport-height hero with the primary copy
+        // no pinned sequence: a plain viewport-height hero with the primary copy,
+        // and the services track scrolls natively
         if (heroTrack) heroTrack.style.height = '100svh'
         if (intro) intro.style.marginTop = '0'
+        const scroller = byId('svc-scroller')
+        if (scroller) scroller.style.overflowX = 'auto'
         return
       }
 
@@ -426,19 +433,19 @@ function useScrollEffects() {
       //    across; it releases once the last card is in view
       const services = byId('services')
       const sc = byId('svc-scroller')
-      if (services && sc) {
-        const travel = () => sc.scrollWidth - sc.clientWidth
-        gsap.to(sc, {
-          scrollLeft: travel,
+      const svcTrack = byId('svc-track')
+      if (services && sc && svcTrack) {
+        const travel = () => Math.max(0, svcTrack.scrollWidth - sc.clientWidth)
+        gsap.to(svcTrack, {
+          x: () => -travel(),
           ease: 'none',
           scrollTrigger: {
             trigger: services,
             start: 'top top',
-            // pin for a bit more than the track's own travel so the pass feels unhurried
-            end: () => '+=' + Math.max(Math.round(travel() * 2.2), 1),
+            end: () => '+=' + Math.max(Math.round(travel() * 2.4), 1),
             pin: true,
             anticipatePin: 1,
-            scrub: 0.8,
+            scrub: 1,
             invalidateOnRefresh: true,
           },
         })
@@ -613,7 +620,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   }, [menuOpen, onCloseMenu])
 
   const menuLink =
-    'rounded-full px-[18px] py-3.5 text-center font-display text-[17px] font-bold tracking-[-0.01em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
+    'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
     <header className="fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)]">
       <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
@@ -646,7 +653,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className="flex flex-col rounded-[28px] bg-white/96 p-2.5 shadow-menu backdrop-blur-xl animate-[rise_240ms_ease_both]">
+          <nav className="flex min-w-[260px] flex-col rounded-[28px] bg-white/96 p-3 shadow-menu backdrop-blur-xl animate-[rise_240ms_ease_both]">
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
@@ -989,39 +996,50 @@ function Benefits() {
 
 function Services() {
   return (
-    <section id="services" className="bg-grey px-pad pt-[clamp(72px,9vw,120px)] pb-[clamp(56px,7vw,96px)]">
+    <section id="services" className="bg-grey px-pad pt-[clamp(64px,7vw,96px)] pb-[clamp(48px,6vw,80px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
           <div className={IDX}>04 — Services</div>
         </div>
 
-        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] overflow-x-auto">
-          <div className="flex w-max gap-[clamp(16px,2vw,28px)] px-pad pt-1 pb-2">
-            {SERVICES.map((sv) => (
-              <a
-                key={sv.num}
-                href="#quote"
-                className="group flex min-h-[360px] w-[clamp(260px,32vw,360px)] flex-col justify-between rounded-3xl border border-ink/8 bg-white p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow,border-color] duration-[320ms] hover:-translate-y-1.5 hover:border-orange/50 hover:text-ink hover:shadow-svc"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[13px] text-ink/45 tabular-nums">{sv.num}</span>
+        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] overflow-hidden">
+          <div id="svc-track" className="flex w-max gap-[clamp(16px,2vw,28px)] px-pad pt-1 pb-2 will-change-transform">
+            {SERVICES.map((sv) => {
+              const photo = PHOTOS[sv.photo]
+              return (
+                <a
+                  key={sv.num}
+                  href="#quote"
+                  className="group relative flex min-h-[400px] w-[clamp(260px,32vw,360px)] flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
+                >
+                  <img
+                    src={photo.src}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.35)_0%,rgba(14,16,17,.05)_35%,rgba(14,16,17,.55)_65%,rgba(14,16,17,.9)_100%)]" />
+                  <div className="relative flex items-center justify-between">
+                    <span className="text-[13px] text-white/70 tabular-nums">{sv.num}</span>
                     <span className="h-0.5 w-7 bg-orange transition-[width] duration-[320ms] group-hover:w-12" />
                   </div>
-                  <h3 className="mt-[clamp(40px,5vw,72px)] mb-0 font-display text-[clamp(24px,2.4vw,32px)] leading-[1.05] font-bold tracking-[-0.03em] text-balance">
-                    {sv.title}
-                  </h3>
-                  <p className="mt-4 mb-0 text-[15px] leading-[1.6] text-ink/66 text-pretty">{sv.body}</p>
-                </div>
-                <div className="mt-8 flex items-center gap-2.5 font-display text-[15px] font-semibold transition-colors duration-[320ms] group-hover:text-orange">
-                  Request a quote
-                  <span className="transition-transform duration-[320ms] group-hover:translate-x-1">
-                    <Arrow size={16} color="currentColor" />
-                  </span>
-                </div>
-              </a>
-            ))}
+                  <div className="relative">
+                    <h3 className="m-0 font-display text-[clamp(24px,2.4vw,32px)] leading-[1.05] font-bold tracking-[-0.03em] text-balance">
+                      {sv.title}
+                    </h3>
+                    <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-white/75 text-pretty">{sv.body}</p>
+                    <div className="mt-6 flex items-center gap-2.5 font-display text-[15px] font-semibold text-lime transition-colors duration-[320ms] group-hover:text-orange">
+                      Request a quote
+                      <span className="transition-transform duration-[320ms] group-hover:translate-x-1">
+                        <Arrow size={16} color="currentColor" />
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              )
+            })}
           </div>
         </div>
       </div>
