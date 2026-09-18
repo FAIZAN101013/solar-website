@@ -20,6 +20,8 @@ npm run preview
 ## Structure
 
 - `src/App.jsx` — the home page: header, hero, sections, savings estimator, two-step quote form, footer.
+  The hero is a pinned three-phase scroll sequence (headline lifts out → second text rises in → the stage
+  moves up to reveal the next section); the Benefits section pins its photo and swaps it as the text scrolls.
 - `src/index.css` — Tailwind v4 entry: design tokens in `@theme`, keyframes, and the scroll-reveal utilities.
 - `src/components/ImageSlot.jsx` — cover-fit photo with credit, or a labelled placeholder when no photo is set.
 - `src/components/Logo.jsx` — brand mark as inline SVG (orange dot arc and wordmark).

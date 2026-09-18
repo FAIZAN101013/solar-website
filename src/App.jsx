@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Logo from './components/Logo.jsx'
@@ -58,6 +58,30 @@ const VALUES = [
   },
 ]
 
+const BENEFITS = [
+  {
+    title: 'Lower energy costs.',
+    body: 'Your appliances run on your own generation first and only reach for the grid when they need more. The more of your own power you use, the less the bill does the talking.',
+    photo: 'benefit',
+    alt: 'Solar panels on a home rooftop in daylight',
+    rule: 'bg-lime',
+  },
+  {
+    title: 'Power after sunset.',
+    body: 'Storage holds the energy your roof makes while you are out, so the evening — when a house actually uses power — runs on sunlight too.',
+    photo: 'battery',
+    alt: 'A home battery mounted on a garage wall',
+    rule: 'bg-gold',
+  },
+  {
+    title: 'Built for decades.',
+    body: 'Panels, inverter and mounting chosen for your roof and your climate, installed by our own crew, and monitored so a fault is seen before it costs you anything.',
+    photo: 'install',
+    alt: 'Installers fitting panels on a roof',
+    rule: 'bg-orange',
+  },
+]
+
 // Placeholder company figures — confirm with the client before launch.
 const STATS = [
   { value: 12, suffix: '+', label: 'Years designing solar' },
@@ -98,6 +122,11 @@ const PHOTOS = {
     src: `${WIKI}Special:FilePath/Two_Tesla_power_wall_3_devices_installed_inside_in_a_residential_home.jpg?width=1600`,
     credit: 'Photo: Rsparks3 · Wikimedia Commons · CC0',
     creditHref: `${WIKI}File:Two_Tesla_power_wall_3_devices_installed_inside_in_a_residential_home.jpg`,
+  },
+  install: {
+    src: `${WIKI}Special:FilePath/Roof_top_installation_4.jpg?width=1600`,
+    credit: 'Photo: Cocreatr · Wikimedia Commons · CC BY-SA 2.0',
+    creditHref: `${WIKI}File:Roof_top_installation_4.jpg`,
   },
   crew: {
     src: `${WIKI}Special:FilePath/Technicians_working_on_a_solar_panel_installation_(9229).jpg?width=1600`,
@@ -247,18 +276,39 @@ function useScrollEffects() {
     const byId = (id) => document.getElementById(id)
 
     const ctx = gsap.context(() => {
-      if (reduced) return
+      const heroTrack = byId('home')
+      const stage = byId('hero-stage')
+      const primary = byId('hero-primary')
+      const secondary = byId('hero-secondary')
+      const intro = byId('next')
 
-      // 1. hero: the film pushes in and drifts while the copy lifts away
-      const hero = { trigger: '#home', start: 'top top', end: 'bottom top', scrub: true }
-      gsap.to('#hero-media', { yPercent: 15, scale: 1.07, ease: 'none', scrollTrigger: hero })
-      gsap.to('#hero-glow', { opacity: 0.2, ease: 'none', scrollTrigger: hero })
-      gsap.to('#hero-copy', {
-        yPercent: -30,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: { ...hero, end: '66% top' },
-      })
+      if (reduced) {
+        // no pinned sequence: a plain viewport-height hero with the primary copy
+        if (heroTrack) heroTrack.style.height = '100svh'
+        if (intro) intro.style.marginTop = '0'
+        return
+      }
+
+      // 1. hero: three scroll phases while the stage is pinned —
+      //    headline lifts out → second text rises in → the whole stage moves up
+      //    and the next section, sitting underneath, is revealed
+      if (heroTrack && stage && primary && secondary) {
+        const vh = () => window.innerHeight
+        gsap
+          .timeline({
+            defaults: { ease: 'none' },
+            scrollTrigger: {
+              trigger: heroTrack,
+              start: 'top top',
+              end: 'bottom bottom',
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          })
+          .to(primary, { y: () => -vh() * 1.15, duration: 1 }, 0)
+          .fromTo(secondary, { y: () => vh() * 0.9, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, 0.6)
+          .to(stage, { y: () => -vh(), duration: 1 }, 2)
+      }
 
       // 2. reveals
       const once = (el, start) => ({ trigger: el, start, once: true })
@@ -509,18 +559,14 @@ function Header({ menuOpen, onToggleMenu, go }) {
   const menuLink =
     'rounded-full px-[18px] py-3.5 font-display text-[17px] font-bold tracking-[-0.01em] hover:bg-grey hover:text-ink'
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[padding,background-color,box-shadow] duration-300 ${
-        scrolled
-          ? 'bg-white/92 py-2.5 shadow-[0_1px_0_rgba(14,16,17,.08),0_12px_32px_rgba(14,16,17,.08)] backdrop-blur-xl'
-          : 'pt-[clamp(16px,2.4vw,28px)] pb-0'
-      }`}
-    >
+    <header className="fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)]">
       <div className="flex w-max max-w-full flex-col items-stretch gap-2.5">
         <div
           id="nav-pill"
-          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] transition-[height,box-shadow,background-color] duration-300 animate-[rise_520ms_ease_both] ${
-            scrolled ? 'h-16 bg-transparent shadow-none' : 'h-[76px] bg-white/94 shadow-pill backdrop-blur-xl'
+          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-xl transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
+            scrolled
+              ? 'h-[68px] border-white/60 bg-white/55 shadow-[0_8px_32px_rgba(14,16,17,.12),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-saturate-150'
+              : 'h-[76px] border-transparent bg-white/94 shadow-pill'
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
@@ -566,10 +612,8 @@ function Header({ menuOpen, onToggleMenu, go }) {
 
 function Hero({ showMobileBar }) {
   return (
-    <section
-      id="home"
-      className="relative flex min-h-svh flex-col justify-end overflow-hidden bg-sky pt-[clamp(104px,14vw,128px)]"
-    >
+    <section id="home" className="relative z-[2] h-[320svh]">
+      <div id="hero-stage" className="sticky top-0 flex h-svh flex-col justify-end overflow-hidden bg-sky pt-[clamp(104px,14vw,128px)] will-change-transform">
       <div id="hero-media" className="absolute -inset-[3%] will-change-transform animate-[fade_900ms_ease_both]">
         <div id="hero-media-inner" className="absolute inset-0 will-change-transform">
           <HeroVideo />
@@ -582,11 +626,9 @@ function Hero({ showMobileBar }) {
       />
       <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.28)_0%,rgba(14,16,17,0)_26%,rgba(14,16,17,.12)_52%,rgba(14,16,17,.62)_100%)]" />
 
-      <div
-        id="hero-copy"
-        className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)] will-change-[transform,opacity]"
-      >
-        <div id="hero-copy-inner" className="mx-auto max-w-wrap will-change-transform">
+      <div id="hero-copy" className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)]">
+        <div id="hero-copy-inner" className="relative mx-auto max-w-wrap will-change-transform">
+          <div id="hero-primary" className="will-change-transform">
           <div className="inline-flex min-h-[34px] items-center gap-[9px] rounded-full border border-white/40 bg-white/18 px-[15px] text-[13px] font-medium tracking-[0.02em] whitespace-nowrap text-white backdrop-blur-sm animate-[rise_520ms_ease_120ms_both]">
             <Sun />
             Solar energy made personal
@@ -632,6 +674,28 @@ function Hero({ showMobileBar }) {
             </div>
           </div>
           {showMobileBar && <div className="h-[88px]" aria-hidden="true" />}
+          </div>
+
+          <div id="hero-secondary" className="absolute inset-x-0 bottom-0 opacity-0 will-change-transform">
+            <div className="inline-flex min-h-[34px] items-center gap-[9px] rounded-full border border-white/40 bg-white/18 px-[15px] text-[13px] font-medium tracking-[0.02em] whitespace-nowrap text-white backdrop-blur-sm">
+              <Sun />
+              Consultation · Design · Install · Support
+            </div>
+            <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(40px,7vw,108px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
+              Designed around the way you <em className="text-lime not-italic">live</em>.
+            </h2>
+            <div className="mt-[clamp(24px,3vw,40px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,56px)]">
+              <p className="m-0 max-w-[460px] text-[clamp(16px,1.25vw,19px)] leading-[1.6] text-white/88 text-pretty">
+                One team from the first roof visit to the last check-in — sizing the system to how much power you
+                use, when you use it, and what your roof can actually do.
+              </p>
+              <a href="#next" className={`${BTN_LIME} h-14 px-[30px] text-base shadow-cta`}>
+                See how it works
+                <Arrow />
+              </a>
+            </div>
+            {showMobileBar && <div className="h-[88px]" aria-hidden="true" />}
+          </div>
         </div>
       </div>
 
@@ -654,6 +718,7 @@ function Hero({ showMobileBar }) {
           <path d="M12 5v14M6 13l6 6 6-6" />
         </svg>
       </a>
+      </div>
     </section>
   )
 }
@@ -661,15 +726,15 @@ function Hero({ showMobileBar }) {
 /** Splits a headline into words that reveal one after another on scroll. */
 function Words({ words }) {
   return words.map((word) => (
-    <span key={word} className="wrd inline-block">
-      {word}{' '}
-    </span>
+    <Fragment key={word}>
+      <span className="wrd inline-block">{word}</span>{' '}
+    </Fragment>
   ))
 }
 
 function Intro() {
   return (
-    <section id="next" className="bg-white px-pad pt-[clamp(96px,13vw,200px)] pb-[clamp(72px,9vw,140px)]">
+    <section id="next" className="relative z-[1] -mt-[100svh] bg-white px-pad pt-[clamp(96px,13vw,200px)] pb-[clamp(72px,9vw,140px)]">
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
@@ -784,8 +849,27 @@ function HowSolarWorks() {
 }
 
 function Benefits() {
-  const photo = `${FRAME} rvs aspect-4/3 min-w-0 grow basis-[440px]`
-  const copy = 'plate-rise mt-[clamp(40px,8vw,140px)] min-w-0 max-w-[440px] grow basis-[320px]'
+  const [active, setActive] = useState(0)
+  const listRef = useRef(null)
+
+  useEffect(() => {
+    const items = listRef.current ? [...listRef.current.querySelectorAll('[data-benefit]')] : []
+    if (!items.length) return
+    const ctx = gsap.context(() => {
+      items.forEach((el, i) =>
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 55%',
+          end: 'bottom 55%',
+          onToggle: (self) => {
+            if (self.isActive) setActive(i)
+          },
+        }),
+      )
+    })
+    return () => ctx.revert()
+  }, [])
+
   return (
     <section className="bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
@@ -796,39 +880,46 @@ function Benefits() {
           <div className={IDX}>03 — Benefits</div>
         </div>
 
-        <div className="mt-[clamp(56px,7vw,104px)] flex flex-wrap items-start gap-[clamp(20px,3vw,48px)]">
-          <div className={photo}>
-            <ImageSlot
-              {...PHOTOS.benefit}
-              alt="Solar panels on a home rooftop in daylight"
-              placeholder="Drop a daytime home / lifestyle photo"
-            />
+        <div className="mt-[clamp(40px,5vw,72px)] grid gap-x-[clamp(24px,4vw,64px)] lg:grid-cols-2">
+          <div className="sticky top-[88px] z-[1] h-[38vh] lg:top-[max(96px,calc(50vh-240px))] lg:h-auto lg:self-start">
+            <div className={`${FRAME} h-full lg:aspect-4/3`}>
+              {BENEFITS.map((b, i) => (
+                <div
+                  key={b.title}
+                  aria-hidden={i !== active}
+                  className={`absolute inset-0 transition-opacity duration-700 ${i === active ? 'opacity-100' : 'opacity-0'}`}
+                >
+                  <ImageSlot {...PHOTOS[b.photo]} alt={b.alt} />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className={copy}>
-            <div className="draw h-0.5 w-14 bg-lime" />
-            <h3 className={`${H3} rv mt-7`}>Lower energy costs.</h3>
-            <p className={`${LEAD} rv`}>
-              Your appliances run on your own generation first and only reach for the grid when they need more.
-              The more of your own power you use, the less the bill does the talking.
-            </p>
-          </div>
-        </div>
 
-        <div className="mt-[clamp(48px,6vw,96px)] flex flex-wrap-reverse items-start justify-end gap-[clamp(20px,3vw,48px)]">
-          <div className={copy}>
-            <div className="draw h-0.5 w-14 bg-gold" />
-            <h3 className={`${H3} rv mt-7`}>Power after sunset.</h3>
-            <p className={`${LEAD} rv`}>
-              Storage holds the energy your roof makes while you are out, so the evening — when a house actually
-              uses power — runs on sunlight too.
-            </p>
-          </div>
-          <div className={photo}>
-            <ImageSlot
-              {...PHOTOS.battery}
-              alt="A home battery mounted on a garage wall"
-              placeholder="Drop an evening home or battery photo"
-            />
+          <div ref={listRef} className="pt-6 lg:pt-0">
+            {BENEFITS.map((b, i) => {
+              const on = i === active
+              return (
+                <div
+                  key={b.title}
+                  data-benefit="1"
+                  className="flex min-h-[54vh] flex-col justify-end py-8 max-lg:pb-[12vh] lg:min-h-[70vh] lg:justify-center lg:py-10"
+                >
+                  <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
+                  <h3
+                    className={`${H3} mt-7 text-[clamp(30px,3.6vw,52px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
+                  >
+                    {b.title}
+                  </h3>
+                  <div
+                    className={`grid transition-[grid-template-rows,opacity] duration-500 ${on ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                  >
+                    <div className="min-h-0 overflow-hidden">
+                      <p className={`${LEAD} max-w-[460px]`}>{b.body}</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
