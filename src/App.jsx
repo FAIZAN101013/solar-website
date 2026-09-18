@@ -328,8 +328,8 @@ function useScrollEffects() {
       if (panel) {
         ScrollTrigger.create({
           trigger: panel,
-          start: 'top 110px',
-          end: 'bottom 40px',
+          start: 'top 150px',
+          end: 'bottom 20px',
           onToggle: ({ isActive }) =>
             window.dispatchEvent(new CustomEvent('nav-hide', { detail: isActive })),
         })
@@ -1424,6 +1424,20 @@ function Quote({ sent, onSent }) {
   const [step, setStep] = useState(1)
   const [band, setBand] = useState(null)
   const [property, setProperty] = useState(null)
+  const formRef = useRef(null)
+
+  // keep the card's top on screen whenever the step changes
+  const goStep = (n) => {
+    setStep(n)
+    requestAnimationFrame(() => {
+      const el = formRef.current
+      if (!el) return
+      const top = el.getBoundingClientRect().top
+      if (top < 100 || top > window.innerHeight * 0.4) {
+        window.scrollTo({ top: window.scrollY + top - 120, behavior: 'smooth' })
+      }
+    })
+  }
 
   const submit = (e) => {
     e.preventDefault()
@@ -1468,15 +1482,16 @@ function Quote({ sent, onSent }) {
         </div>
 
         <form
+          ref={formRef}
           onSubmit={submit}
           className="rvs min-w-0 max-w-[600px] grow basis-[420px] rounded-[28px] bg-white p-[clamp(24px,3vw,44px)] shadow-form"
         >
           {!sent && step === 1 && (
             <div>
               <div className="flex items-center gap-3">
-                <span className={stepLabel}>Step 1 of 2</span>
+                <span className={stepLabel}>Step 1 of 3</span>
                 <span className={stepBar}>
-                  <i className={`${stepFill} w-1/2`} />
+                  <i className={`${stepFill} w-1/3`} />
                 </span>
               </div>
               <h3 className={formH3}>Where is the roof?</h3>
@@ -1510,7 +1525,7 @@ function Quote({ sent, onSent }) {
                 </div>
               </div>
 
-              <button type="button" onClick={() => setStep(2)} className={`${BTN_LIME} mt-8 h-[60px] w-full text-[17px]`}>
+              <button type="button" onClick={() => goStep(2)} className={`${BTN_LIME} mt-8 h-[60px] w-full text-[17px]`}>
                 Continue
                 <Arrow />
               </button>
@@ -1518,11 +1533,11 @@ function Quote({ sent, onSent }) {
           )}
 
           {!sent && step === 2 && (
-            <div className="animate-[revealSoft_300ms_ease_both]">
+            <div key="step2" className="animate-[revealSoft_300ms_ease_both]">
               <div className="flex items-center gap-3">
-                <span className={stepLabel}>Step 2 of 2</span>
+                <span className={stepLabel}>Step 2 of 3</span>
                 <span className={stepBar}>
-                  <i className={`${stepFill} w-full`} />
+                  <i className={`${stepFill} w-2/3`} />
                 </span>
               </div>
               <h3 className={formH3}>Where should we send it?</h3>
@@ -1563,7 +1578,32 @@ function Quote({ sent, onSent }) {
                 </label>
               </div>
 
-              <div className="mt-6">
+              <button type="button" onClick={() => goStep(3)} className={`${BTN_LIME} mt-7 h-[60px] w-full text-[17px]`}>
+                Continue
+                <Arrow />
+              </button>
+              <button
+                type="button"
+                onClick={() => goStep(1)}
+                className="mt-2.5 block h-12 w-full cursor-pointer rounded-full border-0 bg-transparent font-body text-sm text-ink/60 hover:text-ink"
+              >
+                Back
+              </button>
+            </div>
+          )}
+
+          {!sent && step === 3 && (
+            <div key="step3" className="animate-[revealSoft_300ms_ease_both]">
+              <div className="flex items-center gap-3">
+                <span className={stepLabel}>Step 3 of 3</span>
+                <span className={stepBar}>
+                  <i className={`${stepFill} w-full`} />
+                </span>
+              </div>
+              <h3 className={formH3}>A little about the property</h3>
+              <p className={formSub}>This helps us bring the right options to the first conversation.</p>
+
+              <div>
                 <span className={`${FIELD_LABEL} mb-3`}>Property type</span>
                 <div className="flex flex-wrap gap-2">
                   {PROPERTY_TYPES.map((label) => {
@@ -1608,7 +1648,7 @@ function Quote({ sent, onSent }) {
               </button>
               <button
                 type="button"
-                onClick={() => setStep(1)}
+                onClick={() => goStep(2)}
                 className="mt-2.5 block h-12 w-full cursor-pointer rounded-full border-0 bg-transparent font-body text-sm text-ink/60 hover:text-ink"
               >
                 Back
