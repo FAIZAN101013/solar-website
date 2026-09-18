@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Logo from './components/Logo.jsx'
@@ -550,6 +550,8 @@ export default function App() {
 
   useScrollEffects()
 
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
+
   const go = (id) => (e) => {
     e.preventDefault()
     setMenuOpen(false)
@@ -560,7 +562,12 @@ export default function App() {
 
   return (
     <>
-      <Header menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((o) => !o)} go={go} />
+      <Header
+        menuOpen={menuOpen}
+        onToggleMenu={() => setMenuOpen((o) => !o)}
+        onCloseMenu={closeMenu}
+        go={go}
+      />
       <Hero showMobileBar={showMobileBar} />
       <Intro />
       <DesignedAroundYou />
@@ -577,34 +584,39 @@ export default function App() {
   )
 }
 
-function Header({ menuOpen, onToggleMenu, go }) {
+function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
+  const rootRef = useRef(null)
+
   useEffect(() => {
-    let lastY = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      setScrolled(y > 80)
-      // Hide while reading downwards so the pill never sits on the copy;
-      // any upward nudge (or the top of the page) brings it straight back.
-      if (y < 120 || y < lastY - 6) setHidden(false)
-      else if (y > lastY + 6) setHidden(true)
-      lastY = y
-    }
+    const onScroll = () => setScrolled(window.scrollY > 80)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // clicking anywhere outside the pill or the menu, or pressing Escape, closes it
+  useEffect(() => {
+    if (!menuOpen) return
+    const onPointer = (e) => {
+      if (rootRef.current && !rootRef.current.contains(e.target)) onCloseMenu()
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') onCloseMenu()
+    }
+    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen, onCloseMenu])
+
   const menuLink =
-    'rounded-full px-[18px] py-3.5 font-display text-[17px] font-bold tracking-[-0.01em] hover:bg-grey hover:text-ink'
+    'rounded-full px-[18px] py-3.5 text-center font-display text-[17px] font-bold tracking-[-0.01em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
-    <header
-      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
-        hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
-      }`}
-    >
-      <div className="flex w-max max-w-full flex-col items-stretch gap-2.5">
+    <header className="fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)]">
+      <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
         <div
           id="nav-pill"
           className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-xl transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
