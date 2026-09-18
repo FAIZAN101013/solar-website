@@ -44,22 +44,44 @@ const SERVICES = [
   },
 ]
 
+const ICON = {
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M15 9l-2 6-4 2 2-6 4-2z" />
+    </>
+  ),
+  calculator: (
+    <>
+      <rect x="5" y="3" width="14" height="18" rx="2" />
+      <path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01" />
+    </>
+  ),
+  lifebuoy: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M14.5 9.5l3.9-3.9M5.6 18.4l3.9-3.9" />
+    </>
+  ),
+}
+
 const VALUES = [
   {
     bg: 'bg-lime',
-    dash: 'bg-ink',
+    icon: 'compass',
     title: 'Design before pricing',
     body: 'We work out what your home needs, then tell you what it costs. Never the other way round.',
   },
   {
     bg: 'bg-orange',
-    dash: 'bg-ink',
+    icon: 'calculator',
     title: 'Plain numbers',
     body: 'Expected generation, expected savings, and the assumptions behind both, written down.',
   },
   {
     bg: 'bg-lime',
-    dash: 'bg-ink',
+    icon: 'lifebuoy',
     title: 'Still here later',
     body: 'Monitoring, servicing and expansion when your energy use changes.',
   },
@@ -301,6 +323,18 @@ function useScrollEffects() {
     const byId = (id) => document.getElementById(id)
 
     const ctx = gsap.context(() => {
+      // the nav steps aside only while the dark estimator panel is under it
+      const panel = byId('estimate-panel')
+      if (panel) {
+        ScrollTrigger.create({
+          trigger: panel,
+          start: 'top 110px',
+          end: 'bottom 40px',
+          onToggle: ({ isActive }) =>
+            window.dispatchEvent(new CustomEvent('nav-hide', { detail: isActive })),
+        })
+      }
+
       const heroTrack = byId('home')
       const stage = byId('hero-stage')
       const primary = byId('hero-primary')
@@ -596,7 +630,14 @@ export default function App() {
 
 function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const rootRef = useRef(null)
+
+  useEffect(() => {
+    const onHide = (e) => setHidden(Boolean(e.detail))
+    window.addEventListener('nav-hide', onHide)
+    return () => window.removeEventListener('nav-hide', onHide)
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80)
@@ -625,7 +666,11 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   const menuLink =
     'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
-    <header className="fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)]">
+    <header
+      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
+        hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
+      }`}
+    >
       <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
         <div
           id="nav-pill"
@@ -1152,14 +1197,47 @@ function About() {
           data-stagger="1"
           className="mt-[clamp(48px,6vw,88px)] grid grid-cols-[repeat(auto-fit,minmax(256px,1fr))] gap-6"
         >
-          {VALUES.map((v) => (
+          {VALUES.map((v, i) => (
             <div
               key={v.title}
-              className={`group rounded-3xl ${v.bg} p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame`}
+              className={`group relative flex min-h-[280px] flex-col overflow-hidden rounded-3xl ${v.bg} p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame`}
             >
-              <div className={`h-0.5 w-7 transition-[width] duration-300 group-hover:w-12 ${v.dash}`} />
-              <h3 className="mt-7 mb-0 font-display text-[22px] font-bold tracking-[-0.02em]">{v.title}</h3>
-              <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-ink/75 text-pretty">{v.body}</p>
+              <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/25 blur-2xl" />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-8 -bottom-10 h-52 w-52 text-ink/[0.08] transition-transform duration-700 ease-out group-hover:-rotate-6 group-hover:scale-110"
+              >
+                {ICON[v.icon]}
+              </svg>
+
+              <div className="relative flex items-start justify-between">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-ink text-white">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    {ICON[v.icon]}
+                  </svg>
+                </span>
+                <span className="font-display text-[13px] font-bold text-ink/55 tabular-nums">0{i + 1}</span>
+              </div>
+              <h3 className="relative mt-auto pt-10 font-display text-[24px] leading-[1.1] font-bold tracking-[-0.025em]">
+                {v.title}
+              </h3>
+              <p className="relative mt-3 mb-0 max-w-[34ch] text-[15px] leading-[1.6] text-ink/75 text-pretty">{v.body}</p>
             </div>
           ))}
         </div>
@@ -1213,7 +1291,10 @@ function Estimator({ bill, onBill }) {
           <div className={IDX}>07 — Estimate</div>
         </div>
 
-        <div className="rvs relative mt-[clamp(40px,5vw,72px)] overflow-hidden rounded-[32px] bg-ink text-white">
+        <div
+          id="estimate-panel"
+          className="rvs relative mt-[clamp(40px,5vw,72px)] overflow-hidden rounded-[32px] bg-ink text-white"
+        >
           <div className="pointer-events-none absolute -top-40 -right-32 h-[520px] w-[520px] rounded-full bg-lime/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-48 -left-24 h-[420px] w-[420px] rounded-full bg-sky/25 blur-3xl" />
 
