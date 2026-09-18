@@ -511,7 +511,6 @@ function useScrollEffects() {
               // pin for a bit more than the track's own travel so the pass feels unhurried
               end: () => '+=' + Math.max(Math.round(travel() * 2.4), 1),
               pin: true,
-              anticipatePin: 1,
               scrub: 1,
               invalidateOnRefresh: true,
             },
@@ -1059,7 +1058,7 @@ function Benefits() {
   }, [])
 
   return (
-    <section className="bg-white px-pad py-sec">
+    <section className="relative isolate z-0 bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 data-words="1" className={`${H2} max-w-[14ch]`}>
@@ -1117,7 +1116,7 @@ function Benefits() {
 
 function Services() {
   return (
-    <section id="services" className="bg-grey px-pad pt-[clamp(64px,7vw,96px)] pb-[clamp(48px,6vw,80px)]">
+    <section id="services" className="relative isolate z-[3] bg-grey px-pad pt-[clamp(64px,7vw,96px)] pb-[clamp(48px,6vw,80px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
