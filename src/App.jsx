@@ -46,17 +46,20 @@ const SERVICES = [
 
 const VALUES = [
   {
-    dash: 'bg-orange',
+    bg: 'bg-lime',
+    dash: 'bg-ink',
     title: 'Design before pricing',
     body: 'We work out what your home needs, then tell you what it costs. Never the other way round.',
   },
   {
-    dash: 'bg-lime',
+    bg: 'bg-orange',
+    dash: 'bg-ink',
     title: 'Plain numbers',
     body: 'Expected generation, expected savings, and the assumptions behind both, written down.',
   },
   {
-    dash: 'bg-gold',
+    bg: 'bg-lime',
+    dash: 'bg-ink',
     title: 'Still here later',
     body: 'Monitoring, servicing and expansion when your energy use changes.',
   },
@@ -1152,11 +1155,11 @@ function About() {
           {VALUES.map((v) => (
             <div
               key={v.title}
-              className="group rounded-3xl bg-grey p-[clamp(24px,2.6vw,36px)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame"
+              className={`group rounded-3xl ${v.bg} p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame`}
             >
               <div className={`h-0.5 w-7 transition-[width] duration-300 group-hover:w-12 ${v.dash}`} />
               <h3 className="mt-7 mb-0 font-display text-[22px] font-bold tracking-[-0.02em]">{v.title}</h3>
-              <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-ink/66 text-pretty">{v.body}</p>
+              <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-ink/75 text-pretty">{v.body}</p>
             </div>
           ))}
         </div>
