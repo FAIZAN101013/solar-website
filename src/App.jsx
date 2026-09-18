@@ -58,24 +58,42 @@ const VALUES = [
   },
 ]
 
+/** Orange for body copy: the deeper amber step keeps paragraph text readable. */
+const Amber = ({ children }) => <strong className="font-medium text-amber">{children}</strong>
+
 const BENEFITS = [
   {
     title: 'Lower energy costs.',
-    body: 'Your appliances run on your own generation first and only reach for the grid when they need more. The more of your own power you use, the less the bill does the talking.',
+    body: (
+      <>
+        Your appliances run on <Amber>your own generation first</Amber> and only reach for the grid when they
+        need more. The more of your own power you use, the less the bill does the talking.
+      </>
+    ),
     photo: 'benefit',
     alt: 'Solar panels on a home rooftop in daylight',
     rule: 'bg-lime',
   },
   {
     title: 'Power after sunset.',
-    body: 'Storage holds the energy your roof makes while you are out, so the evening — when a house actually uses power — runs on sunlight too.',
+    body: (
+      <>
+        Storage holds the energy your roof makes while you are out, so the evening — when a house actually uses
+        power — <Amber>runs on sunlight too</Amber>.
+      </>
+    ),
     photo: 'battery',
     alt: 'A home battery mounted on a garage wall',
     rule: 'bg-gold',
   },
   {
     title: 'Built for decades.',
-    body: 'Panels, inverter and mounting chosen for your roof and your climate, installed by our own crew, and monitored so a fault is seen before it costs you anything.',
+    body: (
+      <>
+        Panels, inverter and mounting chosen for your roof and your climate, installed by our own crew, and
+        monitored so <Amber>a fault is seen before it costs you anything</Amber>.
+      </>
+    ),
     photo: 'install',
     alt: 'Installers fitting panels on a roof',
     rule: 'bg-orange',
@@ -410,7 +428,7 @@ function useScrollEffects() {
         gsap.to(sc, {
           scrollLeft: () => sc.scrollWidth - sc.clientWidth,
           ease: 'none',
-          scrollTrigger: { trigger: sc, start: 'top 85%', end: 'bottom 15%', scrub: 0.6, invalidateOnRefresh: true },
+          scrollTrigger: { trigger: sc, start: 'top 55%', end: 'bottom 5%', scrub: 1.2, invalidateOnRefresh: true },
         })
       }
 
@@ -749,8 +767,8 @@ function Intro() {
         <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap gap-[clamp(28px,5vw,88px)]">
           <div className="draw mt-3.5 h-0.5 w-[72px] shrink-0 bg-lime" />
           <p className="rvs m-0 max-w-[620px] grow basis-[420px] text-[clamp(17px,1.5vw,22px)] leading-[1.6] text-ink/72 text-pretty">
-            We help homeowners understand their options and design a system around the way they live — how
-            much power you use, when you use it, and what your roof can actually do.
+            We help homeowners understand their options and design a system around the way they live —{' '}
+            <Amber>how much power you use, when you use it</Amber>, and what your roof can actually do.
           </p>
         </div>
       </div>
@@ -789,8 +807,8 @@ function DesignedAroundYou() {
           <div className="plate-rise mt-[clamp(-96px,-6vw,-40px)] mr-[clamp(0px,2vw,32px)] min-w-0 max-w-[520px] grow basis-[380px] rounded-3xl bg-white p-[clamp(28px,3vw,44px)] shadow-card">
             <h3 className={H3}>Every roof is <Orange>different</Orange>.</h3>
             <p className="mt-[18px] mb-0 text-base leading-[1.65] text-ink/70 text-pretty">
-              Orientation, pitch, shading and usable area decide what your roof can generate. We map the sun
-              across your roof before anyone talks about price.
+              Orientation, pitch, shading and usable area decide what your roof can generate.{' '}
+              <Amber>We map the sun across your roof</Amber> before anyone talks about price.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <span className={tag}>Orientation</span>
@@ -809,14 +827,14 @@ function HowSolarWorks() {
   return (
     <section id="flow" className="bg-grey px-pad py-sec">
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
-        <div className="sticky top-[clamp(96px,12vw,140px)] min-w-0 max-w-[480px] grow basis-[360px]">
+        <div className="sticky top-[clamp(128px,12vw,150px)] min-w-0 max-w-[480px] grow basis-[360px]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
           <h2 className="mt-5 mb-0 font-display text-[clamp(34px,4.6vw,72px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
             Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
-            Your appliances use solar power first. Anything spare charges a battery or is exported and measured
-            — so the system keeps working whether you are home or not.
+            <Amber>Your appliances use solar power first.</Amber> Anything spare charges a battery or is exported
+            and measured — so the system keeps working whether you are home or not.
           </p>
           <a href="#quote" className={`${BTN_LIME} mt-9 h-14 px-7 text-base`}>
             Get a Free Quote
@@ -885,8 +903,8 @@ function Benefits() {
         </div>
 
         <div className="mt-[clamp(40px,5vw,72px)] grid gap-x-[clamp(24px,4vw,64px)] lg:grid-cols-2">
-          <div className="sticky top-[88px] z-[1] h-[38vh] lg:top-[max(96px,calc(50vh-240px))] lg:h-auto lg:self-start">
-            <div className={`${FRAME} h-full lg:aspect-4/3`}>
+          <div className="sticky top-[112px] z-[1] h-[38vh] lg:top-[132px] lg:h-[calc(100svh-164px)] lg:self-start">
+            <div className={`${FRAME} h-full`}>
               {BENEFITS.map((b, i) => (
                 <div
                   key={b.title}
@@ -906,7 +924,7 @@ function Benefits() {
                 <div
                   key={b.title}
                   data-benefit="1"
-                  className="flex min-h-[54vh] flex-col justify-end py-8 max-lg:pb-[12vh] lg:min-h-[70vh] lg:justify-center lg:py-10"
+                  className="flex min-h-[54vh] flex-col justify-end py-8 max-lg:pb-[12vh] lg:min-h-[calc(100svh-164px)] lg:justify-center lg:py-10"
                 >
                   <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
                   <h3
@@ -1039,8 +1057,8 @@ function About() {
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
-              roof can do and what you want solar to achieve. We start with those questions, then design around
-              the answers.
+              roof can do and what you want solar to achieve. We start with those questions,{' '}
+              <Amber>then design around the answers</Amber>.
             </p>
             <p className="mt-4 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               A system sits on your roof for decades, so the design work, the install and the person who answers
@@ -1166,7 +1184,8 @@ function Estimator({ bill, onBill }) {
                 <span>$600</span>
               </div>
               <p className="mt-6 mb-0 max-w-[380px] text-sm leading-[1.6] text-white/60 text-pretty">
-                Indicative only, and rounded. A real design uses your usage profile, roof and tariff.
+                Indicative only, and rounded. <span className="text-orange">A real design</span> uses your usage
+                profile, roof and tariff.
               </p>
               <a href="#quote" className={`${BTN_LIME} mt-8 h-[54px] px-[26px] text-base`}>
                 Get an exact quote
@@ -1291,7 +1310,7 @@ function Quote({ sent, onSent }) {
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
           <h2 className={`${H2} rv max-w-none text-[clamp(36px,5.4vw,86px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
-            Let's design a solar solution around your home.
+            Let's design a solar solution <Amber>around your home</Amber>.
           </p>
           <div className="rvs mt-10 flex flex-col gap-3.5 border-t border-ink/14 pt-8">
             <div className={point}>
