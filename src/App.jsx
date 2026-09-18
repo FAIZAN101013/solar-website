@@ -149,7 +149,7 @@ const fmtKwh = (v) => `${Math.round(v).toLocaleString()} kWh / yr`
 
 const BTN =
   'inline-flex items-center justify-center gap-2.5 rounded-full border-0 font-display font-bold whitespace-nowrap cursor-pointer transition-colors'
-const BTN_LIME = `${BTN} bg-lime text-ink hover:bg-lime-hover hover:text-ink`
+const BTN_LIME = `${BTN} bg-lime text-ink hover:bg-orange hover:text-ink`
 const H2 =
   'm-0 max-w-[16ch] font-display font-bold text-h2 leading-[0.98] tracking-[-0.04em] text-balance'
 const H3 = 'm-0 font-display font-bold text-h3 leading-[1.04] tracking-[-0.03em] text-balance'
@@ -650,10 +650,10 @@ function Hero({ showMobileBar }) {
                 </a>
                 <a
                   href="#services"
-                  className={`${BTN} h-14 border border-white/55 bg-transparent px-[26px] text-base font-semibold text-white hover:border-white hover:bg-white/14 hover:text-white`}
+                  className={`${BTN} h-14 border border-white/55 bg-transparent px-[26px] text-base font-semibold text-white hover:border-orange hover:bg-orange hover:text-ink`}
                 >
                   Explore Our Services
-                  <Arrow color="#FFFFFF" />
+                  <Arrow color="currentColor" />
                 </a>
               </div>
             </div>
@@ -682,7 +682,7 @@ function Hero({ showMobileBar }) {
               Consultation · Design · Install · Support
             </div>
             <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(40px,7vw,108px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
-              Designed around the way you <em className="text-lime not-italic">live</em>.
+              Designed around the way you <Orange>live</Orange>.
             </h2>
             <div className="mt-[clamp(24px,3vw,40px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,56px)]">
               <p className="m-0 max-w-[460px] text-[clamp(16px,1.25vw,19px)] leading-[1.6] text-white/88 text-pretty">
@@ -702,7 +702,7 @@ function Hero({ showMobileBar }) {
       <a
         href="#next"
         aria-label="Scroll to next section"
-        className="absolute top-[calc(50svh-22px)] right-pad z-[6] grid h-11 w-11 place-items-center rounded-full bg-lime shadow-scroll transition-colors animate-[bob_3.4s_ease-in-out_infinite] hover:bg-lime-hover"
+        className="absolute top-[calc(50svh-22px)] right-pad z-[6] grid h-11 w-11 place-items-center rounded-full bg-lime shadow-scroll transition-colors animate-[bob_3.4s_ease-in-out_infinite] hover:bg-orange"
       >
         <svg
           width="18"
@@ -724,13 +724,17 @@ function Hero({ showMobileBar }) {
 }
 
 /** Splits a headline into words that reveal one after another on scroll. */
-function Words({ words }) {
+/** Headline words that reveal one after another; `accent` colours one of them. */
+function Words({ words, accent, accentClass = 'text-lime' }) {
   return words.map((word) => (
     <Fragment key={word}>
-      <span className="wrd inline-block">{word}</span>{' '}
+      <span className={`wrd inline-block${word === accent ? ` ${accentClass}` : ''}`}>{word}</span>{' '}
     </Fragment>
   ))
 }
+
+const Lime = ({ children }) => <em className="text-lime not-italic">{children}</em>
+const Orange = ({ children }) => <em className="text-orange not-italic">{children}</em>
 
 function Intro() {
   return (
@@ -740,7 +744,7 @@ function Intro() {
           data-words="1"
           className="m-0 max-w-[19ch] font-display text-[clamp(38px,6.4vw,104px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
         >
-          <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} />
+          <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
         </h2>
         <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap gap-[clamp(28px,5vw,88px)]">
           <div className="draw mt-3.5 h-0.5 w-[72px] shrink-0 bg-lime" />
@@ -783,7 +787,7 @@ function DesignedAroundYou() {
           </div>
 
           <div className="plate-rise mt-[clamp(-96px,-6vw,-40px)] mr-[clamp(0px,2vw,32px)] min-w-0 max-w-[520px] grow basis-[380px] rounded-3xl bg-white p-[clamp(28px,3vw,44px)] shadow-card">
-            <h3 className={H3}>Every roof is different.</h3>
+            <h3 className={H3}>Every roof is <Orange>different</Orange>.</h3>
             <p className="mt-[18px] mb-0 text-base leading-[1.65] text-ink/70 text-pretty">
               Orientation, pitch, shading and usable area decide what your roof can generate. We map the sun
               across your roof before anyone talks about price.
@@ -808,7 +812,7 @@ function HowSolarWorks() {
         <div className="sticky top-[clamp(96px,12vw,140px)] min-w-0 max-w-[480px] grow basis-[360px]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
           <h2 className="mt-5 mb-0 font-display text-[clamp(34px,4.6vw,72px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
-            Sunlight, all the way to your switchboard.
+            Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
             Your appliances use solar power first. Anything spare charges a battery or is exported and measured
@@ -875,7 +879,7 @@ function Benefits() {
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 data-words="1" className={`${H2} max-w-[14ch]`}>
-            <Words words={['What', 'changes', 'when', 'you', 'go', 'solar.']} />
+            <Words words={['What', 'changes', 'when', 'you', 'go', 'solar.']} accent="solar." accentClass="text-orange" />
           </h2>
           <div className={IDX}>03 — Benefits</div>
         </div>
@@ -932,7 +936,7 @@ function Services() {
     <section id="services" className="bg-grey px-pad py-sec">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} rv`}>Solar solutions for the way you live.</h2>
+          <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
           <div className={IDX}>04 — Services</div>
         </div>
 
@@ -1006,7 +1010,7 @@ function About() {
     <section id="about-area" className="bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={H2}>A solar partner, not a panel seller.</h2>
+          <h2 className={H2}>A solar <Orange>partner</Orange>, not a panel seller.</h2>
           <div className={IDX}>06 — About us</div>
         </div>
 
@@ -1128,7 +1132,7 @@ function Estimator({ bill, onBill }) {
     <section className="bg-white px-pad pt-[clamp(72px,9vw,140px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} text-[clamp(30px,4.2vw,62px)] leading-none`}>What could solar do on your roof?</h2>
+          <h2 className={`${H2} text-[clamp(30px,4.2vw,62px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
           <div className={IDX}>07 — Estimate</div>
         </div>
 
@@ -1285,7 +1289,7 @@ function Quote({ sent, onSent }) {
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-none text-[clamp(36px,5.4vw,86px)]`}>Ready to make the switch?</h2>
+          <h2 className={`${H2} rv max-w-none text-[clamp(36px,5.4vw,86px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
             Let's design a solar solution around your home.
           </p>
@@ -1466,7 +1470,7 @@ function Quote({ sent, onSent }) {
               <button
                 type="button"
                 onClick={reset}
-                className="mt-7 h-12 cursor-pointer rounded-full border border-ink/18 bg-transparent px-6 font-display text-[15px] font-semibold transition-colors hover:border-ink"
+                className="mt-7 h-12 cursor-pointer rounded-full border border-ink/18 bg-transparent px-6 font-display text-[15px] font-semibold transition-colors hover:border-orange hover:text-orange"
               >
                 Send another request
               </button>
