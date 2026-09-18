@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Original source media (4K masters); encoded web versions live in public/
+media-src/

@@ -1,16 +1,31 @@
-# React + Vite
+# The Solar Co. — website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Marketing site for The Solar Co., built with React 19, Vite and Tailwind CSS v4. The home page is a port of the
+"Home v2" artboard from the Claude Design project.
 
-Currently, two official plugins are available:
+## Develop
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+## Build
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run build
+npm run preview
+```
 
-## Expanding the ESLint configuration
+## Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/App.jsx` — the home page: header, hero, sections, savings estimator, two-step quote form, footer.
+- `src/index.css` — Tailwind v4 entry: design tokens in `@theme`, keyframes, and the scroll-reveal utilities.
+- `src/components/ImageSlot.jsx` — cover-fit photo with credit, or a labelled placeholder when no photo is set.
+- `src/components/Logo.jsx` — brand mark as inline SVG (orange dot arc and wordmark).
+- `public/hero.webm`, `public/hero.mp4`, `public/hero-poster.jpg` — the hero background film (1080p, muted) and its poster frame. The 4K master lives in `media-src/` (not committed); re-encode with ffmpeg if it changes.
+
+## Placeholders
+
+Copy in square brackets (`[XX]`, `[Customer name]`, `[Regions served]`) and the estimator assumptions in
+`src/App.jsx` are waiting on confirmed figures from the client.
