@@ -1224,9 +1224,9 @@ function About() {
           <div className={IDX}>06 — About us</div>
         </div>
 
-        <div className="mt-[clamp(48px,6vw,88px)] grid items-start gap-[clamp(24px,3vw,48px)] lg:grid-cols-[minmax(0,1.32fr)_minmax(0,1fr)]">
+        <div className="mt-[clamp(28px,3.5vw,56px)] grid items-start gap-[clamp(24px,3vw,44px)] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
           <div className="relative min-w-0">
-            <div className={`${FRAME} rvs aspect-4/3`}>
+            <div className={`${FRAME} rvs aspect-[3/2]`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
@@ -1245,7 +1245,7 @@ function About() {
               </span>
             </div>
           </div>
-          <div className="plate-rise min-w-0 lg:mt-[clamp(40px,7vw,104px)]">
+          <div className="plate-rise min-w-0 lg:mt-[clamp(20px,3vw,48px)]">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
@@ -1365,34 +1365,34 @@ function Estimator({ bill, onBill }) {
   const growth = 0.45 + 0.55 * (sizeKw / 15)
   const assumptions = `$${rate.toFixed(2)} per kWh, ${yieldPerKw} kWh per kW each year, $${costPerKw} per kW installed, ${offsetPct}% of usage offset.`
 
-  const tile = 'rounded-[16px] border border-white/10 bg-white/6 p-3.5'
+  const tile = 'rounded-[14px] border border-white/10 bg-white/6 p-3'
   const tileLabel = 'text-xs font-semibold tracking-[0.08em] text-white/50 uppercase'
   const tileValue =
-    'mt-1 font-display text-[clamp(20px,2vw,27px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
+    'mt-1 font-display text-[clamp(18px,1.7vw,23px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
   const tileSub = 'mt-1.5 text-[11px] text-white/45'
 
   return (
-    <section className="bg-white px-pad pt-[clamp(44px,5.5vw,84px)]">
+    <section className="bg-white px-pad pt-[clamp(32px,4vw,60px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} text-[clamp(28px,3.8vw,54px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
+          <h2 className={`${H2} text-[clamp(24px,3vw,42px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
           <div className={IDX}>07 — Estimate</div>
         </div>
 
         <div
           id="estimate-panel"
-          className="rvs relative mt-[clamp(18px,2.4vw,34px)] overflow-hidden rounded-[28px] bg-ink text-white"
+          className="rvs relative mt-[clamp(14px,1.8vw,26px)] overflow-hidden rounded-[24px] bg-ink text-white"
         >
           <div className="pointer-events-none absolute -top-40 -right-32 h-[520px] w-[520px] rounded-full bg-lime/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-48 -left-24 h-[420px] w-[420px] rounded-full bg-sky/25 blur-3xl" />
 
-          <div className="relative grid gap-[clamp(18px,2.2vw,32px)] p-[clamp(16px,2vw,28px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="relative grid gap-[clamp(16px,1.8vw,26px)] p-[clamp(14px,1.6vw,22px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div>
               <div className="text-[13px] font-semibold tracking-[0.12em] text-white/55 uppercase">
                 Your average monthly power bill
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <strong className="font-display text-[clamp(34px,3.4vw,50px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
+                <strong className="font-display text-[clamp(28px,2.8vw,40px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
                   ${bill}
                 </strong>
                 <span className="text-[15px] text-white/55">per month</span>
@@ -1405,7 +1405,7 @@ function Estimator({ bill, onBill }) {
                 value={bill}
                 onChange={(e) => onBill(Number(e.target.value))}
                 aria-label="Average monthly power bill"
-                className="mt-4 h-7 w-full cursor-pointer accent-lime"
+                className="mt-3 h-6 w-full cursor-pointer accent-lime"
               />
               <div className="mt-1 flex justify-between text-xs text-white/45 tabular-nums">
                 <span>$80</span>
@@ -1415,14 +1415,14 @@ function Estimator({ bill, onBill }) {
                 Indicative only, and rounded. <span className="text-orange">A real design</span> uses your usage
                 profile, roof and tariff.
               </p>
-              <a href="#quote" className={`${BTN_LIME} mt-5 h-[48px] px-[22px] text-[15px]`}>
+              <a href="#quote" className={`${BTN_LIME} mt-4 h-[46px] px-[20px] text-[14px]`}>
                 Get an exact quote
                 <Arrow />
               </a>
             </div>
 
-            <div className="grid content-start gap-2.5">
-              <div className="grid gap-2.5 sm:grid-cols-3">
+            <div className="grid content-start gap-2">
+              <div className="grid gap-2 sm:grid-cols-3">
                 <div className={tile}>
                   <div className={tileLabel}>System size</div>
                   <div className={tileValue}>
@@ -1476,7 +1476,7 @@ function Estimator({ bill, onBill }) {
                     <AnimatedNumber value={annualGen} format={fmtKwh} />
                   </span>
                 </div>
-                <div className="mt-2.5 flex h-[46px] items-end gap-1.5" aria-hidden="true">
+                <div className="mt-2 flex h-[36px] items-end gap-1.5" aria-hidden="true">
                   {SEASON.map((w, i) => (
                     <div
                       key={MONTHS[i] + i}
