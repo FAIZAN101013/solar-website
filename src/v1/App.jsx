@@ -745,14 +745,14 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
           id="nav-pill"
           className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-2xl backdrop-saturate-150 transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'h-[68px] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
-              : 'h-[72px] border-white/60 bg-white/88 shadow-pill'
+              ? 'h-[72px] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
+              : 'h-[76px] border-white/60 bg-white/88 shadow-pill'
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
             <Logo
               className={`block h-auto transition-[width] duration-300 ${
-                scrolled ? 'w-[clamp(106px,10.4vw,136px)]' : 'w-[clamp(112px,11vw,145px)]'
+                scrolled ? 'w-[clamp(112px,11vw,145px)]' : 'w-[clamp(118px,11.6vw,152px)]'
               }`}
             />
           </a>
@@ -761,8 +761,8 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               href="#quote"
               className={`${BTN_LIME} transition-[height,padding,font-size] duration-300 max-sm:hidden ${
                 scrolled
-                  ? 'h-[48px] px-[clamp(15px,1.7vw,22px)] text-[14.5px]'
-                  : 'h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px]'
+                  ? 'h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px]'
+                  : 'h-[56px] px-[clamp(18px,2vw,26px)] text-[15.5px]'
               }`}
             >
               Get a Free Quote
@@ -773,7 +773,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
               className={`relative grid cursor-pointer place-items-center rounded-full border-0 bg-grey transition-[height,width,background-color] duration-300 hover:bg-grey-hover ${
-                scrolled ? 'h-[48px] w-[48px]' : 'h-[52px] w-[52px]'
+                scrolled ? 'h-[52px] w-[52px]' : 'h-[56px] w-[56px]'
               }`}
             >
               <MenuIcon open={menuOpen} />
