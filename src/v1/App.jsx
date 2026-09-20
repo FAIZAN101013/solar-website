@@ -320,20 +320,6 @@ function Sun() {
   )
 }
 
-/**
- * Two rounded rules of unequal length — the shorter one right-aligned under the
- * longer — which even up and cross into an X while the menu is open.
- */
-function MenuIcon({ open }) {
-  const bar = `absolute right-0 block h-[2px] rounded-full bg-ink transition-all duration-300 ease-out`
-  return (
-    <span aria-hidden="true" className="relative block h-[16px] w-[20px]">
-      <span className={`${bar} w-[20px] ${open ? 'top-[7px] rotate-45' : 'top-[4px]'}`} />
-      <span className={`${bar} ${open ? 'top-[7px] w-[20px] -rotate-45' : 'top-[11px] w-[13px]'}`} />
-    </span>
-  )
-}
-
 function Phone() {
   return (
     <svg
@@ -710,20 +696,11 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     return () => window.removeEventListener('nav-hide', onHide)
   }, [])
 
-  // The pill holds its full, centred form for the whole hero — there is nothing
-  // behind it there to clear. It splits once the hero hands over to the page.
   useEffect(() => {
-    const onScroll = () => {
-      const intro = document.getElementById('next')
-      setScrolled(intro ? intro.getBoundingClientRect().top <= 120 : window.scrollY > 80)
-    }
+    const onScroll = () => setScrolled(window.scrollY > 80)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   // clicking anywhere outside the pill or the menu, or pressing Escape, closes it
@@ -747,62 +724,41 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
     <header
-      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-pad transition-[transform,opacity] duration-300 ease-out ${
+      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
         hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
-      <div ref={rootRef} className="mx-auto flex w-max max-w-full flex-col items-stretch gap-2.5">
-        {/* One capsule. It compacts once the hero hands over to the page — the
-            lockup drops to its dot arc and the CTA to a shorter label — so the
-            pill is narrow enough to leave the headings underneath room. */}
+      <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
         <div
           id="nav-pill"
-          className={`flex items-center rounded-full border backdrop-blur-2xl backdrop-saturate-150 transition-[height,gap,padding,background-color,border-color,box-shadow] duration-300 animate-[rise_520ms_ease_both] ${
+          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-xl transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'h-[72px] gap-[clamp(12px,1.4vw,20px)] border-white/70 bg-white/74 pr-[clamp(12px,1.4vw,18px)] pl-[clamp(14px,1.6vw,20px)] shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
-              : 'h-[76px] gap-[clamp(16px,2vw,32px)] border-white/60 bg-white/88 pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] shadow-pill'
+              ? 'h-[68px] border-white/60 bg-white/55 shadow-[0_8px_32px_rgba(14,16,17,.12),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-saturate-150'
+              : 'h-[76px] border-transparent bg-white/94 shadow-pill'
           }`}
         >
-          <a
-            href="#home"
-            onClick={go(null)}
-            aria-label="The Solar Co. home"
-            className="flex shrink-0 items-center"
-          >
-            {scrolled ? (
-              <Logo symbol className="block h-[38px] w-auto" />
-            ) : (
-              <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
-            )}
+          <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
+            <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
           </a>
-
           <div className="flex shrink-0 items-center gap-2">
-            <a
-              href="#quote"
-              className={`${BTN_LIME} transition-[height,padding,font-size] duration-300 max-sm:hidden ${
-                scrolled
-                  ? 'h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px]'
-                  : 'h-[56px] px-[clamp(18px,2vw,26px)] text-[15.5px]'
-              }`}
-            >
-              {scrolled ? 'Free Quote' : 'Get a Free Quote'}
+            <a href="#quote" className={`${BTN_LIME} h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px] max-sm:hidden`}>
+              Get a Free Quote
             </a>
             <button
               type="button"
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
-              className={`relative grid cursor-pointer place-items-center rounded-full border-0 bg-grey transition-[height,width,background-color] duration-300 hover:bg-grey-hover ${
-                scrolled ? 'h-[52px] w-[52px]' : 'h-[56px] w-[56px]'
-              }`}
+              className="grid h-[52px] w-[52px] cursor-pointer place-content-center gap-[5px] rounded-full border-0 bg-grey transition-colors hover:bg-grey-hover"
             >
-              <MenuIcon open={menuOpen} />
+              <span className="block h-[1.5px] w-[18px] bg-ink" />
+              <span className="block h-[1.5px] w-[18px] bg-ink" />
             </button>
           </div>
         </div>
 
         {menuOpen && (
-          <nav className="flex min-w-[260px] flex-col rounded-[28px] border border-white/60 bg-white/92 p-3 shadow-menu backdrop-blur-2xl backdrop-saturate-150 animate-[rise_240ms_ease_both]">
+          <nav className="flex min-w-[260px] flex-col rounded-[28px] bg-white/96 p-3 shadow-menu backdrop-blur-xl animate-[rise_240ms_ease_both]">
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
