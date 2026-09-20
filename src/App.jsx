@@ -520,11 +520,7 @@ function useScrollEffects() {
     const byId = (id) => document.getElementById(id)
 
     const ctx = gsap.context(() => {
-      if (reduced) {
-        const scroller = byId('svc-scroller')
-        if (scroller) scroller.style.overflowX = 'auto'
-        return
-      }
+      if (reduced) return
 
       // 1. reveals
       const once = (el, start) => ({ trigger: el, start, once: true })
@@ -613,38 +609,7 @@ function useScrollEffects() {
         )
       }
 
-      // 3. services: the section pins while vertical scroll runs the cards across
-      const services = byId('services')
-      const sc = byId('svc-scroller')
-      const svcTrack = byId('svc-track')
-      if (services && sc && svcTrack) {
-        const mm = gsap.matchMedia()
-        mm.add('(min-width: 1024px)', () => {
-          const travel = () => Math.max(0, svcTrack.scrollWidth - sc.clientWidth)
-          gsap.to(svcTrack, {
-            x: () => -travel(),
-            ease: 'none',
-            scrollTrigger: {
-              trigger: services,
-              start: 'top top',
-              end: () => '+=' + Math.max(Math.round(travel() * 1.6), 1),
-              pin: true,
-              scrub: 1,
-              invalidateOnRefresh: true,
-            },
-          })
-        })
-        mm.add('(max-width: 1023px)', () => {
-          sc.style.overflowX = 'auto'
-          sc.style.scrollSnapType = 'x mandatory'
-          return () => {
-            sc.style.overflowX = ''
-            sc.style.scrollSnapType = ''
-          }
-        })
-      }
-
-      // 4. large photographs drift inside their frames
+      // 3. large photographs drift inside their frames
       gsap.utils.toArray('[data-parallax]').forEach((el) =>
         gsap.fromTo(
           el.querySelector('img') || el,
@@ -1215,57 +1180,61 @@ function HowSolarWorks() {
 
 function Services() {
   return (
-    <section id="services" className="relative isolate bg-white px-pad pt-[clamp(56px,6.5vw,92px)] pb-[clamp(44px,5vw,72px)]">
+    <section id="services" className="bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
         <SectionHead kicker="Services" index="03 — Services">
           Everything from the first roof visit to <Flame>year thirty</Flame>.
         </SectionHead>
 
-        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(32px,4vw,56px)] scroll-px-pad overflow-hidden">
-          <div id="svc-track" className="flex w-max gap-[clamp(16px,2vw,26px)] px-pad pt-1 pb-3 will-change-transform">
-            {SERVICES.map((sv) => (
-              <article
-                key={sv.num}
-                className={`${CARD} group flex min-h-[420px] w-[clamp(260px,29vw,340px)] shrink-0 snap-start flex-col overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-card`}
-              >
-                <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
-                  <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
-                    <ImageSlot {...PHOTOS[sv.photo]} credit={undefined} alt="" sizes="340px" />
-                  </div>
-                  <span className="absolute top-3 left-3 rounded-full bg-white/92 px-2.5 py-1 font-display text-[12px] font-bold text-navy tabular-nums backdrop-blur-sm">
-                    {sv.num}
+        {/* a plain grid, not a pinned horizontal track: every card is fully
+            visible without hijacking the scroll */}
+        <div data-stagger="1" className="mt-[clamp(26px,3vw,44px)] grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map((sv) => (
+            <article
+              key={sv.num}
+              className={`${CARD} group flex flex-col overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-card`}
+            >
+              <div className="relative aspect-[16/9] shrink-0 overflow-hidden">
+                <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+                  <ImageSlot
+                    {...PHOTOS[sv.photo]}
+                    credit={undefined}
+                    alt=""
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                  />
+                </div>
+                <span className="absolute top-3 left-3 rounded-full bg-white/92 px-2.5 py-1 font-display text-[12px] font-bold text-navy tabular-nums backdrop-blur-sm">
+                  {sv.num}
+                </span>
+              </div>
+              <div className="flex grow flex-col p-[clamp(18px,1.9vw,24px)]">
+                <h3 className="m-0 font-display text-[clamp(17px,1.5vw,21px)] leading-tight font-bold tracking-[-0.025em] text-navy">
+                  {sv.title}
+                </h3>
+                <p className="mt-2 mb-0 text-[14px] leading-[1.6] text-ink/68 text-pretty">{sv.body}</p>
+                <ul className="mt-3.5 mb-0 grid list-none gap-1.5 p-0">
+                  {sv.points.map((pt) => (
+                    <li key={pt} className="flex items-start gap-2 text-[13px] leading-[1.5] text-ink/72">
+                      <span className="mt-0.5 shrink-0">
+                        <Check size={14} width={2.4} />
+                      </span>
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="#quote"
+                  className="mt-auto flex items-center gap-2 pt-5 font-display text-[14px] font-bold text-orange transition-colors hover:text-orange-hover"
+                >
+                  Request a quote
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                    <Arrow size={15} />
                   </span>
-                </div>
-                <div className="flex grow flex-col p-[clamp(20px,2.2vw,28px)]">
-                  <h3 className="m-0 font-display text-[clamp(19px,1.9vw,24px)] leading-tight font-bold tracking-[-0.025em] text-navy">
-                    {sv.title}
-                  </h3>
-                  <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.6] text-ink/68 text-pretty">{sv.body}</p>
-                  <ul className="mt-4 mb-0 grid list-none gap-2 p-0">
-                    {sv.points.map((p) => (
-                      <li key={p} className="flex items-start gap-2 text-[13.5px] leading-[1.5] text-ink/72">
-                        <span className="mt-0.5 shrink-0">
-                          <Check size={15} width={2.4} />
-                        </span>
-                        {p}
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href="#quote"
-                    className="mt-auto flex items-center gap-2 pt-6 font-display text-[14.5px] font-bold text-orange transition-colors hover:text-orange-hover"
-                  >
-                    Request a quote
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">
-                      <Arrow size={16} />
-                    </span>
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
+                </a>
+              </div>
+            </article>
+          ))}
         </div>
-        <p className="mt-2 mb-0 text-[13px] text-ink/45 lg:hidden">Swipe to see all six services.</p>
       </div>
     </section>
   )
@@ -1282,17 +1251,18 @@ function About() {
         </SectionHead>
 
         <div className="mt-[clamp(36px,4.5vw,72px)] flex flex-wrap items-start gap-[clamp(24px,3vw,56px)]">
-          <div className="relative min-w-0 grow basis-[420px]">
-            <div className={`${FRAME} rvs aspect-4/3`}>
+          <div className="relative min-w-0 max-w-[460px] grow basis-[340px]">
+            <div className={`${FRAME} rvs aspect-[5/4]`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
+                  sizes="460px"
                   alt="Technicians fitting solar panels on a roof"
                   placeholder="Drop a team or install-crew photo"
                 />
               </div>
             </div>
-            <div className="rvs absolute -bottom-6 left-6 flex items-center gap-3.5 rounded-2xl border border-line bg-white p-4 pr-6 shadow-card sm:left-8">
+            <div className="rvs absolute -bottom-5 left-4 flex items-center gap-3 rounded-2xl border border-line bg-white p-3 pr-5 shadow-card sm:left-6">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-sun">
                 <Check color="#EC5A2C" size={20} width={2.4} />
               </span>
@@ -1303,7 +1273,7 @@ function About() {
             </div>
           </div>
 
-          <div className="mt-[clamp(32px,5vw,72px)] min-w-0 max-w-[520px] grow basis-[360px]">
+          <div className="mt-[clamp(16px,2.4vw,40px)] min-w-0 max-w-[520px] grow basis-[360px]">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
               The Solar Co. is <Amber>100% New Zealand owned and operated</Amber>. We have designed, supplied and

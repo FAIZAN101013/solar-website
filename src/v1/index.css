@@ -19,12 +19,12 @@
 
   /* fluid rhythm: px-pad, py-sec, gap-pad, -mx-pad … */
   --spacing-pad: clamp(20px, 3.6vw, 56px);
-  --spacing-sec: clamp(72px, 9vw, 132px);
+  --spacing-sec: clamp(46px, 5vw, 78px);
   --container-wrap: 1240px;
 
-  --text-h1: clamp(42px, 7.6vw, 112px);
-  --text-h2: clamp(30px, 4.6vw, 68px);
-  --text-h3: clamp(24px, 2.6vw, 34px);
+  --text-h1: clamp(32px, 4.6vw, 62px);
+  --text-h2: clamp(24px, 2.9vw, 42px);
+  --text-h3: clamp(19px, 1.8vw, 25px);
 
   --shadow-pill: 0 12px 36px rgba(14, 16, 17, 0.14);
   --shadow-menu: 0 18px 44px rgba(14, 16, 17, 0.18);
@@ -50,6 +50,11 @@
   }
   *:focus-visible {
     @apply rounded-md outline-2 outline-offset-[3px] outline-lime;
+  }
+  /* the header is a floating pill, so anchor targets stop clear of it */
+  section[id],
+  footer {
+    scroll-margin-top: 124px;
   }
 }
 
