@@ -710,11 +710,20 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     return () => window.removeEventListener('nav-hide', onHide)
   }, [])
 
+  // The pill holds its full, centred form for the whole hero — there is nothing
+  // behind it there to clear. It splits once the hero hands over to the page.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
+    const onScroll = () => {
+      const intro = document.getElementById('next')
+      setScrolled(intro ? intro.getBoundingClientRect().top <= 120 : window.scrollY > 80)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
   // clicking anywhere outside the pill or the menu, or pressing Escape, closes it
@@ -742,35 +751,24 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
-      <div
-        ref={rootRef}
-        className={`mx-auto flex flex-col items-stretch gap-2.5 ${
-          scrolled ? 'w-full max-w-wrap' : 'w-max max-w-full'
-        }`}
-      >
-        {/* At rest this is one pill. Once scrolled the shell drops its surface
-            and the two halves take their own, so the logo becomes a capsule of
-            its own at the left and the controls sit apart at the right. */}
+      <div ref={rootRef} className="mx-auto flex w-max max-w-full flex-col items-stretch gap-2.5">
+        {/* One capsule. It compacts once the hero hands over to the page — the
+            lockup drops to its dot arc and the CTA to a shorter label — so the
+            pill is narrow enough to leave the headings underneath room. */}
         <div
           id="nav-pill"
-          className={`flex items-center transition-[gap,padding,background-color,border-color,box-shadow] duration-300 animate-[rise_520ms_ease_both] ${
+          className={`flex items-center rounded-full border backdrop-blur-2xl backdrop-saturate-150 transition-[height,gap,padding,background-color,border-color,box-shadow] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'w-full justify-between gap-4 rounded-full border border-transparent bg-transparent p-0 shadow-none'
-              : 'gap-[clamp(16px,2vw,32px)] rounded-full border border-white/60 bg-white/88 pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] shadow-pill backdrop-blur-2xl backdrop-saturate-150'
+              ? 'h-[72px] gap-[clamp(12px,1.4vw,20px)] border-white/70 bg-white/74 pr-[clamp(12px,1.4vw,18px)] pl-[clamp(14px,1.6vw,20px)] shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
+              : 'h-[76px] gap-[clamp(16px,2vw,32px)] border-white/60 bg-white/88 pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] shadow-pill'
           }`}
         >
           <a
             href="#home"
             onClick={go(null)}
             aria-label="The Solar Co. home"
-            className={`flex shrink-0 items-center justify-center rounded-full transition-[height,width,padding,background-color,border-color,box-shadow] duration-300 ${
-              scrolled
-                ? 'h-[72px] w-[72px] border border-white/70 bg-white/74 px-0 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)] backdrop-blur-2xl backdrop-saturate-150'
-                : 'h-[76px] w-auto border border-transparent px-0'
-            }`}
+            className="flex shrink-0 items-center"
           >
-            {/* scrolled, the lockup drops to its dot arc: a 72px circle sits on
-                far less of the heading underneath than a 230px wordmark does */}
             {scrolled ? (
               <Logo symbol className="block h-[38px] w-auto" />
             ) : (
@@ -778,11 +776,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
             )}
           </a>
 
-          <div
-            className={`flex shrink-0 items-center gap-2 rounded-full transition-[height,padding,background-color,border-color,box-shadow] duration-300 ${
-              scrolled ? 'h-[72px] border pr-2.5 pl-[clamp(14px,1.6vw,20px)] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)] backdrop-blur-2xl backdrop-saturate-150' : 'h-[76px] border border-transparent p-0'
-            }`}
-          >
+          <div className="flex shrink-0 items-center gap-2">
             <a
               href="#quote"
               className={`${BTN_LIME} transition-[height,padding,font-size] duration-300 max-sm:hidden ${
@@ -808,7 +802,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className={`flex min-w-[260px] flex-col rounded-[28px] border border-white/60 bg-white/92 p-3 shadow-menu backdrop-blur-2xl backdrop-saturate-150 animate-[rise_240ms_ease_both] ${scrolled ? 'ml-auto' : ''}`}>
+          <nav className="flex min-w-[260px] flex-col rounded-[28px] border border-white/60 bg-white/92 p-3 shadow-menu backdrop-blur-2xl backdrop-saturate-150 animate-[rise_240ms_ease_both]">
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
@@ -965,7 +959,7 @@ function Intro() {
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
-          className="m-0 max-w-[15ch] font-display text-[clamp(30px,3.6vw,50px)] leading-[1] font-bold tracking-[-0.04em] text-balance"
+          className="m-0 max-w-[15ch] font-display text-[clamp(32px,4.2vw,58px)] leading-[1] font-bold tracking-[-0.04em] text-balance"
         >
           <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
         </h2>
@@ -1034,7 +1028,7 @@ function HowSolarWorks() {
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
         <div className="min-w-0 max-w-[480px] grow basis-[360px] lg:sticky lg:top-[clamp(128px,12vw,150px)]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
-          <h2 className="mt-5 mb-0 max-w-[15ch] font-display text-[clamp(28px,3.5vw,48px)] leading-[1] font-bold tracking-[-0.04em] text-balance">
+          <h2 className="mt-5 mb-0 max-w-[15ch] font-display text-[clamp(30px,4vw,56px)] leading-[1] font-bold tracking-[-0.04em] text-balance">
             Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
@@ -1047,7 +1041,7 @@ function HowSolarWorks() {
           </a>
         </div>
 
-        <div id="flow-track" className="relative min-w-0 grow basis-[420px] pl-1 lg:pr-[clamp(0px,15vw,212px)]">
+        <div id="flow-track" className="relative min-w-0 grow basis-[420px] pl-1">
           <div className="absolute top-7 bottom-7 left-[27px] w-0.5 bg-ink/12" />
           <div
             id="flow-fill"
@@ -1149,7 +1143,7 @@ function Benefits() {
                 >
                   <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
                   <h3
-                    className={`${H3} mt-6 max-w-[14ch] text-[clamp(26px,2.9vw,42px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
+                    className={`${H3} mt-6 max-w-[14ch] text-[clamp(28px,3.2vw,46px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
                   >
                     {b.title}
                   </h3>
@@ -1243,7 +1237,7 @@ function CustomerStory() {
         {/* the quote runs across the width instead of hugging the left edge, and
             the attribution fills the space beside it */}
         <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,64px)]">
-          <blockquote className="rv mx-0 mb-0 max-w-[17ch] grow basis-[420px] font-display text-[clamp(26px,3vw,42px)] leading-[1.06] font-medium tracking-[-0.04em] text-balance">
+          <blockquote className="rv mx-0 mb-0 max-w-[17ch] grow basis-[420px] font-display text-[clamp(28px,3.4vw,46px)] leading-[1.06] font-medium tracking-[-0.04em] text-balance">
             “[Their words go here — a real review, supplied by you. We have not
             written one on your behalf.]”
           </blockquote>
@@ -1300,7 +1294,7 @@ function About() {
               </span>
             </div>
           </div>
-          <div className="plate-rise min-w-0 lg:pr-[clamp(0px,15vw,212px)] lg:mt-[clamp(20px,3vw,48px)]">
+          <div className="plate-rise min-w-0 lg:mt-[clamp(20px,3vw,48px)]">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
@@ -1605,7 +1599,7 @@ function Quote({ sent, onSent }) {
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-[13ch] text-[clamp(30px,3.6vw,50px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
+          <h2 className={`${H2} rv max-w-[13ch] text-[clamp(32px,4.2vw,58px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
             Let's design a solar solution <Amber>around your home</Amber>.
           </p>
