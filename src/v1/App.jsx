@@ -320,6 +320,18 @@ function Sun() {
   )
 }
 
+/** Three rules that fold into a cross while the menu is open. */
+function MenuIcon({ open }) {
+  const bar = 'absolute block h-[1.75px] w-[17px] rounded-full bg-ink transition-all duration-300 ease-out'
+  return (
+    <span aria-hidden="true" className="relative block h-[17px] w-[17px]">
+      <span className={`${bar} top-[3px] ${open ? 'top-[7.5px] rotate-45' : ''}`} />
+      <span className={`${bar} top-[7.5px] ${open ? 'scale-x-0 opacity-0' : ''}`} />
+      <span className={`${bar} top-[12px] ${open ? 'top-[7.5px] -rotate-45' : ''}`} />
+    </span>
+  )
+}
+
 function Phone() {
   return (
     <svg
@@ -733,14 +745,14 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
           id="nav-pill"
           className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-2xl backdrop-saturate-150 transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'h-[64px] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
-              : 'h-[72px] border-white/60 bg-white/88 shadow-pill'
+              ? 'h-[52px] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
+              : 'h-[64px] border-white/60 bg-white/88 shadow-pill'
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
             <Logo
               className={`block h-auto transition-[width] duration-300 ${
-                scrolled ? 'w-[clamp(100px,9.6vw,126px)]' : 'w-[clamp(112px,11vw,145px)]'
+                scrolled ? 'w-[clamp(92px,8.8vw,116px)]' : 'w-[clamp(106px,10.4vw,136px)]'
               }`}
             />
           </a>
@@ -749,8 +761,8 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               href="#quote"
               className={`${BTN_LIME} transition-[height,padding,font-size] duration-300 max-sm:hidden ${
                 scrolled
-                  ? 'h-[44px] px-[clamp(14px,1.5vw,20px)] text-[14px]'
-                  : 'h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px]'
+                  ? 'h-[38px] px-[clamp(13px,1.4vw,18px)] text-[13.5px]'
+                  : 'h-[48px] px-[clamp(15px,1.7vw,22px)] text-[15px]'
               }`}
             >
               Get a Free Quote
@@ -760,12 +772,11 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
-              className={`grid cursor-pointer place-content-center gap-[5px] rounded-full border-0 bg-grey transition-[height,width,background-color] duration-300 hover:bg-grey-hover ${
-                scrolled ? 'h-[44px] w-[44px]' : 'h-[52px] w-[52px]'
+              className={`relative grid cursor-pointer place-items-center rounded-full border-0 bg-grey transition-[height,width,background-color] duration-300 hover:bg-grey-hover ${
+                scrolled ? 'h-[38px] w-[38px]' : 'h-[48px] w-[48px]'
               }`}
             >
-              <span className="block h-[1.5px] w-[18px] bg-ink" />
-              <span className="block h-[1.5px] w-[18px] bg-ink" />
+              <MenuIcon open={menuOpen} />
             </button>
           </div>
         </div>

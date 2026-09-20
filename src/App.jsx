@@ -442,6 +442,18 @@ function Sun({ color = '#F9B637', size = 14 }) {
   )
 }
 
+/** Three rules that fold into a cross while the menu is open. */
+function MenuIcon({ open }) {
+  const bar = 'absolute block h-[1.75px] w-[17px] rounded-full bg-navy transition-all duration-300 ease-out'
+  return (
+    <span aria-hidden="true" className="relative block h-[17px] w-[17px]">
+      <span className={`${bar} top-[3px] ${open ? 'top-[7.5px] rotate-45' : ''}`} />
+      <span className={`${bar} top-[7.5px] ${open ? 'scale-x-0 opacity-0' : ''}`} />
+      <span className={`${bar} top-[12px] ${open ? 'top-[7.5px] -rotate-45' : ''}`} />
+    </span>
+  )
+}
+
 function Phone({ color = '#1E2A3A', size = 20 }) {
   return (
     <svg
@@ -794,10 +806,9 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
-              className="grid h-[48px] w-[48px] cursor-pointer place-content-center gap-[5px] rounded-full border border-line bg-white transition-colors hover:bg-grey lg:hidden"
+              className="relative grid h-[48px] w-[48px] cursor-pointer place-items-center rounded-full border border-line bg-white transition-colors hover:bg-grey lg:hidden"
             >
-              <span className="block h-[1.5px] w-[18px] bg-navy" />
-              <span className="block h-[1.5px] w-[18px] bg-navy" />
+              <MenuIcon open={menuOpen} />
             </button>
           </div>
         </div>
