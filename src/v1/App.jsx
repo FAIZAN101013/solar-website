@@ -752,11 +752,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
-            <Logo
-              className={`block h-auto transition-[width] duration-300 ${
-                scrolled ? 'w-[clamp(112px,11vw,145px)]' : 'w-[clamp(118px,11.6vw,152px)]'
-              }`}
-            />
+            <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
           </a>
           <div className="flex shrink-0 items-center gap-2">
             <a
