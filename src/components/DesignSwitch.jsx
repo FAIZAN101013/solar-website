@@ -7,8 +7,8 @@
  * Deliberately A and B rather than v1 and v2: neither direction supersedes the
  * other, and a version number would imply one of them is the older draft.
  *
- * It parks in the bottom-right corner rather than the centre, so it stops
- * covering body copy, and it fades back while the pointer is elsewhere.
+ * It sits in the bottom centre and fades back to 66% while the pointer is
+ * elsewhere, so it reads as an overlay rather than part of the page.
  *
  * Styles are scoped inline and in one tagged <style> block on purpose: A and B
  * compile separate Tailwind token sets, so this component cannot rely on
@@ -17,7 +17,8 @@
 const CSS = `
 .dsw {
   position: fixed;
-  right: max(16px, env(safe-area-inset-right, 0px));
+  left: 50%;
+  transform: translateX(-50%);
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 40;
   display: flex;
