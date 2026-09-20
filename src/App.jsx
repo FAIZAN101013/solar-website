@@ -363,7 +363,6 @@ const BTN =
 const BTN_CTA = `${BTN} bg-orange text-white hover:bg-orange-hover hover:text-white`
 const BTN_GHOST = `${BTN} border border-navy/20 bg-white text-navy hover:border-orange hover:text-orange`
 const H2 = 'm-0 max-w-[18ch] font-display font-bold text-h2 leading-[1.02] tracking-[-0.035em] text-navy text-balance'
-const H3 = 'm-0 font-display font-bold text-h3 leading-[1.12] tracking-[-0.025em] text-navy text-balance'
 const KICKER = 'text-[13px] font-semibold uppercase tracking-[0.14em] text-orange'
 const LEAD = 'mt-5 mb-0 max-w-[62ch] text-[17px] leading-[1.7] text-ink/70 text-pretty'
 const FRAME = 'relative overflow-hidden rounded-3xl bg-grey shadow-frame'
@@ -1100,15 +1099,22 @@ function Benefits() {
           What solar actually does for a <Flame>New Zealand home</Flame>.
         </SectionHead>
 
-        <div data-stagger="1" className="mt-[clamp(36px,4.5vw,64px)] grid gap-6 lg:grid-cols-3">
+        <div data-stagger="1" className="mt-[clamp(24px,3vw,44px)] grid gap-5 lg:grid-cols-3">
           {BENEFITS.map((b) => (
             <article key={b.title} className={`${CARD} overflow-hidden transition-shadow duration-300 hover:shadow-card`}>
-              <div className="relative aspect-[16/10]">
-                <ImageSlot {...PHOTOS[b.photo]} alt={b.alt} placeholder="Drop a photograph" />
+              <div className="relative aspect-[2/1]">
+                <ImageSlot
+                  {...PHOTOS[b.photo]}
+                  alt={b.alt}
+                  sizes="(max-width: 1024px) 100vw, 380px"
+                  placeholder="Drop a photograph"
+                />
               </div>
-              <div className="p-[clamp(20px,2.2vw,30px)]">
-                <h3 className={H3}>{b.title}</h3>
-                <p className="mt-3.5 mb-0 text-[15px] leading-[1.65] text-ink/70 text-pretty">{b.body}</p>
+              <div className="p-[clamp(16px,1.7vw,22px)]">
+                <h3 className="m-0 font-display text-[clamp(17px,1.5vw,20px)] leading-[1.15] font-bold tracking-[-0.025em] text-navy text-balance">
+                  {b.title}
+                </h3>
+                <p className="mt-2.5 mb-0 text-[13.5px] leading-[1.6] text-ink/70 text-pretty">{b.body}</p>
               </div>
             </article>
           ))}
@@ -1274,7 +1280,7 @@ function About() {
 
         <div className="mt-[clamp(24px,3vw,48px)] grid items-start gap-[clamp(24px,3vw,48px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
           <div className="relative min-w-0">
-            <div className={`${FRAME} rvs aspect-[16/11]`}>
+            <div className={`${FRAME} rvs aspect-[16/9]`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}

@@ -724,7 +724,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
     <header
-      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
+      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-end px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
         hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
@@ -758,7 +758,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className="flex min-w-[260px] flex-col rounded-[28px] bg-white/96 p-3 shadow-menu backdrop-blur-xl animate-[rise_240ms_ease_both]">
+          <nav className="ml-auto flex min-w-[260px] flex-col rounded-[28px] bg-white p-3 shadow-menu animate-[rise_240ms_ease_both]">
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
