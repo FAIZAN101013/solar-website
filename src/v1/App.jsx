@@ -616,7 +616,7 @@ function HeroVideo() {
   return (
     <video
       ref={ref}
-      className="absolute inset-0 block h-full w-full object-cover brightness-[1.12] saturate-[1.06] contrast-[1.02]"
+      className="absolute inset-0 block h-full w-full object-cover brightness-[1.26] saturate-[1.12] contrast-[0.96]"
       autoPlay
       muted
       loop
@@ -801,11 +801,12 @@ function Hero({ showMobileBar }) {
 
       <div
         id="hero-glow"
-        className="pointer-events-none absolute -top-[18%] -right-[6%] h-[70vw] max-h-[900px] w-[70vw] max-w-[900px] rounded-full mix-blend-screen animate-[fade_1400ms_ease_both] [background:radial-gradient(circle,rgba(235,216,122,.5)_0%,rgba(235,216,122,.16)_42%,rgba(235,216,122,0)_70%)]"
+        className="pointer-events-none absolute -top-[18%] -right-[6%] h-[70vw] max-h-[900px] w-[70vw] max-w-[900px] rounded-full mix-blend-screen animate-[fade_1400ms_ease_both] [background:radial-gradient(circle,rgba(255,232,160,.62)_0%,rgba(255,232,160,.2)_44%,rgba(255,232,160,0)_72%)]"
       />
-      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.14)_0%,rgba(14,16,17,0)_28%,rgba(14,16,17,.04)_54%,rgba(14,16,17,.42)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(255,255,255,.22)_0%,rgba(255,255,255,.06)_38%,rgba(255,255,255,0)_66%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] [background:linear-gradient(180deg,rgba(14,16,17,0)_0%,rgba(14,16,17,.12)_46%,rgba(14,16,17,.4)_100%)]" />
 
-      <div id="hero-copy" className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)]">
+      <div id="hero-copy" className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)] [text-shadow:0_2px_20px_rgba(14,16,17,.5)]">
         <div id="hero-copy-inner" className="relative mx-auto max-w-wrap will-change-transform">
           <div id="hero-primary" className="will-change-transform">
           <div className="inline-flex min-h-[34px] items-center gap-[9px] rounded-full border border-white/40 bg-white/18 px-[15px] text-[13px] font-medium tracking-[0.02em] whitespace-nowrap text-white backdrop-blur-sm animate-[rise_520ms_ease_120ms_both]">
