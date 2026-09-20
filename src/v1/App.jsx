@@ -738,14 +738,14 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
     <header
-      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
+      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-pad transition-[transform,opacity] duration-300 ease-out ${
         hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
       <div
         ref={rootRef}
-        className={`flex flex-col items-stretch gap-2.5 transition-[width] duration-300 ${
-          scrolled ? 'w-full' : 'mx-auto w-max max-w-full'
+        className={`mx-auto flex flex-col items-stretch gap-2.5 ${
+          scrolled ? 'w-full max-w-wrap' : 'w-max max-w-full'
         }`}
       >
         {/* At rest this is one pill. Once scrolled the shell drops its surface
@@ -783,7 +783,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
                   : 'h-[56px] px-[clamp(18px,2vw,26px)] text-[15.5px]'
               }`}
             >
-              Get a Free Quote
+              {scrolled ? 'Free Quote' : 'Get a Free Quote'}
             </a>
             <button
               type="button"
@@ -1039,7 +1039,7 @@ function HowSolarWorks() {
           </a>
         </div>
 
-        <div id="flow-track" className="relative min-w-0 grow basis-[420px] pl-1">
+        <div id="flow-track" className="relative min-w-0 grow basis-[420px] pl-1 lg:pr-[clamp(0px,15vw,212px)]">
           <div className="absolute top-7 bottom-7 left-[27px] w-0.5 bg-ink/12" />
           <div
             id="flow-fill"
@@ -1292,7 +1292,7 @@ function About() {
               </span>
             </div>
           </div>
-          <div className="plate-rise min-w-0 lg:mt-[clamp(20px,3vw,48px)]">
+          <div className="plate-rise min-w-0 lg:pr-[clamp(0px,15vw,212px)] lg:mt-[clamp(20px,3vw,48px)]">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
