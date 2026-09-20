@@ -738,10 +738,21 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
-            <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
+            <Logo
+              className={`block h-auto transition-[width] duration-300 ${
+                scrolled ? 'w-[clamp(100px,9.6vw,126px)]' : 'w-[clamp(112px,11vw,145px)]'
+              }`}
+            />
           </a>
           <div className="flex shrink-0 items-center gap-2">
-            <a href="#quote" className={`${BTN_LIME} h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px] max-sm:hidden`}>
+            <a
+              href="#quote"
+              className={`${BTN_LIME} transition-[height,padding,font-size] duration-300 max-sm:hidden ${
+                scrolled
+                  ? 'h-[44px] px-[clamp(14px,1.5vw,20px)] text-[14px]'
+                  : 'h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px]'
+              }`}
+            >
               Get a Free Quote
             </a>
             <button
@@ -749,7 +760,9 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
-              className="grid h-[52px] w-[52px] cursor-pointer place-content-center gap-[5px] rounded-full border-0 bg-grey transition-colors hover:bg-grey-hover"
+              className={`grid cursor-pointer place-content-center gap-[5px] rounded-full border-0 bg-grey transition-[height,width,background-color] duration-300 hover:bg-grey-hover ${
+                scrolled ? 'h-[44px] w-[44px]' : 'h-[52px] w-[52px]'
+              }`}
             >
               <span className="block h-[1.5px] w-[18px] bg-ink" />
               <span className="block h-[1.5px] w-[18px] bg-ink" />
