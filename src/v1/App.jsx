@@ -724,7 +724,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
   return (
     <header
-      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-end px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
+      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
         hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
@@ -758,7 +758,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className="ml-auto flex min-w-[260px] flex-col rounded-[28px] bg-white p-3 shadow-menu animate-[rise_240ms_ease_both]">
+          <nav className="flex min-w-[260px] flex-col rounded-[28px] bg-white p-3 shadow-menu animate-[rise_240ms_ease_both]">
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
@@ -907,7 +907,7 @@ const Orange = ({ children }) => <em className="text-orange not-italic">{childre
 
 function Intro() {
   return (
-    <section id="next" className="relative z-[1] -mt-[100svh] bg-white px-pad pt-[clamp(96px,13vw,200px)] pb-[clamp(72px,9vw,140px)]">
+    <section id="next" className="relative z-[1] -mt-[100svh] bg-white px-pad pt-[clamp(84px,9vw,132px)] pb-sec">
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
@@ -930,7 +930,7 @@ function Intro() {
 function DesignedAroundYou() {
   const tag = 'inline-flex min-h-8 items-center rounded-full bg-grey px-[13px] text-[13px]'
   return (
-    <section className="bg-white px-pad pb-[clamp(96px,12vw,180px)]">
+    <section className="bg-white px-pad pb-sec">
       <div className="relative mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs mb-[clamp(28px,3vw,44px)]`}>
           <div className={KICKER}>Designed around your home</div>
@@ -1118,7 +1118,7 @@ function Benefits() {
 
 function Services() {
   return (
-    <section id="services" className="relative isolate z-[3] bg-grey px-pad pt-[clamp(64px,7vw,96px)] pb-[clamp(48px,6vw,80px)]">
+    <section id="services" className="relative isolate z-[3] bg-grey px-pad py-sec">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
@@ -1373,7 +1373,7 @@ function Estimator({ bill, onBill }) {
   const tileSub = 'mt-1.5 text-[11px] text-white/45'
 
   return (
-    <section className="bg-white px-pad pt-[clamp(32px,4vw,60px)]">
+    <section className="bg-white px-pad pt-sec">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} text-[clamp(24px,3vw,42px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
@@ -1547,7 +1547,7 @@ function Quote({ sent, onSent }) {
   return (
     <section
       id="quote"
-      className="px-pad pt-sec pb-[clamp(72px,9vw,120px)] [background:linear-gradient(180deg,#FFFFFF_0%,#F6F6F6_40%,#F6F6F6_100%)]"
+      className="px-pad py-sec [background:linear-gradient(180deg,#FFFFFF_0%,#F6F6F6_40%,#F6F6F6_100%)]"
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
@@ -1774,7 +1774,7 @@ function Footer({ go }) {
   const heading = 'm-0 text-[13px] font-semibold uppercase tracking-[0.1em] text-ink/45'
   const links = 'mt-5 flex flex-col gap-3 text-[15px] text-ink/66'
   return (
-    <footer className="border-t border-ink/12 bg-white px-pad pt-[clamp(56px,7vw,96px)] pb-10">
+    <footer className="border-t border-ink/12 bg-white px-pad pt-sec pb-10">
       <div className="mx-auto max-w-wrap">
         <div className="flex flex-wrap justify-between gap-[clamp(32px,5vw,80px)]">
           <div className="max-w-[360px] grow basis-[280px]">

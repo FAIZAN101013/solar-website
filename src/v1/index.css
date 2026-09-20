@@ -19,7 +19,7 @@
 
   /* fluid rhythm: px-pad, py-sec, gap-pad, -mx-pad … */
   --spacing-pad: clamp(20px, 3.6vw, 56px);
-  --spacing-sec: clamp(72px, 9vw, 132px);
+  --spacing-sec: clamp(52px, 6vw, 86px);
   --container-wrap: 1240px;
 
   --text-h1: clamp(42px, 7.6vw, 112px);
