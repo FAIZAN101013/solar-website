@@ -731,10 +731,10 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
       <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
         <div
           id="nav-pill"
-          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-xl transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
+          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-2xl backdrop-saturate-150 transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'h-[64px] border-black/5 bg-white shadow-[0_10px_34px_rgba(14,16,17,.16)]'
-              : 'h-[72px] border-transparent bg-white shadow-pill'
+              ? 'h-[64px] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
+              : 'h-[72px] border-white/60 bg-white/88 shadow-pill'
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
@@ -758,7 +758,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className="flex min-w-[260px] flex-col rounded-[28px] bg-white p-3 shadow-menu animate-[rise_240ms_ease_both]">
+          <nav className="flex min-w-[260px] flex-col rounded-[28px] border border-white/60 bg-white/92 p-3 shadow-menu backdrop-blur-2xl backdrop-saturate-150 animate-[rise_240ms_ease_both]">
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
