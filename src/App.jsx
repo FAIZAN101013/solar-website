@@ -876,7 +876,7 @@ function Hero({ showMobileBar, onQuickLead }) {
         className="pointer-events-none absolute -bottom-[30%] -left-[14%] h-[52vw] max-h-[620px] w-[52vw] max-w-[620px] rounded-full [background:radial-gradient(circle,rgba(234,242,248,.9)_0%,rgba(234,242,248,0)_70%)]"
       />
 
-      <div className="relative mx-auto grid max-w-wrap items-start gap-[clamp(24px,2.8vw,44px)] lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)]">
+      <div className="relative mx-auto grid max-w-wrap items-start gap-[clamp(24px,2.8vw,44px)] lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:items-center">
         <div>
           <div className="inline-flex min-h-[30px] items-center gap-2 rounded-full border border-gold-soft bg-sun px-3 text-[12.5px] font-semibold tracking-[0.01em] text-navy animate-[rise_500ms_ease_both]">
             <Sun />
