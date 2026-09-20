@@ -1272,9 +1272,9 @@ function About() {
           </div>
         </div>
 
-        <div className="mt-[clamp(28px,3.5vw,56px)] grid items-start gap-[clamp(24px,3vw,48px)] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
+        <div className="mt-[clamp(24px,3vw,48px)] grid items-start gap-[clamp(24px,3vw,48px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
           <div className="relative min-w-0">
-            <div className={`${FRAME} rvs aspect-[4/3]`}>
+            <div className={`${FRAME} rvs aspect-[16/11]`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
@@ -1284,18 +1284,18 @@ function About() {
                 />
               </div>
             </div>
-            <div className="rvs absolute -bottom-5 left-4 flex items-center gap-3 rounded-2xl border border-line bg-white p-3 pr-5 shadow-card sm:left-6">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-sun">
-                <Check color="#EC5A2C" size={20} width={2.4} />
+            <div className="rvs absolute -bottom-4 left-4 flex items-center gap-2.5 rounded-xl border border-line bg-white py-2 pr-3.5 pl-2.5 shadow-card">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sun">
+                <Check color="#EC5A2C" size={16} width={2.6} />
               </span>
               <span className="leading-tight">
-                <span className="block font-display text-[15px] font-bold text-navy">Our own install crews</span>
-                <span className="block text-[13px] text-ink/55">7 solar hubs · 70% of NZ homes</span>
+                <span className="block font-display text-[13px] font-bold text-navy">Our own install crews</span>
+                <span className="block text-[11.5px] text-ink/55">7 hubs · 70% of NZ homes</span>
               </span>
             </div>
           </div>
 
-          <div className="min-w-0 lg:mt-2">
+          <div className="min-w-0">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-6 mb-0 text-[16px] leading-[1.7] text-ink/74 text-pretty">
               Seven solar hubs put a local team within reach of around 70% of New Zealand homes, so the people
