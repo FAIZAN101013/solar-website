@@ -780,7 +780,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
 
 function Hero({ showMobileBar }) {
   return (
-    <section id="home" className="relative z-[2] h-[280svh]">
+    <section id="home" className="relative z-[2] h-[320svh]">
       <div id="hero-stage" className="sticky top-0 flex h-svh flex-col justify-end overflow-hidden bg-sky pt-[clamp(104px,14vw,128px)] will-change-transform">
       <div id="hero-media" className="absolute -inset-[3%] will-change-transform animate-[fade_900ms_ease_both]">
         <div id="hero-media-inner" className="absolute inset-0 will-change-transform">
@@ -849,7 +849,7 @@ function Hero({ showMobileBar }) {
               <Sun />
               Consultation · Design · Install · Support
             </div>
-            <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(28px,4vw,58px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
+            <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(36px,6.2vw,92px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
               Designed around the way you <Orange>live</Orange>.
             </h2>
             <div className="mt-[clamp(24px,3vw,40px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,56px)]">
@@ -906,15 +906,15 @@ const Orange = ({ children }) => <em className="text-orange not-italic">{childre
 
 function Intro() {
   return (
-    <section id="next" className="relative z-[1] -mt-[100svh] bg-white px-pad pt-[clamp(64px,8vw,116px)] pb-[clamp(46px,5.5vw,84px)]">
+    <section id="next" className="relative z-[1] -mt-[100svh] bg-white px-pad pt-[clamp(96px,13vw,200px)] pb-[clamp(72px,9vw,140px)]">
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
-          className="m-0 max-w-[19ch] font-display text-[clamp(28px,4vw,56px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
+          className="m-0 max-w-[19ch] font-display text-[clamp(34px,5.6vw,88px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
         >
           <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
         </h2>
-        <div className="mt-[clamp(26px,3vw,46px)] flex flex-wrap gap-[clamp(24px,3.5vw,56px)]">
+        <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap gap-[clamp(28px,5vw,88px)]">
           <div className="draw mt-3.5 h-0.5 w-[72px] shrink-0 bg-lime" />
           <p className="rvs m-0 max-w-[620px] grow basis-[420px] text-[clamp(17px,1.5vw,22px)] leading-[1.6] text-ink/72 text-pretty">
             We help homeowners understand their options and design a system around the way they live —{' '}
@@ -929,14 +929,14 @@ function Intro() {
 function DesignedAroundYou() {
   const tag = 'inline-flex min-h-8 items-center rounded-full bg-grey px-[13px] text-[13px]'
   return (
-    <section className="bg-white px-pad pb-[clamp(54px,6.5vw,96px)]">
+    <section className="bg-white px-pad pb-[clamp(96px,12vw,180px)]">
       <div className="relative mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs mb-[clamp(28px,3vw,44px)]`}>
           <div className={KICKER}>Designed around your home</div>
           <div className={IDX_MUTED}>01 — Site &amp; roof</div>
         </div>
 
-        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-video sm:min-h-[240px]`}>
+        <div className={`${FRAME_LG} max-h-[56svh] aspect-[4/3] sm:aspect-video sm:min-h-[300px]`}>
           <div data-parallax="1" className={PARALLAX}>
             <ImageSlot
               {...PHOTOS.house}
@@ -979,7 +979,7 @@ function HowSolarWorks() {
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
         <div className="min-w-0 max-w-[480px] grow basis-[360px] lg:sticky lg:top-[clamp(128px,12vw,150px)]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
-          <h2 className="mt-5 mb-0 font-display text-[clamp(24px,3vw,42px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
+          <h2 className="mt-5 mb-0 font-display text-[clamp(30px,4vw,60px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
             Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
@@ -999,7 +999,7 @@ function HowSolarWorks() {
             className="absolute top-7 left-[27px] h-0 w-0.5 [background:linear-gradient(180deg,#EBD87A_0%,#B6E241_30%,#B6E241_100%)]"
           />
           {FLOW.map((f) => (
-            <div key={f.num} data-flow-step="1" className="relative flex gap-[clamp(20px,2.5vw,32px)] pb-[clamp(24px,3vw,40px)]">
+            <div key={f.num} data-flow-step="1" className="relative flex gap-[clamp(20px,2.5vw,32px)] pb-[clamp(36px,4.5vw,64px)]">
               <div
                 data-flow-dot="1"
                 className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-ink/14 bg-white transition-[transform,border-color,box-shadow] duration-[340ms]"
@@ -1007,7 +1007,7 @@ function HowSolarWorks() {
                 <span className="font-display text-[15px] font-bold tabular-nums">{f.num}</span>
               </div>
               <div data-flow-body="1" className="pt-1.5 transition-opacity duration-[340ms]">
-                <h3 className="m-0 font-display text-[clamp(18px,1.8vw,24px)] font-bold tracking-[-0.025em]">
+                <h3 className="m-0 font-display text-[clamp(22px,2.4vw,30px)] font-bold tracking-[-0.025em]">
                   {f.title}
                 </h3>
                 <p className="mt-2.5 mb-0 max-w-[460px] text-base leading-[1.6] text-ink/66 text-pretty">{f.body}</p>
@@ -1068,8 +1068,8 @@ function Benefits() {
           <div className={IDX}>03 — Benefits</div>
         </div>
 
-        <div className="mt-[clamp(26px,3vw,46px)] grid gap-x-[clamp(24px,4vw,64px)] lg:grid-cols-2">
-          <div className="sticky top-[112px] z-[1] h-[38vh] lg:top-[132px] lg:h-[calc(100svh-164px)] lg:self-start">
+        <div className="mt-[clamp(40px,5vw,72px)] grid gap-x-[clamp(24px,4vw,64px)] lg:grid-cols-2">
+          <div className="sticky top-[112px] z-[1] h-[34vh] lg:top-[132px] lg:h-[min(66svh,calc(100svh-164px))] lg:self-start">
             <div className={`${FRAME} h-full`}>
               {BENEFITS.map((b, i) => (
                 <div
@@ -1090,11 +1090,11 @@ function Benefits() {
                 <div
                   key={b.title}
                   data-benefit="1"
-                  className="flex min-h-[46vh] flex-col justify-end py-8 max-lg:pb-[12vh] lg:min-h-[calc(100svh-164px)] lg:justify-center lg:py-10"
+                  className="flex min-h-[54vh] flex-col justify-end py-8 max-lg:pb-[12vh] lg:min-h-[calc(100svh-164px)] lg:justify-center lg:py-10"
                 >
                   <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
                   <h3
-                    className={`${H3} mt-7 text-[clamp(24px,2.6vw,38px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
+                    className={`${H3} mt-7 text-[clamp(30px,3.6vw,52px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
                   >
                     {b.title}
                   </h3>
@@ -1117,14 +1117,14 @@ function Benefits() {
 
 function Services() {
   return (
-    <section id="services" className="relative isolate z-[3] bg-grey px-pad pt-[clamp(46px,5.5vw,74px)] pb-[clamp(48px,6vw,80px)]">
+    <section id="services" className="relative isolate z-[3] bg-grey px-pad pt-[clamp(64px,7vw,96px)] pb-[clamp(48px,6vw,80px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
           <div className={IDX}>04 — Services</div>
         </div>
 
-        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(26px,3.2vw,48px)] scroll-px-pad overflow-hidden">
+        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] scroll-px-pad overflow-hidden">
           <div id="svc-track" className="flex w-max gap-[clamp(16px,2vw,28px)] px-pad pt-1 pb-2 will-change-transform">
             {SERVICES.map((sv) => {
               const photo = PHOTOS[sv.photo]
@@ -1132,7 +1132,7 @@ function Services() {
                 <a
                   key={sv.num}
                   href="#quote"
-                  className="group relative flex min-h-[330px] w-[clamp(240px,26vw,300px)] snap-start flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
+                  className="group relative flex min-h-[380px] w-[clamp(250px,30vw,340px)] snap-start flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
                 >
                   <img
                     src={photo.src}
@@ -1147,7 +1147,7 @@ function Services() {
                     <span className="h-0.5 w-7 bg-orange transition-[width] duration-[320ms] group-hover:w-12" />
                   </div>
                   <div className="relative">
-                    <h3 className="m-0 font-display text-[clamp(20px,2vw,26px)] leading-[1.05] font-bold tracking-[-0.03em] text-balance">
+                    <h3 className="m-0 font-display text-[clamp(24px,2.4vw,32px)] leading-[1.05] font-bold tracking-[-0.03em] text-balance">
                       {sv.title}
                     </h3>
                     <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-white/75 text-pretty">{sv.body}</p>
@@ -1176,7 +1176,7 @@ function CustomerStory() {
           <div className={KICKER}>Customer story</div>
           <div className={IDX_MUTED}>05 — In their words</div>
         </div>
-        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-[21/9] sm:min-h-[240px]`}>
+        <div className={`${FRAME_LG} max-h-[48svh] aspect-[4/3] sm:aspect-[21/9] sm:min-h-[280px]`}>
           <div data-parallax="1" className={PARALLAX}>
             <ImageSlot
               {...PHOTOS.story}
@@ -1185,7 +1185,7 @@ function CustomerStory() {
             />
           </div>
         </div>
-        <blockquote className="rv mx-0 mt-[clamp(26px,3vw,46px)] mb-0 max-w-[15ch] font-display text-[clamp(22px,3vw,42px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
+        <blockquote className="rv mx-0 mt-[clamp(40px,5vw,72px)] mb-0 max-w-[15ch] font-display text-[clamp(28px,4vw,60px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
           “[Approved customer quote goes here.]”
         </blockquote>
         <div className="rvs mt-[clamp(28px,3vw,40px)] flex flex-wrap items-center gap-4 text-[15px] leading-normal">
@@ -1209,9 +1209,9 @@ function About() {
           <div className={IDX}>06 — About us</div>
         </div>
 
-        <div className="mt-[clamp(32px,4vw,60px)] flex flex-wrap items-start gap-[clamp(20px,3vw,48px)]">
+        <div className="mt-[clamp(48px,6vw,88px)] flex flex-wrap items-start gap-[clamp(20px,3vw,48px)]">
           <div className="relative min-w-0 grow basis-[440px]">
-            <div className={`${FRAME} rvs aspect-4/3`}>
+            <div className={`${FRAME} rvs max-h-[54svh] aspect-4/3`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
@@ -1230,7 +1230,7 @@ function About() {
               </span>
             </div>
           </div>
-          <div className="plate-rise mt-[clamp(20px,3vw,48px)] min-w-0 max-w-[460px] grow basis-[320px]">
+          <div className="plate-rise mt-[clamp(40px,8vw,120px)] min-w-0 max-w-[460px] grow basis-[320px]">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
@@ -1250,11 +1250,11 @@ function About() {
 
         <div
           data-stagger="1"
-          className="mt-[clamp(36px,4.5vw,68px)] grid grid-cols-2 gap-x-6 gap-y-10 border-y border-ink/12 py-[clamp(28px,3vw,44px)] lg:grid-cols-4"
+          className="mt-[clamp(56px,7vw,104px)] grid grid-cols-2 gap-x-6 gap-y-10 border-y border-ink/12 py-[clamp(28px,3vw,44px)] lg:grid-cols-4"
         >
           {STATS.map((st) => (
             <div key={st.label}>
-              <div className="font-display text-[clamp(28px,3.2vw,44px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
+              <div className="font-display text-[clamp(36px,4vw,56px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
                 <span data-count={st.value} data-decimals={st.decimals || 0}>
                   0
                 </span>
@@ -1268,12 +1268,12 @@ function About() {
 
         <div
           data-stagger="1"
-          className="mt-[clamp(32px,4vw,60px)] grid grid-cols-[repeat(auto-fit,minmax(256px,1fr))] gap-6"
+          className="mt-[clamp(48px,6vw,88px)] grid grid-cols-[repeat(auto-fit,minmax(256px,1fr))] gap-6"
         >
           {VALUES.map((v, i) => (
             <div
               key={v.title}
-              className={`group relative flex min-h-[240px] flex-col overflow-hidden rounded-3xl ${v.bg} p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame`}
+              className={`group relative flex min-h-[280px] flex-col overflow-hidden rounded-3xl ${v.bg} p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame`}
             >
               <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/25 blur-2xl" />
               <svg
@@ -1353,14 +1353,14 @@ function Estimator({ bill, onBill }) {
   const tile = 'rounded-[18px] border border-white/10 bg-white/6 p-4'
   const tileLabel = 'text-xs font-semibold tracking-[0.08em] text-white/50 uppercase'
   const tileValue =
-    'mt-1.5 font-display text-[clamp(22px,2.2vw,28px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
+    'mt-1.5 font-display text-[clamp(26px,2.6vw,34px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
   const tileSub = 'mt-2 text-xs text-white/45'
 
   return (
-    <section className="bg-white px-pad pt-[clamp(48px,6vw,88px)]">
+    <section className="bg-white px-pad pt-[clamp(72px,9vw,140px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} text-[clamp(24px,3vw,42px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
+          <h2 className={`${H2} text-[clamp(28px,3.8vw,54px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
           <div className={IDX}>07 — Estimate</div>
         </div>
 
@@ -1524,18 +1524,18 @@ function Quote({ sent, onSent }) {
   const stepLabel = 'font-display text-[13px] font-bold tabular-nums'
   const stepBar = 'h-[3px] grow rounded-full bg-ink/10'
   const stepFill = 'block h-[3px] rounded-full bg-lime'
-  const formH3 = 'mt-6 mb-0 font-display text-[clamp(18px,1.8vw,24px)] font-bold tracking-[-0.03em]'
+  const formH3 = 'mt-6 mb-0 font-display text-[clamp(22px,2.4vw,30px)] font-bold tracking-[-0.03em]'
   const formSub = 'mt-2.5 mb-7 text-[15px] text-ink/60'
   const point = 'flex items-center gap-3 text-base'
 
   return (
     <section
       id="quote"
-      className="px-pad pt-sec pb-[clamp(48px,6vw,88px)] [background:linear-gradient(180deg,#FFFFFF_0%,#F6F6F6_40%,#F6F6F6_100%)]"
+      className="px-pad pt-sec pb-[clamp(72px,9vw,120px)] [background:linear-gradient(180deg,#FFFFFF_0%,#F6F6F6_40%,#F6F6F6_100%)]"
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-none text-[clamp(28px,3.6vw,52px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
+          <h2 className={`${H2} rv max-w-none text-[clamp(34px,4.8vw,72px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
             Let's design a solar solution <Amber>around your home</Amber>.
           </p>
@@ -1758,7 +1758,7 @@ function Footer({ go }) {
   const heading = 'm-0 text-[13px] font-semibold uppercase tracking-[0.1em] text-ink/45'
   const links = 'mt-5 flex flex-col gap-3 text-[15px] text-ink/66'
   return (
-    <footer className="border-t border-ink/12 bg-white px-pad pt-[clamp(40px,5vw,72px)] pb-10">
+    <footer className="border-t border-ink/12 bg-white px-pad pt-[clamp(56px,7vw,96px)] pb-10">
       <div className="mx-auto max-w-wrap">
         <div className="flex flex-wrap justify-between gap-[clamp(32px,5vw,80px)]">
           <div className="max-w-[360px] grow basis-[280px]">
