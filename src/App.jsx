@@ -1196,7 +1196,7 @@ function Services() {
               key={sv.num}
               className={`${CARD} group flex flex-col overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-card`}
             >
-              <div className="relative aspect-[16/9] shrink-0 overflow-hidden">
+              <div className="relative aspect-[2/1] shrink-0 overflow-hidden">
                 <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
                   <ImageSlot
                     {...PHOTOS[sv.photo]}
@@ -1209,14 +1209,14 @@ function Services() {
                   {sv.num}
                 </span>
               </div>
-              <div className="flex grow flex-col p-[clamp(18px,1.9vw,24px)]">
-                <h3 className="m-0 font-display text-[clamp(17px,1.5vw,21px)] leading-tight font-bold tracking-[-0.025em] text-navy">
+              <div className="flex grow flex-col p-[clamp(15px,1.5vw,20px)]">
+                <h3 className="m-0 font-display text-[clamp(16px,1.35vw,19px)] leading-tight font-bold tracking-[-0.025em] text-navy">
                   {sv.title}
                 </h3>
-                <p className="mt-2 mb-0 text-[14px] leading-[1.6] text-ink/68 text-pretty">{sv.body}</p>
-                <ul className="mt-3.5 mb-0 grid list-none gap-1.5 p-0">
+                <p className="mt-2 mb-0 text-[13.5px] leading-[1.55] text-ink/68 text-pretty">{sv.body}</p>
+                <ul className="mt-3 mb-0 grid list-none gap-1.5 p-0">
                   {sv.points.map((pt) => (
-                    <li key={pt} className="flex items-start gap-2 text-[13px] leading-[1.5] text-ink/72">
+                    <li key={pt} className="flex items-start gap-2 text-[12.5px] leading-[1.45] text-ink/72">
                       <span className="mt-0.5 shrink-0">
                         <Check size={14} width={2.4} />
                       </span>
@@ -1226,7 +1226,7 @@ function Services() {
                 </ul>
                 <a
                   href="#quote"
-                  className="mt-auto flex items-center gap-2 pt-5 font-display text-[14px] font-bold text-orange transition-colors hover:text-orange-hover"
+                  className="mt-auto flex items-center gap-2 pt-4 font-display text-[13.5px] font-bold text-orange transition-colors hover:text-orange-hover"
                 >
                   Request a quote
                   <span className="transition-transform duration-300 group-hover:translate-x-1">
@@ -1248,17 +1248,37 @@ function About() {
   return (
     <section id="about" className="bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
-        <SectionHead kicker="About us" index="04 — About us">
-          A New Zealand solar company, <Flame>owned and run here</Flame>.
-        </SectionHead>
+        {/* header row: the heading no longer sits alone against an empty half —
+            the opening statement runs beside it */}
+        <div className="rvs grid gap-x-[clamp(24px,4vw,72px)] gap-y-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+              <span className={KICKER}>About us</span>
+              <span className="text-[13px] text-ink/40 tabular-nums lg:hidden">04 — About us</span>
+            </div>
+            <h2 className={`${H2} mt-3`}>
+              A New Zealand solar company, <Flame>owned and run here</Flame>.
+            </h2>
+          </div>
+          <div>
+            <div className="mb-3 hidden text-right text-[13px] text-ink/40 tabular-nums lg:block">
+              04 — About us
+            </div>
+            <p className="m-0 text-[clamp(16px,1.4vw,19px)] leading-[1.7] text-ink/74 text-pretty">
+              The Solar Co. is <Amber>100% New Zealand owned and operated</Amber>. We have designed, supplied
+              and installed more than <Amber>6,000 solar systems</Amber> for homes, businesses and farms from
+              Northland to Otago.
+            </p>
+          </div>
+        </div>
 
-        <div className="mt-[clamp(36px,4.5vw,72px)] flex flex-wrap items-start gap-[clamp(24px,3vw,56px)]">
-          <div className="relative min-w-0 max-w-[460px] grow basis-[340px]">
-            <div className={`${FRAME} rvs aspect-[5/4]`}>
+        <div className="mt-[clamp(28px,3.5vw,56px)] grid items-start gap-[clamp(24px,3vw,48px)] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
+          <div className="relative min-w-0">
+            <div className={`${FRAME} rvs aspect-[4/3]`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
-                  sizes="460px"
+                  sizes="(max-width: 1024px) 100vw, 560px"
                   alt="Technicians fitting solar panels on a roof"
                   placeholder="Drop a team or install-crew photo"
                 />
@@ -1275,19 +1295,14 @@ function About() {
             </div>
           </div>
 
-          <div className="mt-[clamp(16px,2.4vw,40px)] min-w-0 max-w-[520px] grow basis-[360px]">
+          <div className="min-w-0 lg:mt-2">
             <div className="draw h-0.5 w-14 bg-orange" />
-            <p className="mt-7 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
-              The Solar Co. is <Amber>100% New Zealand owned and operated</Amber>. We have designed, supplied and
-              installed more than <Amber>6,000 solar systems</Amber> for homes, businesses and farms from
-              Northland to Otago.
-            </p>
-            <p className="mt-4 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
+            <p className="mt-6 mb-0 text-[16px] leading-[1.7] text-ink/74 text-pretty">
               Seven solar hubs put a local team within reach of around 70% of New Zealand homes, so the people
               who design your system are the people who install it and the people who pick up the phone in year
               six.
             </p>
-            <p className="mt-4 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
+            <p className="mt-4 mb-0 text-[16px] leading-[1.7] text-ink/74 text-pretty">
               A system sits on your roof for decades. That is why we quote after we have seen the roof, put the
               generation estimate in writing, and back the panels with a{' '}
               <Amber>30-year performance warranty</Amber>.
