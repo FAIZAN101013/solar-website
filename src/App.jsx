@@ -217,17 +217,19 @@ const BENEFITS = [
   },
 ]
 
+// Short prompts on purpose. This is a thing you tick off in someone's kitchen,
+// not a thing you read — which is what separates it from the FAQ.
 const CHECKLIST = [
-  'Are they 100% New Zealand owned, and will the same company still be here for warranty claims?',
+  'Are they 100% New Zealand owned?',
   'Do they visit the roof, or quote from a satellite image?',
-  'Is the generation estimate written down, with the assumptions behind it?',
-  'Who actually does the install — employed crews, or subcontractors you never meet?',
-  'What is the panel performance warranty, and what is the workmanship warranty?',
-  'Is the inverter warranty separate, and how long is it?',
-  'Will the system be monitored, and who watches the alerts?',
-  'Is the quote itemised: panels, inverter, mounting, electrical, scaffolding, consent?',
-  'What happens if the roof needs work later, or you add an EV?',
-  'Can they show you installs of a similar size nearby?',
+  'Is the generation estimate in writing?',
+  'Employed crews, or subcontractors you never meet?',
+  'How long is the panel performance warranty?',
+  'Is the inverter warranty separate, and how long?',
+  'Who watches the monitoring alerts?',
+  'Is the quote itemised, line by line?',
+  'What happens if you add an EV later?',
+  'Can they show you installs nearby?',
 ]
 
 const FAQS = [
@@ -692,9 +694,9 @@ export default function App() {
         <HowSolarWorks />
         <Services />
         <About />
+        <Checklist />
         <Testimonials />
         <Estimator bill={bill} onBill={setBill} />
-        <Checklist />
         <Faq />
         <Quote sent={sent} onSent={setSent} fields={lead} onFields={setLead} bill={bill} />
       </main>
@@ -1357,7 +1359,7 @@ function Testimonials() {
   return (
     <section id="testimonials" className="bg-grey px-pad py-sec">
       <div className="mx-auto max-w-wrap">
-        <SectionHead kicker="Testimonials" index="05 — Testimonials">
+        <SectionHead kicker="Testimonials" index="06 — Testimonials">
           What our <Flame>customers</Flame> say.
         </SectionHead>
 
@@ -1454,7 +1456,7 @@ function Estimator({ bill, onBill }) {
   return (
     <section id="estimate" className="bg-sky px-pad py-sec">
       <div className="mx-auto max-w-wrap">
-        <SectionHead kicker="Savings estimator" index="06 — Estimate">
+        <SectionHead kicker="Savings estimator" index="07 — Estimate">
           What could solar do on <Flame>your roof</Flame>?
         </SectionHead>
 
@@ -1579,27 +1581,43 @@ function Estimator({ bill, onBill }) {
 function Checklist() {
   return (
     <section className="bg-white px-pad py-sec">
-      <div className="mx-auto max-w-wrap">
-        <SectionHead kicker="Before you sign anything" index="07 — Checklist"
-          lead={
-            <>
-              Print this and take it to every quote you get, including ours. A good installer will answer all ten
-              without hesitating.
-            </>
-          }>
-          Ten questions to ask <Flame>any</Flame> solar installer.
-        </SectionHead>
+      <div className="mx-auto grid max-w-wrap gap-[clamp(24px,3vw,56px)] lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+        <div>
+          <SectionHead kicker="Before you sign anything" index="05 — Checklist">
+            Ten questions to ask <Flame>any</Flame> solar installer.
+          </SectionHead>
+          <p className={LEAD}>
+            Take it to every quote you get, ours included. A system sits on your roof for thirty years, so the
+            company behind it matters as much as the panels. A good installer answers all ten without
+            hesitating.
+          </p>
+          <a href="#quote" className={`${BTN_CTA} mt-7 h-[52px] px-6 text-[16px] shadow-cta`}>
+            Put us to the test
+            <Arrow color="#fff" />
+          </a>
+        </div>
 
+        {/* deliberately unlike the FAQ below: a tick-list to run down, not
+            question cards to open */}
         <ol
           data-stagger="1"
-          className="mt-[clamp(32px,4vw,56px)] grid list-none gap-x-6 gap-y-4 p-0 md:grid-cols-2"
+          className="m-0 grid list-none gap-x-8 gap-y-0 rounded-3xl border border-gold-soft bg-sun p-[clamp(18px,2.2vw,30px)] sm:grid-cols-2"
         >
           {CHECKLIST.map((item, i) => (
-            <li key={item} className="flex gap-4 rounded-2xl border border-line bg-grey/60 p-4">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white font-display text-[12.5px] font-bold text-orange tabular-nums">
-                {i + 1}
+            <li
+              key={item}
+              className="flex items-start gap-3 border-b border-orange/12 py-3 last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0"
+            >
+              <span
+                aria-hidden="true"
+                className="mt-px grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border-[1.5px] border-orange/45 bg-white"
+              >
+                <Check color="#EC5A2C" size={12} width={3} />
               </span>
-              <span className="text-[14.5px] leading-[1.6] text-ink/75 text-pretty">{item}</span>
+              <span className="text-[14px] leading-[1.5] text-navy text-pretty">{item}</span>
+              <span className="ml-auto pl-2 font-display text-[11.5px] font-bold text-orange/40 tabular-nums">
+                {String(i + 1).padStart(2, '0')}
+              </span>
             </li>
           ))}
         </ol>
