@@ -696,19 +696,8 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     return () => window.removeEventListener('nav-hide', onHide)
   }, [])
 
-  const [past, setPast] = useState(false)
-
   useEffect(() => {
-    let last = window.scrollY
-    const onScroll = () => {
-      const y = window.scrollY
-      setScrolled(y > 80)
-      // reading downwards: get out of the way of the headline underneath.
-      // reading back upwards: come straight back.
-      if (y > 220 && y > last + 5) setPast(true)
-      else if (y < last - 5 || y <= 160) setPast(false)
-      last = y
-    }
+    const onScroll = () => setScrolled(window.scrollY > 80)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -736,7 +725,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   return (
     <header
       className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
-        (hidden || past) && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
+        hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
       <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
