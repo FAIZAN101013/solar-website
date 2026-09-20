@@ -696,8 +696,19 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     return () => window.removeEventListener('nav-hide', onHide)
   }, [])
 
+  const [past, setPast] = useState(false)
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
+    let last = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 80)
+      // reading downwards: get out of the way of the headline underneath.
+      // reading back upwards: come straight back.
+      if (y > 220 && y > last + 5) setPast(true)
+      else if (y < last - 5 || y <= 160) setPast(false)
+      last = y
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -725,7 +736,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   return (
     <header
       className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
-        hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
+        (hidden || past) && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
       <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
@@ -733,8 +744,8 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
           id="nav-pill"
           className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-xl transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'h-[68px] border-white/60 bg-white/55 shadow-[0_8px_32px_rgba(14,16,17,.12),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-saturate-150'
-              : 'h-[76px] border-transparent bg-white/94 shadow-pill'
+              ? 'h-[64px] border-black/5 bg-white shadow-[0_10px_34px_rgba(14,16,17,.16)]'
+              : 'h-[72px] border-transparent bg-white shadow-pill'
           }`}
         >
           <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
