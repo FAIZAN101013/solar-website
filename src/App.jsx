@@ -836,7 +836,7 @@ function Hero({ showMobileBar, onQuickLead }) {
   return (
     <section
       id="home"
-      className="relative overflow-hidden bg-white px-pad pt-[clamp(108px,15vw,176px)] pb-[clamp(48px,6vw,80px)]"
+      className="relative overflow-hidden bg-white px-pad pt-[clamp(104px,11vw,140px)] pb-[clamp(36px,4vw,56px)]"
     >
       {/* soft daylight wash — keeps the page light, never dark */}
       <div
@@ -848,24 +848,24 @@ function Hero({ showMobileBar, onQuickLead }) {
         className="pointer-events-none absolute -bottom-[30%] -left-[14%] h-[52vw] max-h-[620px] w-[52vw] max-w-[620px] rounded-full [background:radial-gradient(circle,rgba(234,242,248,.9)_0%,rgba(234,242,248,0)_70%)]"
       />
 
-      <div className="relative mx-auto grid max-w-wrap items-start gap-[clamp(28px,3.5vw,56px)] lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)]">
+      <div className="relative mx-auto grid max-w-wrap items-start gap-[clamp(24px,2.8vw,44px)] lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)]">
         <div>
-          <div className="inline-flex min-h-[34px] items-center gap-2 rounded-full border border-gold-soft bg-sun px-3.5 text-[13px] font-semibold tracking-[0.01em] text-navy animate-[rise_500ms_ease_both]">
+          <div className="inline-flex min-h-[30px] items-center gap-2 rounded-full border border-gold-soft bg-sun px-3 text-[12.5px] font-semibold tracking-[0.01em] text-navy animate-[rise_500ms_ease_both]">
             <Sun />
             100% NZ owned · 6,000+ systems installed
           </div>
 
-          <h1 className="mt-[clamp(16px,1.8vw,24px)] mb-0 max-w-[16ch] font-display text-h1 leading-[0.98] font-extrabold tracking-[-0.04em] text-navy text-balance animate-[rise_600ms_ease_120ms_both]">
+          <h1 className="mt-[clamp(12px,1.3vw,18px)] mb-0 max-w-[15ch] font-display text-[clamp(30px,3.5vw,48px)] leading-[1] font-extrabold tracking-[-0.04em] text-navy text-balance animate-[rise_600ms_ease_120ms_both]">
             Cut up to <Flame>80%</Flame> off your power bill.
           </h1>
 
-          <p className="mt-[clamp(16px,1.6vw,22px)] mb-0 max-w-[50ch] text-[clamp(16px,1.2vw,19px)] leading-[1.65] text-ink/72 text-pretty animate-[rise_560ms_ease_200ms_both]">
+          <p className="mt-[clamp(12px,1.2vw,16px)] mb-0 max-w-[52ch] text-[clamp(14.5px,1.05vw,16.5px)] leading-[1.6] text-ink/72 text-pretty animate-[rise_560ms_ease_200ms_both]">
             Solar and battery systems designed around your roof, your power use and your budget. Free on-site
             assessment, a written estimate before you commit, and typical payback in around five years.
           </p>
 
           <ul
-            className="mt-6 mb-0 grid list-none gap-2.5 p-0 sm:grid-cols-2 animate-[rise_560ms_ease_280ms_both]"
+            className="mt-5 mb-0 grid list-none gap-x-4 gap-y-2 p-0 sm:grid-cols-2 animate-[rise_560ms_ease_280ms_both]"
             aria-label="Why homeowners choose us"
           >
             {[
@@ -874,22 +874,22 @@ function Hero({ showMobileBar, onQuickLead }) {
               '7 solar hubs covering 70% of NZ homes',
               'Installed by our own qualified crews',
             ].map((t) => (
-              <li key={t} className="flex items-start gap-2.5 text-[15px] leading-[1.5] text-ink/78">
+              <li key={t} className="flex items-start gap-2 text-[13.5px] leading-[1.45] text-ink/78">
                 <span className="mt-0.5 shrink-0">
-                  <Check size={17} />
+                  <Check size={15} width={2.4} />
                 </span>
                 {t}
               </li>
             ))}
           </ul>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3 animate-[rise_560ms_ease_340ms_both]">
-            <a href="#quote" className={`${BTN_CTA} h-14 px-7 text-[17px] shadow-cta`}>
+          <div className="mt-6 flex flex-wrap items-center gap-3 animate-[rise_560ms_ease_340ms_both]">
+            <a href="#quote" className={`${BTN_CTA} h-[50px] px-6 text-[15.5px] shadow-cta`}>
               Get My Free Quote
               <Arrow color="#fff" />
             </a>
-            <a href={COMPANY.phoneHref} className={`${BTN_GHOST} h-14 px-6 text-[17px]`}>
-              <Phone size={19} color="#EC5A2C" />
+            <a href={COMPANY.phoneHref} className={`${BTN_GHOST} h-[50px] px-5 text-[15.5px]`}>
+              <Phone size={17} color="#EC5A2C" />
               {COMPANY.phone}
             </a>
           </div>
@@ -897,7 +897,7 @@ function Hero({ showMobileBar, onQuickLead }) {
 
         {/* quick lead capture, above the fold */}
         <div className="animate-[rise_640ms_ease_260ms_both]">
-          <div className={`${FRAME_LG} aspect-[16/10] w-full sm:aspect-[2/1] lg:aspect-[21/9]`}>
+          <div className={`${FRAME_LG} aspect-[16/10] w-full sm:aspect-[21/9] lg:aspect-[5/2]`}>
             <div data-parallax="1" className={PARALLAX}>
               <ImageSlot
                 {...PHOTOS.house}
@@ -910,15 +910,15 @@ function Hero({ showMobileBar, onQuickLead }) {
 
           <form
             onSubmit={submit}
-            className="relative z-[2] mx-auto -mt-[clamp(28px,3.2vw,44px)] w-[min(100%,560px)] rounded-3xl border border-line bg-white p-[clamp(20px,2.4vw,30px)] shadow-form"
+            className="relative z-[2] mx-auto -mt-[clamp(24px,2.6vw,36px)] w-[min(100%,560px)] rounded-3xl border border-line bg-white p-[clamp(18px,1.9vw,24px)] shadow-form"
           >
-            <h2 className="m-0 font-display text-[clamp(19px,1.8vw,23px)] leading-tight font-bold tracking-[-0.025em] text-navy">
+            <h2 className="m-0 font-display text-[clamp(17px,1.5vw,20px)] leading-tight font-bold tracking-[-0.025em] text-navy">
               Book a free solar assessment
             </h2>
-            <p className="mt-1.5 mb-5 text-[14px] leading-[1.55] text-ink/62">
+            <p className="mt-1 mb-4 text-[13px] leading-[1.5] text-ink/62">
               Three details is all we need to call you back.
             </p>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2.5 sm:grid-cols-2">
               <label className="block">
                 <span className="sr-only">Your name</span>
                 <input
@@ -928,7 +928,7 @@ function Hero({ showMobileBar, onQuickLead }) {
                   placeholder="Your name"
                   value={form.name}
                   onChange={set('name')}
-                  className={INPUT}
+                  className={`${INPUT} h-[46px]`}
                 />
               </label>
               <label className="block">
@@ -940,7 +940,7 @@ function Hero({ showMobileBar, onQuickLead }) {
                   placeholder="Phone number"
                   value={form.phone}
                   onChange={set('phone')}
-                  className={INPUT}
+                  className={`${INPUT} h-[46px]`}
                 />
               </label>
               <label className="block sm:col-span-2">
@@ -952,15 +952,15 @@ function Hero({ showMobileBar, onQuickLead }) {
                   placeholder="Suburb or town"
                   value={form.suburb}
                   onChange={set('suburb')}
-                  className={INPUT}
+                  className={`${INPUT} h-[46px]`}
                 />
               </label>
             </div>
-            <button type="submit" className={`${BTN_CTA} mt-4 h-[54px] w-full text-[16px] shadow-cta`}>
+            <button type="submit" className={`${BTN_CTA} mt-3 h-[48px] w-full text-[15px] shadow-cta`}>
               Request My Free Quote
               <Arrow color="#fff" />
             </button>
-            <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-ink/55">
+            <p className="mt-2.5 mb-0 text-center text-[11.5px] leading-[1.45] text-ink/55">
               No cost, no obligation. Your details are used only for this quote.
             </p>
           </form>
@@ -1768,7 +1768,7 @@ function Quote({ sent, onSent, fields, onFields, bill }) {
           <div className="mt-9 grid gap-4 rounded-3xl border border-line bg-grey p-[clamp(20px,2.2vw,28px)]">
             <a href={COMPANY.phoneHref} className="flex items-center gap-3.5 font-display text-[19px] font-extrabold text-navy hover:text-orange">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white">
-                <Phone size={19} color="#EC5A2C" />
+                <Phone size={17} color="#EC5A2C" />
               </span>
               {COMPANY.phone}
             </a>
