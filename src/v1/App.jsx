@@ -238,7 +238,7 @@ const BTN =
   'inline-flex items-center justify-center gap-2.5 rounded-full border-0 font-display font-bold whitespace-nowrap cursor-pointer transition-colors'
 const BTN_LIME = `${BTN} bg-lime text-ink hover:bg-orange hover:text-ink`
 const H2 =
-  'm-0 max-w-[16ch] font-display font-bold text-h2 leading-[0.98] tracking-[-0.04em] text-balance'
+  'm-0 max-w-[15ch] font-display font-bold text-h2 leading-[1] tracking-[-0.04em] text-balance'
 const H3 = 'm-0 font-display font-bold text-h3 leading-[1.04] tracking-[-0.03em] text-balance'
 const SEC_HEAD = 'flex flex-wrap items-end justify-between gap-6'
 const IDX = 'shrink basis-[300px] text-sm text-amber tabular-nums'
@@ -915,7 +915,7 @@ function Intro() {
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
-          className="m-0 max-w-[16ch] font-display text-[clamp(28px,3.4vw,46px)] leading-[1] font-bold tracking-[-0.04em] text-balance"
+          className="m-0 max-w-[15ch] font-display text-[clamp(30px,3.6vw,50px)] leading-[1] font-bold tracking-[-0.04em] text-balance"
         >
           <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
         </h2>
@@ -984,7 +984,7 @@ function HowSolarWorks() {
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
         <div className="min-w-0 max-w-[480px] grow basis-[360px] lg:sticky lg:top-[clamp(128px,12vw,150px)]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
-          <h2 className="mt-5 mb-0 max-w-[16ch] font-display text-[clamp(26px,3.2vw,44px)] leading-[1] font-bold tracking-[-0.04em] text-balance">
+          <h2 className="mt-5 mb-0 max-w-[15ch] font-display text-[clamp(28px,3.5vw,48px)] leading-[1] font-bold tracking-[-0.04em] text-balance">
             Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
@@ -1099,7 +1099,7 @@ function Benefits() {
                 >
                   <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
                   <h3
-                    className={`${H3} mt-6 max-w-[15ch] text-[clamp(24px,2.7vw,38px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
+                    className={`${H3} mt-6 max-w-[14ch] text-[clamp(26px,2.9vw,42px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
                   >
                     {b.title}
                   </h3>
@@ -1193,7 +1193,7 @@ function CustomerStory() {
         {/* the quote runs across the width instead of hugging the left edge, and
             the attribution fills the space beside it */}
         <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,64px)]">
-          <blockquote className="rv mx-0 mb-0 max-w-[18ch] grow basis-[420px] font-display text-[clamp(24px,2.8vw,38px)] leading-[1.06] font-medium tracking-[-0.04em] text-balance">
+          <blockquote className="rv mx-0 mb-0 max-w-[17ch] grow basis-[420px] font-display text-[clamp(26px,3vw,42px)] leading-[1.06] font-medium tracking-[-0.04em] text-balance">
             “[Their words go here — a real review, supplied by you. We have not
             written one on your behalf.]”
           </blockquote>
@@ -1555,7 +1555,7 @@ function Quote({ sent, onSent }) {
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-[14ch] text-[clamp(28px,3.4vw,46px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
+          <h2 className={`${H2} rv max-w-[13ch] text-[clamp(30px,3.6vw,50px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
             Let's design a solar solution <Amber>around your home</Amber>.
           </p>
