@@ -3,23 +3,26 @@
 Marketing site for The Solar Co., a 100% New Zealand owned solar company. Built with React 19, Vite and
 Tailwind CSS v4.
 
-## Two design versions
+## Two design directions
 
-Both build and deploy together, and a floating switch in the bottom centre moves between them.
+Both build and deploy together, and a floating switch in the bottom centre moves between them. They are
+labelled A and B rather than v1 and v2 on purpose: neither supersedes the other, and a version number would
+imply one is an older draft.
 
-| Route      | Version | Concept                                                                              |
-| ---------- | ------- | ------------------------------------------------------------------------------------ |
-| `/`        | **v2**  | Light throughout, real client content, lead capture first. The current proposal.       |
-| `/v1.html` | **v1**  | The original concept: full-bleed film hero, pinned scroll sequence, darker treatment.  |
+| Route     | Direction           | What it is                                                                 |
+| --------- | ------------------- | -------------------------------------------------------------------------- |
+| `/`       | **A — Light**       | Conversion-focused layout, free-quote form in the hero. Light throughout.    |
+| `/b.html` | **B — Video hero**  | The same content behind a full-width video header.                           |
 
-v1 is kept verbatim apart from two changes: it loads the same local photographs as v2, and it renders the
-version switch. It compiles its own Tailwind theme from `src/v1/index.css`, so the two palettes never collide.
+B is kept verbatim apart from three changes: it loads the same local photographs as A, it renders the design
+switch, and its hero film carries a brightness correction. It compiles its own Tailwind theme from
+`src/design-b/index.css`, so the two palettes never collide.
 
 ## Develop
 
 ```bash
 npm install
-npm run dev     # v2 at /, v1 at /v1.html
+npm run dev     # A at /, B at /b.html
 ```
 
 ## Build
@@ -32,20 +35,20 @@ npm run preview
 ## Brand
 
 The palette is taken from the logo: navy wordmark `#273750` and the orange → gold dot arc
-(`#EC5A2C` → `#F4863A` → `#F9B637`). v2 is light on every section — white, warm off-white `#FFF6EA`, pale
+(`#EC5A2C` → `#F4863A` → `#F9B637`). A is light on every section — white, warm off-white `#FFF6EA`, pale
 blue `#EAF2F8` and grey `#F5F6F8` grounds with navy type and orange actions. There are no dark sections.
 
 ## Structure
 
-- `src/App.jsx` — v2: header, light hero with a three-field lead card, trust bar, power-price chart,
+- `src/App.jsx` — Design A: header, light hero with a three-field lead card, trust bar, power-price chart,
   benefits, how solar works, services, about, testimonials, savings estimator, installer checklist, FAQ,
   full consultation form, footer.
-- `src/index.css` — v2 Tailwind entry: design tokens in `@theme`, keyframes, scroll-reveal utilities.
-- `src/v1/` — v1 page, its own Tailwind theme and its own `ImageSlot`.
+- `src/index.css` — Design A Tailwind entry: design tokens in `@theme`, keyframes, scroll-reveal utilities.
+- `src/design-b/` — Design B page, its own Tailwind theme and its own `ImageSlot`.
 - `src/components/ImageSlot.jsx` — cover-fit photo that offers a `.webp` before the `.jpg`, or a labelled
   placeholder when no photo is set.
 - `src/components/Logo.jsx` — brand mark as inline SVG (orange dot arc and navy wordmark).
-- `src/components/VersionSwitch.jsx` — the v1 / v2 switch. Inline styles, because it renders inside both
+- `src/components/DesignSwitch.jsx` — the A / B switch. Inline styles, because it renders inside both
   Tailwind themes.
 
 ## Images
@@ -54,8 +57,8 @@ Every photograph is stored in `public/img/` and served from this origin — noth
 a 1400px `.jpg` with a matching `.webp` alongside it; `ImageSlot` offers the `.webp` first. Licence credits
 stay visible in the corner of each frame.
 
-`public/hero.webm`, `public/hero.mp4` and `public/hero-poster.jpg` are the v1 hero film. v2 does not load
-them. They can be deleted if v1 is dropped, which takes about 12 MB off the build.
+`public/hero.webm`, `public/hero.mp4` and `public/hero-poster.jpg` are Design B's hero film. A does not
+load them. They can be deleted if B is dropped, which takes about 12 MB off the build.
 
 ## Client content
 

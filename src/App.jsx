@@ -752,34 +752,50 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     'rounded-2xl px-4 py-3 font-display text-[17px] font-bold text-navy transition-colors hover:bg-grey hover:text-orange'
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-30 transition-[background-color,box-shadow,border-color] duration-300 ${
-        scrolled ? 'border-b border-line bg-white/92 shadow-pill backdrop-blur-xl' : 'border-b border-transparent bg-white'
-      }`}
-    >
-      {/* utility strip: the phone number is visible before anything else */}
-      <div className="hidden border-b border-line bg-sun px-pad lg:block">
-        <div className="mx-auto flex max-w-wrap items-center justify-between gap-6 py-2 text-[13px] text-navy">
-          <span className="flex items-center gap-2">
-            <Sun size={13} />
-            100% New Zealand owned and operated · 6,000+ systems installed
-          </span>
-          <span className="flex items-center gap-5">
-            <a href={COMPANY.phoneHref} className="flex items-center gap-2 font-semibold hover:text-orange">
-              <Phone size={14} color="#EC5A2C" />
-              {COMPANY.phone}
-            </a>
-            <span className="flex items-center gap-2 text-ink/60">
-              <Pin size={14} color="#3D5171" />
-              {COMPANY.street}, {COMPANY.suburb}, {COMPANY.city}
+    <header className="fixed inset-x-0 top-0 z-30 px-pad pt-[clamp(6px,0.7vw,10px)]">
+      {/* one floating panel, rounded on every corner and glass throughout. It
+          sits on the same container as the page, so its edges line up with the
+          content beneath it. */}
+      <div
+        ref={rootRef}
+        className={`mx-auto max-w-wrap overflow-hidden rounded-[clamp(18px,1.9vw,26px)] border backdrop-blur-2xl backdrop-saturate-150 transition-[background-color,border-color,box-shadow] duration-300 ${
+          scrolled
+            ? 'border-white/70 bg-white/72 shadow-[0_12px_40px_rgba(30,42,58,.14),inset_0_1px_0_rgba(255,255,255,.85)]'
+            : 'border-line bg-white/92 shadow-[0_6px_24px_rgba(30,42,58,.08),inset_0_1px_0_rgba(255,255,255,.7)]'
+        }`}
+      >
+        {/* utility strip: the phone number is visible before anything else, and
+            it folds away once you start reading */}
+        <div
+          className={`hidden overflow-hidden border-b bg-sun/70 transition-[height,opacity,border-color] duration-300 lg:block ${
+            scrolled ? 'h-0 border-transparent opacity-0' : 'h-[34px] border-gold-soft/60 opacity-100'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-6 px-[clamp(14px,1.6vw,24px)] py-1.5 text-[12.5px] text-navy">
+            <span className="flex items-center gap-2">
+              <Sun size={13} />
+              100% New Zealand owned and operated · 6,000+ systems installed
             </span>
-          </span>
+            <span className="flex items-center gap-5">
+              <a href={COMPANY.phoneHref} className="flex items-center gap-2 font-semibold hover:text-orange">
+                <Phone size={14} color="#EC5A2C" />
+                {COMPANY.phone}
+              </a>
+              <span className="flex items-center gap-2 text-ink/60">
+                <Pin size={14} color="#3D5171" />
+                {COMPANY.street}, {COMPANY.suburb}, {COMPANY.city}
+              </span>
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div ref={rootRef} className="px-pad">
-        <div className="mx-auto flex max-w-wrap items-center justify-between gap-4 py-3.5">
-          <a href="#home" onClick={go(null)} aria-label={`${COMPANY.name} home`} className="flex shrink-0 items-center">
+        <div className="flex items-center justify-between gap-4 px-[clamp(12px,1.4vw,20px)] py-2.5">
+          <a
+            href="#home"
+            onClick={go(null)}
+            aria-label={`${COMPANY.name} home`}
+            className="flex shrink-0 items-center pl-1"
+          >
             <Logo className="block h-auto w-[clamp(118px,11vw,152px)]" />
           </a>
 
@@ -794,7 +810,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
           <div className="flex shrink-0 items-center gap-2">
             <a
               href={COMPANY.phoneHref}
-              className={`${BTN_GHOST} h-[48px] px-4 text-[15px] max-md:hidden`}
+              className={`${BTN} h-[48px] border border-navy/15 bg-white/70 px-4 text-[15px] text-navy hover:border-orange hover:text-orange max-md:hidden`}
               aria-label={`Call ${COMPANY.phone}`}
             >
               <Phone size={17} color="#EC5A2C" />
@@ -808,7 +824,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
-              className="relative grid h-[48px] w-[48px] cursor-pointer place-items-center rounded-full border border-line bg-white transition-colors hover:bg-grey lg:hidden"
+              className="relative grid h-[48px] w-[48px] cursor-pointer place-items-center rounded-full border border-navy/15 bg-white/70 transition-colors hover:bg-white lg:hidden"
             >
               <MenuIcon open={menuOpen} />
             </button>
@@ -816,7 +832,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className="mx-auto mb-3 flex max-w-wrap flex-col rounded-3xl border border-line bg-white p-2 shadow-menu lg:hidden animate-[revealSoft_220ms_ease_both]">
+          <nav className="flex flex-col gap-0.5 border-t border-line/70 p-2 lg:hidden animate-[revealSoft_220ms_ease_both]">
             {NAV.map((n) => (
               <a key={n.label} href={n.id ? `#${n.id}` : '#home'} onClick={go(n.id)} className={menuLink}>
                 {n.label}
