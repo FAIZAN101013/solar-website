@@ -616,7 +616,7 @@ function HeroVideo() {
   return (
     <video
       ref={ref}
-      className="absolute inset-0 block h-full w-full object-cover"
+      className="absolute inset-0 block h-full w-full object-cover brightness-[1.12] saturate-[1.06] contrast-[1.02]"
       autoPlay
       muted
       loop
@@ -792,7 +792,7 @@ function Hero({ showMobileBar }) {
         id="hero-glow"
         className="pointer-events-none absolute -top-[18%] -right-[6%] h-[70vw] max-h-[900px] w-[70vw] max-w-[900px] rounded-full mix-blend-screen animate-[fade_1400ms_ease_both] [background:radial-gradient(circle,rgba(235,216,122,.5)_0%,rgba(235,216,122,.16)_42%,rgba(235,216,122,0)_70%)]"
       />
-      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.28)_0%,rgba(14,16,17,0)_26%,rgba(14,16,17,.12)_52%,rgba(14,16,17,.62)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.14)_0%,rgba(14,16,17,0)_28%,rgba(14,16,17,.04)_54%,rgba(14,16,17,.42)_100%)]" />
 
       <div id="hero-copy" className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)]">
         <div id="hero-copy-inner" className="relative mx-auto max-w-wrap will-change-transform">
@@ -936,7 +936,7 @@ function DesignedAroundYou() {
           <div className={IDX_MUTED}>01 — Site &amp; roof</div>
         </div>
 
-        <div className={`${FRAME_LG} max-h-[56svh] aspect-[4/3] sm:aspect-video sm:min-h-[300px]`}>
+        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-auto sm:h-[clamp(260px,42svh,460px)]`}>
           <div data-parallax="1" className={PARALLAX}>
             <ImageSlot
               {...PHOTOS.house}
@@ -1132,7 +1132,7 @@ function Services() {
                 <a
                   key={sv.num}
                   href="#quote"
-                  className="group relative flex min-h-[380px] w-[clamp(250px,30vw,340px)] snap-start flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
+                  className="group relative flex min-h-[300px] w-[clamp(225px,23vw,285px)] snap-start flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(18px,2vw,26px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
                 >
                   <img
                     src={photo.src}
@@ -1147,7 +1147,7 @@ function Services() {
                     <span className="h-0.5 w-7 bg-orange transition-[width] duration-[320ms] group-hover:w-12" />
                   </div>
                   <div className="relative">
-                    <h3 className="m-0 font-display text-[clamp(24px,2.4vw,32px)] leading-[1.05] font-bold tracking-[-0.03em] text-balance">
+                    <h3 className="m-0 font-display text-[clamp(19px,1.8vw,25px)] leading-[1.08] font-bold tracking-[-0.03em] text-balance">
                       {sv.title}
                     </h3>
                     <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-white/75 text-pretty">{sv.body}</p>
@@ -1176,7 +1176,7 @@ function CustomerStory() {
           <div className={KICKER}>Customer story</div>
           <div className={IDX_MUTED}>05 — In their words</div>
         </div>
-        <div className={`${FRAME_LG} max-h-[48svh] aspect-[4/3] sm:aspect-[21/9] sm:min-h-[280px]`}>
+        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-auto sm:h-[clamp(220px,34svh,400px)]`}>
           <div data-parallax="1" className={PARALLAX}>
             <ImageSlot
               {...PHOTOS.story}
@@ -1185,14 +1185,29 @@ function CustomerStory() {
             />
           </div>
         </div>
-        <blockquote className="rv mx-0 mt-[clamp(40px,5vw,72px)] mb-0 max-w-[15ch] font-display text-[clamp(28px,4vw,60px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
-          “[Approved customer quote goes here.]”
-        </blockquote>
-        <div className="rvs mt-[clamp(28px,3vw,40px)] flex flex-wrap items-center gap-4 text-[15px] leading-normal">
-          <div className="h-0.5 w-11 bg-lime" />
-          <div>
-            <strong className="font-semibold">[Customer name]</strong>
-            <span className="text-ink/55"> — [Suburb] · [System size]</span>
+        {/* the quote runs across the width instead of hugging the left edge, and
+            the attribution fills the space beside it */}
+        <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,64px)]">
+          <blockquote className="rv mx-0 mb-0 max-w-[24ch] grow basis-[520px] font-display text-[clamp(28px,4vw,60px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
+            “[Their words go here — a real review, supplied by you. We have not
+            written one on your behalf.]”
+          </blockquote>
+
+          <div className="rvs shrink basis-[240px]">
+            <div className="flex gap-[3px]" aria-label="Five star rating">
+              <Star />
+              <Star />
+              <Star />
+              <Star />
+              <Star />
+            </div>
+            <div className="mt-4 flex items-center gap-4 text-[15px] leading-normal">
+              <div className="h-0.5 w-11 shrink-0 bg-lime" />
+              <div>
+                <strong className="font-semibold">[Customer name]</strong>
+                <span className="block text-ink/55">[Suburb] · [System size]</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1209,9 +1224,9 @@ function About() {
           <div className={IDX}>06 — About us</div>
         </div>
 
-        <div className="mt-[clamp(48px,6vw,88px)] flex flex-wrap items-start gap-[clamp(20px,3vw,48px)]">
-          <div className="relative min-w-0 grow basis-[440px]">
-            <div className={`${FRAME} rvs max-h-[54svh] aspect-4/3`}>
+        <div className="mt-[clamp(48px,6vw,88px)] grid items-start gap-[clamp(24px,3vw,48px)] lg:grid-cols-[minmax(0,1.32fr)_minmax(0,1fr)]">
+          <div className="relative min-w-0">
+            <div className={`${FRAME} rvs aspect-4/3`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
@@ -1230,7 +1245,7 @@ function About() {
               </span>
             </div>
           </div>
-          <div className="plate-rise mt-[clamp(40px,8vw,120px)] min-w-0 max-w-[460px] grow basis-[320px]">
+          <div className="plate-rise min-w-0 lg:mt-[clamp(40px,7vw,104px)]">
             <div className="draw h-0.5 w-14 bg-orange" />
             <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
               There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
@@ -1350,14 +1365,14 @@ function Estimator({ bill, onBill }) {
   const growth = 0.45 + 0.55 * (sizeKw / 15)
   const assumptions = `$${rate.toFixed(2)} per kWh, ${yieldPerKw} kWh per kW each year, $${costPerKw} per kW installed, ${offsetPct}% of usage offset.`
 
-  const tile = 'rounded-[18px] border border-white/10 bg-white/6 p-4'
+  const tile = 'rounded-[16px] border border-white/10 bg-white/6 p-3.5'
   const tileLabel = 'text-xs font-semibold tracking-[0.08em] text-white/50 uppercase'
   const tileValue =
-    'mt-1.5 font-display text-[clamp(26px,2.6vw,34px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
-  const tileSub = 'mt-2 text-xs text-white/45'
+    'mt-1 font-display text-[clamp(20px,2vw,27px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
+  const tileSub = 'mt-1.5 text-[11px] text-white/45'
 
   return (
-    <section className="bg-white px-pad pt-[clamp(72px,9vw,140px)]">
+    <section className="bg-white px-pad pt-[clamp(44px,5.5vw,84px)]">
       <div className="mx-auto max-w-wrap">
         <div className={`${SEC_HEAD} rvs`}>
           <h2 className={`${H2} text-[clamp(28px,3.8vw,54px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
@@ -1366,18 +1381,18 @@ function Estimator({ bill, onBill }) {
 
         <div
           id="estimate-panel"
-          className="rvs relative mt-[clamp(28px,4vw,52px)] overflow-hidden rounded-[32px] bg-ink text-white"
+          className="rvs relative mt-[clamp(18px,2.4vw,34px)] overflow-hidden rounded-[28px] bg-ink text-white"
         >
           <div className="pointer-events-none absolute -top-40 -right-32 h-[520px] w-[520px] rounded-full bg-lime/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-48 -left-24 h-[420px] w-[420px] rounded-full bg-sky/25 blur-3xl" />
 
-          <div className="relative grid gap-[clamp(24px,3vw,48px)] p-[clamp(22px,3vw,40px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div className="relative grid gap-[clamp(18px,2.2vw,32px)] p-[clamp(16px,2vw,28px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div>
               <div className="text-[13px] font-semibold tracking-[0.12em] text-white/55 uppercase">
                 Your average monthly power bill
               </div>
               <div className="mt-4 flex items-baseline gap-2">
-                <strong className="font-display text-[clamp(48px,5vw,72px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
+                <strong className="font-display text-[clamp(34px,3.4vw,50px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
                   ${bill}
                 </strong>
                 <span className="text-[15px] text-white/55">per month</span>
@@ -1390,24 +1405,24 @@ function Estimator({ bill, onBill }) {
                 value={bill}
                 onChange={(e) => onBill(Number(e.target.value))}
                 aria-label="Average monthly power bill"
-                className="mt-6 h-8 w-full cursor-pointer accent-lime"
+                className="mt-4 h-7 w-full cursor-pointer accent-lime"
               />
               <div className="mt-1 flex justify-between text-xs text-white/45 tabular-nums">
                 <span>$80</span>
                 <span>$600</span>
               </div>
-              <p className="mt-5 mb-0 max-w-[380px] text-sm leading-[1.6] text-white/60 text-pretty">
+              <p className="mt-4 mb-0 max-w-[380px] text-[13px] leading-[1.55] text-white/60 text-pretty">
                 Indicative only, and rounded. <span className="text-orange">A real design</span> uses your usage
                 profile, roof and tariff.
               </p>
-              <a href="#quote" className={`${BTN_LIME} mt-6 h-[52px] px-[24px] text-base`}>
+              <a href="#quote" className={`${BTN_LIME} mt-5 h-[48px] px-[22px] text-[15px]`}>
                 Get an exact quote
                 <Arrow />
               </a>
             </div>
 
-            <div className="grid content-start gap-3">
-              <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid content-start gap-2.5">
+              <div className="grid gap-2.5 sm:grid-cols-3">
                 <div className={tile}>
                   <div className={tileLabel}>System size</div>
                   <div className={tileValue}>
@@ -1461,7 +1476,7 @@ function Estimator({ bill, onBill }) {
                     <AnimatedNumber value={annualGen} format={fmtKwh} />
                   </span>
                 </div>
-                <div className="mt-3 flex h-[64px] items-end gap-1.5" aria-hidden="true">
+                <div className="mt-2.5 flex h-[46px] items-end gap-1.5" aria-hidden="true">
                   {SEASON.map((w, i) => (
                     <div
                       key={MONTHS[i] + i}
@@ -1482,7 +1497,7 @@ function Estimator({ bill, onBill }) {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-dashed border-white/25 px-4 py-3 text-[12px] leading-[1.55] text-white/55">
+              <div className="rounded-xl border border-dashed border-white/25 px-3.5 py-2.5 text-[11.5px] leading-[1.5] text-white/55">
                 Placeholder assumptions awaiting your confirmation: {assumptions}
               </div>
             </div>
