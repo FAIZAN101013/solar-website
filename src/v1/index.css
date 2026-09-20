@@ -1,0 +1,145 @@
+@import 'tailwindcss';
+
+/* ── design tokens from the Home v2 artboard ─────────────────────────── */
+@theme {
+  --color-ink: #0e1011;
+  --color-lime: #b6e241;
+  --color-lime-hover: #c8ee66;
+  --color-lime-deep: #8fb52c;
+  --color-olive: #5e7a17;
+  --color-gold: #ebd87a;
+  --color-amber: #c2691a;
+  --color-orange: #f2913a;
+  --color-sky: #368dc4;
+  --color-grey: #f6f6f6;
+  --color-grey-hover: #ececec;
+
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* fluid rhythm: px-pad, py-sec, gap-pad, -mx-pad … */
+  --spacing-pad: clamp(20px, 3.6vw, 56px);
+  --spacing-sec: clamp(72px, 9vw, 132px);
+  --container-wrap: 1240px;
+
+  --text-h1: clamp(42px, 7.6vw, 112px);
+  --text-h2: clamp(30px, 4.6vw, 68px);
+  --text-h3: clamp(24px, 2.6vw, 34px);
+
+  --shadow-pill: 0 12px 36px rgba(14, 16, 17, 0.14);
+  --shadow-menu: 0 18px 44px rgba(14, 16, 17, 0.18);
+  --shadow-frame: 0 24px 60px rgba(14, 16, 17, 0.12);
+  --shadow-frame-lg: 0 30px 80px rgba(14, 16, 17, 0.14);
+  --shadow-card: 0 24px 64px rgba(14, 16, 17, 0.16);
+  --shadow-form: 0 30px 70px rgba(14, 16, 17, 0.12);
+  --shadow-cta: 0 12px 30px rgba(14, 16, 17, 0.22);
+  --shadow-scroll: 0 10px 24px rgba(14, 16, 17, 0.24);
+  --shadow-svc: 0 26px 60px rgba(14, 16, 17, 0.14);
+  --shadow-bar: 0 -10px 30px rgba(14, 16, 17, 0.14);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply m-0 bg-white font-body text-ink antialiased;
+  }
+  a {
+    @apply text-ink no-underline hover:text-olive;
+  }
+  *:focus-visible {
+    @apply rounded-md outline-2 outline-offset-[3px] outline-lime;
+  }
+}
+
+/* ── motion ──────────────────────────────────────────────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes revealSoft {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes drawLine {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes floatUp {
+  from {
+    transform: translateY(40px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Scroll-driven motion (reveals, parallax, the energy line, the services track)
+   is driven by GSAP ScrollTrigger in App.jsx; the .rv / .rvs / .draw / .plate-rise /
+   .wrd class names are plain markers it selects. */
+@utility noscroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

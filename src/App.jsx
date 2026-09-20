@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Logo from './components/Logo.jsx'
@@ -6,53 +6,77 @@ import ImageSlot from './components/ImageSlot.jsx'
 
 gsap.registerPlugin(ScrollTrigger)
 
+/* ── company details ──────────────────────────────────────────────────────
+   Supplied by the client. Confirm the email address before launch — the phone
+   number, street address and figures below come from their own material.
+   ─────────────────────────────────────────────────────────────────────── */
+const COMPANY = {
+  name: 'The Solar Co.',
+  phone: '0800 537 6527',
+  phoneHref: 'tel:08005376527',
+  email: 'hello@thesolarco.co.nz',
+  street: '4a Edwin Street',
+  suburb: 'Mt Eden',
+  city: 'Auckland 1024',
+  hours: 'Mon–Fri 8am–5pm',
+}
+
 /* ── content ─────────────────────────────────────────────────────────── */
+
+const TRUST = [
+  { value: '100%', label: 'NZ owned and operated' },
+  { value: '6,000+', label: 'Systems installed nationwide' },
+  { value: '7', label: 'Solar hubs across New Zealand' },
+  { value: '30yr', label: 'Panel performance warranty' },
+]
+
+const STATS = [
+  { value: 6000, suffix: '+', label: 'Systems installed' },
+  { value: 7, suffix: '', label: 'Solar hubs nationwide' },
+  { value: 70, suffix: '%', label: 'Of NZ homes in our service area' },
+  { value: 30, suffix: ' yr', label: 'Panel performance warranty' },
+]
+
+// Residential power price, cents per kWh. Client-supplied end points (2008, 2024);
+// the years between are interpolated for the chart shape.
+const POWER_PRICES = [
+  { year: 2008, cents: 17 },
+  { year: 2012, cents: 22 },
+  { year: 2016, cents: 26 },
+  { year: 2020, cents: 29 },
+  { year: 2024, cents: 34 },
+]
 
 const FLOW = [
   {
     num: '01',
-    title: 'Sun',
-    body: 'Every daylight hour puts free energy on your roof. Output drops by roughly a quarter to a half in winter or heavy cloud, and a good design allows for that.',
+    title: 'Sunlight hits your roof',
+    body: 'Every daylight hour puts free energy on your roof. Output drops in winter and heavy cloud, and a good design allows for that from the start.',
   },
   {
     num: '02',
-    title: 'Panels',
-    body: 'Photovoltaic cells turn that sunlight into DC electricity. How much depends on the roof: its orientation, pitch, shading and usable area.',
+    title: 'Panels make DC power',
+    body: 'Photovoltaic cells turn that sunlight into DC electricity. How much depends on your roof: its orientation, pitch, shading and usable area.',
   },
   {
     num: '03',
-    title: 'Inverter',
-    body: 'Converts the DC into the mains AC electricity your appliances run on, and reports live production so you and we can see the system working.',
+    title: 'The inverter converts it',
+    body: 'DC becomes the mains AC your appliances run on. It also reports live production, so you and we can see the system working.',
   },
   {
     num: '04',
-    title: 'Your home',
-    body: 'The switchboard sends solar power to your circuits first. Only what the panels cannot cover is drawn from the grid.',
+    title: 'Your home uses it first',
+    body: 'The switchboard sends solar to your circuits before anything else. Only what the panels cannot cover is drawn from the grid.',
   },
   {
     num: '05',
-    title: 'Battery',
-    body: 'Surplus daytime energy charges the battery, so the evening — when a home uses most of its power — runs on sunlight too. Some systems can also keep essentials running through a blackout.',
+    title: 'A battery holds the surplus',
+    body: 'Daytime surplus charges the battery so the evening — when a home uses most of its power — runs on sunlight too.',
   },
   {
     num: '06',
-    title: 'Grid',
-    body: 'Anything left over is exported and measured by an import/export meter. You stay connected with a two-way link: buy when you need more, sell when you make more.',
-  },
-]
-
-const SYSTEM_TYPES = [
-  {
-    title: 'Panels only',
-    body: 'The simplest system. Energy has to be used as it is made, so if the house is empty by day the surplus is exported and evenings come from the grid.',
-    tag: 'Lower upfront cost',
-    tagClass: 'bg-grey text-ink/70',
-  },
-  {
-    title: 'Panels + battery',
-    body: 'Store the surplus and use it when it suits you, not when it is generated. Battery prices have fallen a long way, which is why most new systems now include one.',
-    tag: 'Most new installs',
-    tagClass: 'bg-lime text-ink',
+    title: 'The rest goes to the grid',
+    body: 'Anything left over is exported and measured by your import/export meter. You buy when you need more and sell when you make more.',
   },
 ]
 
@@ -60,26 +84,44 @@ const SERVICES = [
   {
     num: '01',
     title: 'Residential Solar',
-    body: 'Panel systems sized to your roof, your usage and the way your household runs.',
+    body: 'Rooftop systems sized to your roof, your power bill and the way your household actually runs.',
+    points: ['Free on-site roof assessment', 'Tier-1 panels, 30-year warranty', 'Full install by our own crews'],
     photo: 'house',
   },
   {
     num: '02',
     title: 'Battery Storage',
-    body: 'Store what your roof makes during the day and use it through the evening.',
+    body: 'Store what your roof makes during the day and run the evening peak on your own power instead of the grid.',
+    points: ['Sized to your evening load', 'Blackout backup options', 'Retrofits to most existing systems'],
     photo: 'battery',
   },
   {
     num: '03',
     title: 'Commercial Solar',
-    body: 'Larger arrays for businesses, sheds and farms where daytime load is high.',
+    body: 'Larger arrays for businesses, sheds, packhouses and farms, where daytime load lines up with generation.',
+    points: ['Load-profile analysis', 'Depreciation and ROI modelling', 'Staged installs to suit operations'],
     photo: 'benefit',
   },
   {
     num: '04',
     title: 'Solar Consultation',
-    body: 'Roof analysis, sun mapping and an energy profile before price enters the conversation.',
+    body: 'Roof analysis, sun mapping and an energy profile before price ever enters the conversation.',
+    points: ['Shade and orientation study', 'Written generation estimate', 'No cost, no obligation'],
     photo: 'crew',
+  },
+  {
+    num: '05',
+    title: 'Monitoring & Servicing',
+    body: 'Live production monitoring so a fault is spotted before it costs you anything, plus scheduled servicing.',
+    points: ['App-based production tracking', 'Proactive fault alerts', 'Panel cleaning and checks'],
+    photo: 'install',
+  },
+  {
+    num: '06',
+    title: 'System Expansion',
+    body: 'Adding an EV, a heat pump or a spa changes your numbers. We extend the system you already own.',
+    points: ['EV charger integration', 'Extra panels and capacity', 'Battery added to a solar-only system'],
+    photo: 'story',
   },
 ]
 
@@ -103,126 +145,207 @@ const ICON = {
       <path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M14.5 9.5l3.9-3.9M5.6 18.4l3.9-3.9" />
     </>
   ),
+  house: (
+    <>
+      <path d="M3 10.5L12 3l9 7.5" />
+      <path d="M5.5 9.5V20h13V9.5" />
+    </>
+  ),
 }
 
 const VALUES = [
   {
-    bg: 'bg-lime',
     icon: 'compass',
     title: 'Design before pricing',
     body: 'We work out what your home needs, then tell you what it costs. Never the other way round.',
   },
   {
-    bg: 'bg-orange',
     icon: 'calculator',
     title: 'Plain numbers',
-    body: 'Expected generation, expected savings, and the assumptions behind both, written down.',
+    body: 'Expected generation, expected savings and the assumptions behind both, written down before you sign.',
   },
   {
-    bg: 'bg-lime',
     icon: 'lifebuoy',
-    title: 'Still here later',
-    body: 'Monitoring, servicing and expansion when your energy use changes.',
+    title: 'Here in year ten',
+    body: 'Seven hubs, our own crews, and monitoring and servicing long after the scaffolding comes down.',
+  },
+  {
+    icon: 'house',
+    title: '100% New Zealand',
+    body: 'NZ owned and operated, with systems specified for New Zealand roofs, weather and grid rules.',
   },
 ]
 
-/** Orange for body copy: the deeper amber step keeps paragraph text readable. */
-const Amber = ({ children }) => <strong className="font-medium text-amber">{children}</strong>
+/** Orange emphasis for body copy. */
+const Amber = ({ children }) => <strong className="font-semibold text-orange">{children}</strong>
+const Flame = ({ children }) => <em className="text-orange not-italic">{children}</em>
 
 const BENEFITS = [
   {
-    title: 'Lower energy costs.',
+    title: 'Cut up to 80% off your power bill.',
     body: (
       <>
         Your appliances run on <Amber>your own generation first</Amber> and only reach for the grid when they
-        need more. The more of your own power you use, the less the bill does the talking.
+        need more. With the right system and a battery, most of the bill simply stops arriving.
       </>
     ),
     photo: 'benefit',
-    alt: 'Solar panels on a home rooftop in daylight',
-    rule: 'bg-lime',
+    alt: 'Solar panels on a New Zealand home rooftop in daylight',
   },
   {
-    title: 'Power after sunset.',
+    title: 'Typical payback in around 5 years.',
     body: (
       <>
-        Storage holds the energy your roof makes while you are out, so the evening — when a house actually uses
-        power — <Amber>runs on sunlight too</Amber>.
+        A well-designed system pays for itself in roughly five years and then keeps generating for decades.{' '}
+        <Amber>Panels carry a 30-year performance warranty</Amber>, so the savings outlast the payback many
+        times over.
       </>
     ),
     photo: 'battery',
     alt: 'A home battery mounted on a garage wall',
-    rule: 'bg-gold',
   },
   {
-    title: 'Built for decades.',
+    title: 'Protection from rising prices.',
     body: (
       <>
-        Panels, inverter and mounting chosen for your roof and your climate, installed by our own crew, and
-        monitored so <Amber>a fault is seen before it costs you anything</Amber>.
+        New Zealand residential power went from 17c per kWh in 2008 to 34c in 2024. Generating your own is{' '}
+        <Amber>the only way to fix your rate</Amber> for the next thirty years.
       </>
     ),
     photo: 'install',
-    alt: 'Installers fitting panels on a roof',
-    rule: 'bg-orange',
+    alt: 'Installers fitting solar panels on a roof',
   },
 ]
 
-// Placeholder company figures — confirm with the client before launch.
-const STATS = [
-  { value: 12, suffix: '+', label: 'Years designing solar' },
-  { value: 850, suffix: '+', label: 'Systems installed' },
-  { value: 6.4, decimals: 1, suffix: ' MW', label: 'Capacity on roofs' },
-  { value: 4.9, decimals: 1, suffix: '★', label: 'Average review' },
+const CHECKLIST = [
+  'Are they 100% New Zealand owned, and will the same company still be here for warranty claims?',
+  'Do they visit the roof, or quote from a satellite image?',
+  'Is the generation estimate written down, with the assumptions behind it?',
+  'Who actually does the install — employed crews, or subcontractors you never meet?',
+  'What is the panel performance warranty, and what is the workmanship warranty?',
+  'Is the inverter warranty separate, and how long is it?',
+  'Will the system be monitored, and who watches the alerts?',
+  'Is the quote itemised: panels, inverter, mounting, electrical, scaffolding, consent?',
+  'What happens if the roof needs work later, or you add an EV?',
+  'Can they show you installs of a similar size nearby?',
+]
+
+const FAQS = [
+  {
+    q: 'How much does a solar system cost?',
+    a: 'It depends on roof size, panel count and whether you add a battery. A typical New Zealand home system sits in the mid five figures installed, and a written, itemised quote follows the free roof assessment. We never quote a price before we have seen the roof.',
+  },
+  {
+    q: 'How much can I actually save?',
+    a: 'Households that use a good share of their generation, or add a battery, commonly take up to 80% off the bill. The honest answer depends on how much power you use and when you use it, which is exactly what the consultation works out.',
+  },
+  {
+    q: 'How long before the system pays for itself?',
+    a: 'Around five years is typical for a well-matched system at current power prices. Because panels carry a 30-year performance warranty, the years after payback are the point of the exercise.',
+  },
+  {
+    q: 'Do I need a battery?',
+    a: 'Not necessarily. If the house is busy during the day, panels alone already cover a lot. If it is empty until evening, a battery is what turns daytime generation into evening savings. Battery prices have fallen a long way, which is why most new systems now include one.',
+  },
+  {
+    q: 'What happens on cloudy days and in winter?',
+    a: 'Generation drops, by roughly a quarter to a half depending on conditions. That is normal and it is built into the design, which is why systems are sized against a full year of usage rather than a sunny afternoon.',
+  },
+  {
+    q: 'Can I sell power back to the grid?',
+    a: 'Yes. Surplus is exported through a two-way import/export meter and your retailer credits it at their buy-back rate. Buy-back is worth less than using the power yourself, which is the main argument for storage.',
+  },
+  {
+    q: 'How long does installation take?',
+    a: 'Most residential installs are done in one to two days on site, by our own crews. The paperwork either side — network approval and the meter change — usually takes a few weeks.',
+  },
+  {
+    q: 'Do I need council consent?',
+    a: 'Standard roof-mounted residential solar generally does not require building consent in New Zealand. Your network company does need to approve the connection, and we handle that application for you.',
+  },
+  {
+    q: 'What if I sell the house?',
+    a: 'The system stays with the property and the warranties transfer to the new owner. A documented, monitored solar system is a straightforward thing to show a buyer.',
+  },
+  {
+    q: 'What warranty do I get?',
+    a: '30 years of performance warranty on the panels, a separate manufacturer warranty on the inverter, and our own workmanship warranty on the install. All three are set out in the quote.',
+  },
+]
+
+/* Testimonials are deliberately left as marked slots. Real reviews will be
+   supplied by the client — nothing here is invented. */
+const TESTIMONIAL_SLOTS = [
+  { location: '[Suburb, city]', system: '[System size] + battery' },
+  { location: '[Suburb, city]', system: '[System size]' },
+  { location: '[Suburb, city]', system: '[System size] commercial' },
 ]
 
 const BILL_BANDS = ['Under $150', '$150–250', '$250–400', '$400+']
 const PROPERTY_TYPES = ['House', 'Townhouse / unit', 'Business', 'Farm / rural']
+const ROOF_TYPES = ['Not sure', 'Colorsteel / metal', 'Tile', 'Membrane / flat']
+const TIMEFRAMES = ['As soon as possible', 'Next 3 months', '3–6 months', 'Just researching']
+const CONTACT_TIMES = ['Any time', 'Morning', 'Afternoon', 'Evening']
 
-// Placeholder assumptions — replace with the client's confirmed figures.
-const ESTIMATE = {
-  rate: 0.34, // $ per kWh
-  yieldPerKw: 1300, // kWh per kW per year
-  costPerKw: 1800, // $ installed per kW
-  offsetShare: 0.5, // share of usage solar covers
+const BLANK_LEAD = {
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  suburb: '',
+  roof: ROOF_TYPES[0],
+  timeframe: TIMEFRAMES[0],
+  contactTime: CONTACT_TIMES[0],
+  message: '',
 }
 
-const WIKI = 'https://commons.wikimedia.org/wiki/'
+// Estimator assumptions, tuned to the client's published outcomes
+// (up to 80% of the bill offset, payback around five years).
+const ESTIMATE = {
+  rate: 0.34, // $ per kWh, NZ residential 2024
+  yieldPerKw: 1350, // kWh per kW per year
+  costPerKw: 2200, // $ installed per kW
+  offsetShare: 0.7, // share of usage a solar + battery system covers
+}
+
+const CC_WIKI = 'https://commons.wikimedia.org/wiki/'
+// Photographs are stored in public/img/ (1400px jpg + webp) and served from this
+// origin. Nothing is hot-linked. `credit` keeps the licence attribution visible.
 const PHOTOS = {
   house: {
-    src: `${WIKI}Special:FilePath/Solar_panel_roof_6th_St.jpg?width=2000`,
+    src: '/img/house.jpg',
     credit: 'Photo: Wikimedia Commons · CC BY-SA 4.0',
-    creditHref: `${WIKI}File:Solar_panel_roof_6th_St.jpg`,
+    creditHref: `${CC_WIKI}File:Solar_panel_roof_6th_St.jpg`,
   },
   benefit: {
-    src: `${WIKI}Special:FilePath/Solar_Panels_on_Rooftop.jpg?width=1600`,
+    src: '/img/benefit.jpg',
     credit: 'Photo: Wikimedia Commons · CC BY-SA 4.0',
-    creditHref: `${WIKI}File:Solar_Panels_on_Rooftop.jpg`,
+    creditHref: `${CC_WIKI}File:Solar_Panels_on_Rooftop.jpg`,
   },
   story: {
-    src: `${WIKI}Special:FilePath/Rooftop_Solar_Panels.jpg?width=2000`,
+    src: '/img/story.jpg',
     credit: 'Photo: Wikimedia Commons · CC BY-SA 4.0',
-    creditHref: `${WIKI}File:Rooftop_Solar_Panels.jpg`,
+    creditHref: `${CC_WIKI}File:Rooftop_Solar_Panels.jpg`,
   },
   battery: {
-    src: 'https://images.pexels.com/photos/37929911/pexels-photo-37929911.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    src: '/img/battery.jpg',
     credit: 'Photo: Magda Ehlers · Pexels',
     creditHref: 'https://www.pexels.com/photo/high-efficiency-residential-power-inverter-setup-37929911/',
   },
   install: {
-    src: 'https://images.pexels.com/photos/28812508/pexels-photo-28812508.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    src: '/img/install.jpg',
     credit: 'Photo: Hanna Alves · Pexels',
     creditHref: 'https://www.pexels.com/photo/construction-worker-climbing-ladder-at-worksite-28812508/',
   },
   crew: {
-    src: `${WIKI}Special:FilePath/Technicians_working_on_a_solar_panel_installation_(9229).jpg?width=1600`,
+    src: '/img/crew.jpg',
     credit: 'Photo: Stephen Yang / The Solutions Project · Wikimedia Commons · CC BY 2.0',
-    creditHref: `${WIKI}File:Technicians_working_on_a_solar_panel_installation_(9229).jpg`,
+    creditHref: `${CC_WIKI}File:Technicians_working_on_a_solar_panel_installation_(9229).jpg`,
   },
 }
 
 const MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
-// Share of annual generation per month — a southern-hemisphere shape, placeholder until the site is known.
+// Share of annual generation per month — southern-hemisphere shape.
 const SEASON = [0.115, 0.1, 0.095, 0.075, 0.06, 0.05, 0.055, 0.07, 0.08, 0.095, 0.1, 0.115]
 const SEASON_MAX = Math.max(...SEASON)
 
@@ -235,29 +358,28 @@ const fmtKwh = (v) => `${Math.round(v).toLocaleString()} kWh / yr`
 
 const BTN =
   'inline-flex items-center justify-center gap-2.5 rounded-full border-0 font-display font-bold whitespace-nowrap cursor-pointer transition-colors'
-const BTN_LIME = `${BTN} bg-lime text-ink hover:bg-orange hover:text-ink`
-const H2 =
-  'm-0 max-w-[16ch] font-display font-bold text-h2 leading-[0.98] tracking-[-0.04em] text-balance'
-const H3 = 'm-0 font-display font-bold text-h3 leading-[1.04] tracking-[-0.03em] text-balance'
-const SEC_HEAD = 'flex flex-wrap items-end justify-between gap-6'
-const IDX = 'shrink basis-[300px] text-sm text-amber tabular-nums'
-const IDX_MUTED = 'text-sm text-ink/50 tabular-nums'
-const KICKER = 'text-[13px] font-semibold uppercase tracking-[0.14em] text-amber'
-const LEAD = 'mt-[18px] mb-0 text-[17px] leading-[1.65] text-ink/70 text-pretty'
+const BTN_CTA = `${BTN} bg-orange text-white hover:bg-orange-hover hover:text-white`
+const BTN_GHOST = `${BTN} border border-navy/20 bg-white text-navy hover:border-orange hover:text-orange`
+const H2 = 'm-0 max-w-[18ch] font-display font-bold text-h2 leading-[1.02] tracking-[-0.035em] text-navy text-balance'
+const H3 = 'm-0 font-display font-bold text-h3 leading-[1.12] tracking-[-0.025em] text-navy text-balance'
+const KICKER = 'text-[13px] font-semibold uppercase tracking-[0.14em] text-orange'
+const LEAD = 'mt-5 mb-0 max-w-[62ch] text-[17px] leading-[1.7] text-ink/70 text-pretty'
 const FRAME = 'relative overflow-hidden rounded-3xl bg-grey shadow-frame'
 const FRAME_LG = 'relative overflow-hidden rounded-[28px] bg-grey shadow-frame-lg'
 const PARALLAX = 'absolute inset-0 will-change-transform'
-const FIELD_LABEL = 'mb-2 block text-[13px] font-semibold'
+const CARD = 'rounded-3xl border border-line bg-white'
+const FIELD_LABEL = 'mb-2 block text-[13px] font-semibold text-navy'
 const INPUT =
-  'h-[54px] w-full rounded-[14px] border border-ink/16 bg-white px-4 font-body text-[15px] text-ink placeholder:text-ink/40 transition-colors focus:border-lime-deep focus:outline-none'
+  'h-[52px] w-full rounded-xl border border-line bg-white px-4 font-body text-[15px] text-ink placeholder:text-ink/40 transition-colors focus:border-orange focus:outline-none'
+const SELECT = `${INPUT} cursor-pointer appearance-none bg-[length:16px] bg-[right_16px_center] bg-no-repeat pr-11 [background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E2A3A' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")]`
 const CHIP =
-  'relative inline-flex min-h-[46px] cursor-pointer items-center gap-[9px] rounded-full border bg-transparent px-[18px] font-body text-[15px] text-ink transition-colors hover:border-lime-deep'
-const CHIP_ON = 'border-ink bg-lime/28'
-const CHIP_OFF = 'border-ink/16'
+  'relative inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border bg-white px-4 font-body text-[14px] text-ink transition-colors hover:border-orange'
+const CHIP_ON = 'border-orange bg-sun text-navy'
+const CHIP_OFF = 'border-line'
 
 /* ── icons ───────────────────────────────────────────────────────────── */
 
-function Arrow({ color = '#0E1011', size = 18 }) {
+function Arrow({ color = 'currentColor', size = 18 }) {
   return (
     <svg
       width={size}
@@ -275,7 +397,7 @@ function Arrow({ color = '#0E1011', size = 18 }) {
   )
 }
 
-function Check({ color = '#5E7A17', size = 18, width = 2.2 }) {
+function Check({ color = '#2E7D52', size = 18, width = 2.2 }) {
   return (
     <svg
       width={size}
@@ -293,22 +415,22 @@ function Check({ color = '#5E7A17', size = 18, width = 2.2 }) {
   )
 }
 
-function Star() {
+function Star({ size = 15 }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="#B6E241" aria-hidden="true">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="#F9B637" aria-hidden="true">
       <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9L12 2z" />
     </svg>
   )
 }
 
-function Sun() {
+function Sun({ color = '#F9B637', size = 14 }) {
   return (
     <svg
-      width="14"
-      height="14"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#EBD87A"
+      stroke={color}
       strokeWidth="2"
       strokeLinecap="round"
       aria-hidden="true"
@@ -319,20 +441,58 @@ function Sun() {
   )
 }
 
-function Phone() {
+function Phone({ color = '#1E2A3A', size = 20 }) {
   return (
     <svg
-      width="20"
-      height="20"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#0E1011"
+      stroke={color}
       strokeWidth="1.9"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
       <path d="M5 3h4l2 5-2.5 1.5a11 11 0 005 5L15 12l5 2v4a2 2 0 01-2 2A16 16 0 013 5a2 2 0 012-2z" />
+    </svg>
+  )
+}
+
+function Pin({ color = '#1E2A3A', size = 20 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 21s7-5.6 7-11a7 7 0 10-14 0c0 5.4 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  )
+}
+
+function Mail({ color = '#1E2A3A', size = 20 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3.5 6.5l8.5 6 8.5-6" />
     </svg>
   )
 }
@@ -350,11 +510,9 @@ function useViewportWidth() {
 }
 
 /**
- * Scroll-driven motion, all on GSAP ScrollTrigger: reveals, the hero's layered
- * exit, the nav pill solidifying, the "how solar works" energy line, the
- * services track and the drifting photographs. Pointer parallax on the hero
- * rides on gsap.quickTo. All of it is skipped for visitors who prefer reduced
- * motion.
+ * Scroll-driven motion on GSAP ScrollTrigger: reveals, the "how solar works"
+ * energy line, the services track and the drifting photographs. All of it is
+ * skipped for visitors who prefer reduced motion.
  */
 function useScrollEffects() {
   useEffect(() => {
@@ -362,50 +520,19 @@ function useScrollEffects() {
     const byId = (id) => document.getElementById(id)
 
     const ctx = gsap.context(() => {
-      const heroTrack = byId('home')
-      const stage = byId('hero-stage')
-      const primary = byId('hero-primary')
-      const secondary = byId('hero-secondary')
-      const intro = byId('next')
-
       if (reduced) {
-        // no pinned sequence: a plain viewport-height hero with the primary copy,
-        // and the services track scrolls natively
-        if (heroTrack) heroTrack.style.height = '100svh'
-        if (intro) intro.style.marginTop = '0'
         const scroller = byId('svc-scroller')
         if (scroller) scroller.style.overflowX = 'auto'
         return
       }
 
-      // 1. hero: three scroll phases while the stage is pinned —
-      //    headline lifts out → second text rises in → the whole stage moves up
-      //    and the next section, sitting underneath, is revealed
-      if (heroTrack && stage && primary && secondary) {
-        const vh = () => window.innerHeight
-        gsap
-          .timeline({
-            defaults: { ease: 'none' },
-            scrollTrigger: {
-              trigger: heroTrack,
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: true,
-              invalidateOnRefresh: true,
-            },
-          })
-          .to(primary, { y: () => -vh() * 1.15, duration: 1 }, 0)
-          .fromTo(secondary, { y: () => vh() * 0.9, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, 0.6)
-          .to(stage, { y: () => -vh(), duration: 1 }, 2)
-      }
-
-      // 2. reveals
+      // 1. reveals
       const once = (el, start) => ({ trigger: el, start, once: true })
       gsap.utils.toArray('.rv').forEach((el) =>
-        gsap.from(el, { y: 28, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: once(el, 'top 88%') }),
+        gsap.from(el, { y: 26, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: once(el, 'top 88%') }),
       )
       gsap.utils.toArray('.rvs').forEach((el) =>
-        gsap.from(el, { y: 14, opacity: 0, duration: 0.8, ease: 'power3.out', scrollTrigger: once(el, 'top 90%') }),
+        gsap.from(el, { y: 14, opacity: 0, duration: 0.7, ease: 'power3.out', scrollTrigger: once(el, 'top 92%') }),
       )
       gsap.utils.toArray('.draw').forEach((el) =>
         gsap.from(el, {
@@ -418,22 +545,22 @@ function useScrollEffects() {
       )
       gsap.utils.toArray('[data-words]').forEach((h) =>
         gsap.from(h.querySelectorAll('.wrd'), {
-          y: 18,
+          y: 16,
           opacity: 0,
-          duration: 0.7,
-          stagger: 0.09,
+          duration: 0.6,
+          stagger: 0.08,
           ease: 'power3.out',
-          scrollTrigger: once(h, 'top 85%'),
+          scrollTrigger: once(h, 'top 86%'),
         }),
       )
       gsap.utils.toArray('[data-stagger]').forEach((group) =>
         gsap.from(group.children, {
-          y: 24,
+          y: 22,
           opacity: 0,
-          duration: 0.8,
-          stagger: 0.12,
+          duration: 0.7,
+          stagger: 0.1,
           ease: 'power3.out',
-          scrollTrigger: once(group, 'top 85%'),
+          scrollTrigger: once(group, 'top 86%'),
         }),
       )
       gsap.utils.toArray('[data-count]').forEach((el) => {
@@ -444,21 +571,14 @@ function useScrollEffects() {
           v: target,
           duration: 1.6,
           ease: 'power2.out',
-          scrollTrigger: once(el, 'top 90%'),
+          scrollTrigger: once(el, 'top 92%'),
           onUpdate: () => {
-            el.textContent = o.v.toFixed(decimals)
+            el.textContent = Number(o.v.toFixed(decimals)).toLocaleString()
           },
         })
       })
-      gsap.utils.toArray('.plate-rise').forEach((el) =>
-        gsap.fromTo(
-          el,
-          { y: 40 },
-          { y: 0, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'top 55%', scrub: true } },
-        ),
-      )
 
-      // 3. how solar works: the energy line fills and the nearest step lights up
+      // 2. how solar works: the energy line fills and the nearest step lights up
       const track = byId('flow-track')
       const fill = byId('flow-fill')
       if (track && fill) {
@@ -473,28 +593,27 @@ function useScrollEffects() {
             ease: 'none',
             scrollTrigger: {
               trigger: track,
-              start: 'top 50%',
-              end: 'bottom 60%',
+              start: 'top 55%',
+              end: 'bottom 65%',
               scrub: true,
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 const idx = Math.round(self.progress * (steps.length - 1))
                 dots.forEach((dot, i) =>
                   gsap.set(dot, {
-                    borderColor: i <= idx ? '#B6E241' : 'rgba(14,16,17,.14)',
+                    borderColor: i <= idx ? '#EC5A2C' : '#E3E6EB',
+                    backgroundColor: i <= idx ? '#FFF6EA' : '#FFFFFF',
                     scale: i === idx ? 1.08 : 1,
-                    boxShadow: i === idx ? '0 8px 22px rgba(182,226,65,.45)' : 'none',
                   }),
                 )
-                bodies.forEach((b, i) => gsap.set(b, { opacity: self.isActive && i !== idx ? 0.62 : 1 }))
+                bodies.forEach((b, i) => gsap.set(b, { opacity: self.isActive && i !== idx ? 0.66 : 1 }))
               },
             },
           },
         )
       }
 
-      // 4. services: the section pins while vertical scroll runs the four cards
-      //    across; it releases once the last card is in view
+      // 3. services: the section pins while vertical scroll runs the cards across
       const services = byId('services')
       const sc = byId('svc-scroller')
       const svcTrack = byId('svc-track')
@@ -508,15 +627,13 @@ function useScrollEffects() {
             scrollTrigger: {
               trigger: services,
               start: 'top top',
-              // pin for a bit more than the track's own travel so the pass feels unhurried
-              end: () => '+=' + Math.max(Math.round(travel() * 2.4), 1),
+              end: () => '+=' + Math.max(Math.round(travel() * 1.6), 1),
               pin: true,
               scrub: 1,
               invalidateOnRefresh: true,
             },
           })
         })
-        // phones and tablets: swipe the track natively
         mm.add('(max-width: 1023px)', () => {
           sc.style.overflowX = 'auto'
           sc.style.scrollSnapType = 'x mandatory'
@@ -527,27 +644,13 @@ function useScrollEffects() {
         })
       }
 
-      // the nav steps aside only while the dark estimator panel is under it.
-      // Created after the services pin so its start/end include the pin's spacer.
-      const panel = byId('estimate-panel')
-      if (panel) {
-        ScrollTrigger.create({
-          trigger: panel,
-          start: 'top 150px',
-          end: 'bottom 20px',
-          refreshPriority: -1,
-          onToggle: ({ isActive }) =>
-            window.dispatchEvent(new CustomEvent('nav-hide', { detail: isActive })),
-        })
-      }
-
-      // 5. large photographs drift inside their frames
+      // 4. large photographs drift inside their frames
       gsap.utils.toArray('[data-parallax]').forEach((el) =>
         gsap.fromTo(
           el.querySelector('img') || el,
-          { yPercent: -7, scale: 1.1 },
+          { yPercent: -6, scale: 1.1 },
           {
-            yPercent: 7,
+            yPercent: 6,
             scale: 1.1,
             ease: 'none',
             scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true },
@@ -556,79 +659,17 @@ function useScrollEffects() {
       )
     })
 
-    // pointer parallax on the hero
-    const media = byId('hero-media-inner')
-    const glow = byId('hero-glow')
-    const copy = byId('hero-copy-inner')
-    const ease = { duration: 0.6, ease: 'power2.out' }
-    const to = (el, prop) => (el ? gsap.quickTo(el, prop, ease) : () => {})
-    const mediaX = to(media, 'x')
-    const mediaY = to(media, 'y')
-    const glowX = to(glow, 'x')
-    const glowY = to(glow, 'y')
-    const copyX = to(copy, 'x')
-    const onMove = (e) => {
-      if (reduced) return
-      const tx = e.clientX / window.innerWidth - 0.5
-      const ty = e.clientY / window.innerHeight - 0.5
-      mediaX(-tx * 14)
-      mediaY(-ty * 9)
-      glowX(-tx * 26)
-      glowY(-ty * 16)
-      copyX(-tx * 3)
-    }
-    window.addEventListener('mousemove', onMove, { passive: true })
-
     const refresh = () => ScrollTrigger.refresh()
     const raf = requestAnimationFrame(refresh)
     if (document.fonts?.ready) document.fonts.ready.then(refresh)
     window.addEventListener('load', refresh)
 
     return () => {
-      window.removeEventListener('mousemove', onMove)
       window.removeEventListener('load', refresh)
       cancelAnimationFrame(raf)
       ctx.revert()
     }
   }, [])
-}
-
-/**
- * Full-bleed background film for the hero. Muted and looping so browsers allow
- * autoplay; the poster frame stands in until the first frame decodes and for
- * visitors who prefer reduced motion, where playback is paused.
- */
-function HeroVideo() {
-  const ref = useRef(null)
-  useEffect(() => {
-    const video = ref.current
-    if (!video) return
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const apply = () => {
-      if (mq.matches) video.pause()
-      else video.play().catch(() => {})
-    }
-    apply()
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
-  }, [])
-  return (
-    <video
-      ref={ref}
-      className="absolute inset-0 block h-full w-full object-cover"
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      poster="/hero-poster.jpg"
-      aria-hidden="true"
-      tabIndex={-1}
-    >
-      <source src="/hero.webm" type="video/webm" />
-      <source src="/hero.mp4" type="video/mp4" />
-    </video>
-  )
 }
 
 function scrollToId(id) {
@@ -641,43 +682,57 @@ function scrollToId(id) {
 
 /* ── page ────────────────────────────────────────────────────────────── */
 
+const NAV = [
+  { label: 'Home', id: null },
+  { label: 'About Us', id: 'about' },
+  { label: 'Services', id: 'services' },
+  { label: 'Testimonials', id: 'testimonials' },
+  { label: 'FAQ', id: 'faq' },
+]
+
 export default function App() {
   const w = useViewportWidth()
   const wide = w >= 1000
   const [menuOpen, setMenuOpen] = useState(false)
   const [bill, setBill] = useState(250)
   const [sent, setSent] = useState(false)
+  // The lead fields live here so the hero's three-field card can hand its
+  // answers straight to the full consultation form further down the page.
+  const [lead, setLead] = useState(BLANK_LEAD)
 
   useScrollEffects()
 
   const closeMenu = useCallback(() => setMenuOpen(false), [])
 
-  const go = (id) => (e) => {
-    e.preventDefault()
-    setMenuOpen(false)
-    scrollToId(id)
-  }
+  const go = useCallback(
+    (id) => (e) => {
+      if (e) e.preventDefault()
+      setMenuOpen(false)
+      scrollToId(id)
+    },
+    [],
+  )
 
   const showMobileBar = !wide && !sent
 
   return (
     <>
-      <Header
-        menuOpen={menuOpen}
-        onToggleMenu={() => setMenuOpen((o) => !o)}
-        onCloseMenu={closeMenu}
-        go={go}
-      />
-      <Hero showMobileBar={showMobileBar} />
-      <Intro />
-      <DesignedAroundYou />
-      <HowSolarWorks />
-      <Benefits />
-      <Services />
-      <CustomerStory />
-      <About />
-      <Estimator bill={bill} onBill={setBill} />
-      <Quote sent={sent} onSent={setSent} />
+      <Header menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((o) => !o)} onCloseMenu={closeMenu} go={go} />
+      <main>
+        <Hero showMobileBar={showMobileBar} onQuickLead={setLead} />
+        <TrustBar />
+        <Intro />
+        <PowerPrices />
+        <Benefits />
+        <HowSolarWorks />
+        <Services />
+        <About />
+        <Testimonials />
+        <Estimator bill={bill} onBill={setBill} />
+        <Checklist />
+        <Faq />
+        <Quote sent={sent} onSent={setSent} fields={lead} onFields={setLead} bill={bill} />
+      </main>
       <Footer go={go} />
       {showMobileBar && <MobileBar />}
     </>
@@ -686,23 +741,15 @@ export default function App() {
 
 function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
   const rootRef = useRef(null)
 
   useEffect(() => {
-    const onHide = (e) => setHidden(Boolean(e.detail))
-    window.addEventListener('nav-hide', onHide)
-    return () => window.removeEventListener('nav-hide', onHide)
-  }, [])
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
+    const onScroll = () => setScrolled(window.scrollY > 40)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // clicking anywhere outside the pill or the menu, or pressing Escape, closes it
   useEffect(() => {
     if (!menuOpen) return
     const onPointer = (e) => {
@@ -719,56 +766,86 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
     }
   }, [menuOpen, onCloseMenu])
 
+  const navLink =
+    'rounded-full px-3.5 py-2 font-display text-[15px] font-semibold text-navy transition-colors hover:bg-grey hover:text-orange'
   const menuLink =
-    'rounded-full px-5 py-3.5 font-display text-[21px] font-bold tracking-[-0.015em] text-orange transition-colors hover:bg-grey hover:text-lime-deep'
+    'rounded-2xl px-4 py-3 font-display text-[17px] font-bold text-navy transition-colors hover:bg-grey hover:text-orange'
+
   return (
     <header
-      className={`fixed inset-x-0 top-[clamp(16px,2.4vw,28px)] z-20 flex justify-center px-[clamp(16px,3vw,40px)] transition-[transform,opacity] duration-300 ease-out ${
-        hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
+      className={`fixed inset-x-0 top-0 z-30 transition-[background-color,box-shadow,border-color] duration-300 ${
+        scrolled ? 'border-b border-line bg-white/92 shadow-pill backdrop-blur-xl' : 'border-b border-transparent bg-white'
       }`}
     >
-      <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
-        <div
-          id="nav-pill"
-          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-xl transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
-            scrolled
-              ? 'h-[68px] border-white/60 bg-white/55 shadow-[0_8px_32px_rgba(14,16,17,.12),inset_0_1px_0_rgba(255,255,255,.7)] backdrop-saturate-150'
-              : 'h-[76px] border-transparent bg-white/94 shadow-pill'
-          }`}
-        >
-          <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
-            <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
+      {/* utility strip: the phone number is visible before anything else */}
+      <div className="hidden border-b border-line bg-sun px-pad lg:block">
+        <div className="mx-auto flex max-w-wrap items-center justify-between gap-6 py-2 text-[13px] text-navy">
+          <span className="flex items-center gap-2">
+            <Sun size={13} />
+            100% New Zealand owned and operated · 6,000+ systems installed
+          </span>
+          <span className="flex items-center gap-5">
+            <a href={COMPANY.phoneHref} className="flex items-center gap-2 font-semibold hover:text-orange">
+              <Phone size={14} color="#EC5A2C" />
+              {COMPANY.phone}
+            </a>
+            <span className="flex items-center gap-2 text-ink/60">
+              <Pin size={14} color="#3D5171" />
+              {COMPANY.street}, {COMPANY.suburb}, {COMPANY.city}
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <div ref={rootRef} className="px-pad">
+        <div className="mx-auto flex max-w-wrap items-center justify-between gap-4 py-3.5">
+          <a href="#home" onClick={go(null)} aria-label={`${COMPANY.name} home`} className="flex shrink-0 items-center">
+            <Logo className="block h-auto w-[clamp(118px,11vw,152px)]" />
           </a>
+
+          <nav className="hidden items-center gap-0.5 lg:flex">
+            {NAV.map((n) => (
+              <a key={n.label} href={n.id ? `#${n.id}` : '#home'} onClick={go(n.id)} className={navLink}>
+                {n.label}
+              </a>
+            ))}
+          </nav>
+
           <div className="flex shrink-0 items-center gap-2">
-            <a href="#quote" className={`${BTN_LIME} h-[52px] px-[clamp(16px,1.8vw,24px)] text-[15px] max-sm:hidden`}>
-              Get a Free Quote
+            <a
+              href={COMPANY.phoneHref}
+              className={`${BTN_GHOST} h-[48px] px-4 text-[15px] max-md:hidden`}
+              aria-label={`Call ${COMPANY.phone}`}
+            >
+              <Phone size={17} color="#EC5A2C" />
+              {COMPANY.phone}
+            </a>
+            <a href="#quote" onClick={go('quote')} className={`${BTN_CTA} h-[48px] px-5 text-[15px] shadow-cta max-sm:hidden`}>
+              Free Quote
             </a>
             <button
               type="button"
               aria-label="Menu"
               aria-expanded={menuOpen}
               onClick={onToggleMenu}
-              className="grid h-[52px] w-[52px] cursor-pointer place-content-center gap-[5px] rounded-full border-0 bg-grey transition-colors hover:bg-grey-hover"
+              className="grid h-[48px] w-[48px] cursor-pointer place-content-center gap-[5px] rounded-full border border-line bg-white transition-colors hover:bg-grey lg:hidden"
             >
-              <span className="block h-[1.5px] w-[18px] bg-ink" />
-              <span className="block h-[1.5px] w-[18px] bg-ink" />
+              <span className="block h-[1.5px] w-[18px] bg-navy" />
+              <span className="block h-[1.5px] w-[18px] bg-navy" />
             </button>
           </div>
         </div>
 
         {menuOpen && (
-          <nav className="flex min-w-[260px] flex-col rounded-[28px] bg-white/96 p-3 shadow-menu backdrop-blur-xl animate-[rise_240ms_ease_both]">
-            <a href="#home" onClick={go(null)} className={menuLink}>
-              Home
-            </a>
-            <a href="#about" onClick={go('about-area')} className={menuLink}>
-              About
-            </a>
-            <a href="#services" onClick={go('services')} className={menuLink}>
-              Services
-            </a>
-            <a href="#stories" onClick={go('stories')} className={menuLink}>
-              Testimonials
+          <nav className="mx-auto mb-3 flex max-w-wrap flex-col rounded-3xl border border-line bg-white p-2 shadow-menu lg:hidden animate-[revealSoft_220ms_ease_both]">
+            {NAV.map((n) => (
+              <a key={n.label} href={n.id ? `#${n.id}` : '#home'} onClick={go(n.id)} className={menuLink}>
+                {n.label}
+              </a>
+            ))}
+            <a href={COMPANY.phoneHref} className={`${menuLink} flex items-center gap-2.5 text-orange`}>
+              <Phone size={18} color="#EC5A2C" />
+              {COMPANY.phone}
             </a>
           </nav>
         )}
@@ -777,147 +854,216 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
   )
 }
 
-function Hero({ showMobileBar }) {
+/* ── hero: light, lead-first ─────────────────────────────────────────── */
+
+function Hero({ showMobileBar, onQuickLead }) {
+  const [form, setForm] = useState({ name: '', phone: '', suburb: '' })
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
+
+  const submit = (e) => {
+    e.preventDefault()
+    onQuickLead((lead) => ({ ...lead, name: form.name, phone: form.phone, suburb: form.suburb }))
+    scrollToId('quote')
+  }
+
   return (
-    <section id="home" className="relative z-[2] h-[320svh]">
-      <div id="hero-stage" className="sticky top-0 flex h-svh flex-col justify-end overflow-hidden bg-sky pt-[clamp(104px,14vw,128px)] will-change-transform">
-      <div id="hero-media" className="absolute -inset-[3%] will-change-transform animate-[fade_900ms_ease_both]">
-        <div id="hero-media-inner" className="absolute inset-0 will-change-transform">
-          <HeroVideo />
-        </div>
-      </div>
-
+    <section
+      id="home"
+      className="relative overflow-hidden bg-white px-pad pt-[clamp(108px,15vw,176px)] pb-[clamp(48px,6vw,80px)]"
+    >
+      {/* soft daylight wash — keeps the page light, never dark */}
       <div
-        id="hero-glow"
-        className="pointer-events-none absolute -top-[18%] -right-[6%] h-[70vw] max-h-[900px] w-[70vw] max-w-[900px] rounded-full mix-blend-screen animate-[fade_1400ms_ease_both] [background:radial-gradient(circle,rgba(235,216,122,.5)_0%,rgba(235,216,122,.16)_42%,rgba(235,216,122,0)_70%)]"
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-[28%] -right-[10%] h-[70vw] max-h-[820px] w-[70vw] max-w-[820px] rounded-full [background:radial-gradient(circle,rgba(249,182,55,.22)_0%,rgba(249,182,55,.07)_45%,rgba(249,182,55,0)_70%)]"
       />
-      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.28)_0%,rgba(14,16,17,0)_26%,rgba(14,16,17,.12)_52%,rgba(14,16,17,.62)_100%)]" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-[30%] -left-[14%] h-[52vw] max-h-[620px] w-[52vw] max-w-[620px] rounded-full [background:radial-gradient(circle,rgba(234,242,248,.9)_0%,rgba(234,242,248,0)_70%)]"
+      />
 
-      <div id="hero-copy" className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)]">
-        <div id="hero-copy-inner" className="relative mx-auto max-w-wrap will-change-transform">
-          <div id="hero-primary" className="will-change-transform">
-          <div className="inline-flex min-h-[34px] items-center gap-[9px] rounded-full border border-white/40 bg-white/18 px-[15px] text-[13px] font-medium tracking-[0.02em] whitespace-nowrap text-white backdrop-blur-sm animate-[rise_520ms_ease_120ms_both]">
+      <div className="relative mx-auto grid max-w-wrap items-start gap-[clamp(28px,3.5vw,56px)] lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)]">
+        <div>
+          <div className="inline-flex min-h-[34px] items-center gap-2 rounded-full border border-gold-soft bg-sun px-3.5 text-[13px] font-semibold tracking-[0.01em] text-navy animate-[rise_500ms_ease_both]">
             <Sun />
-            Solar energy made personal
+            100% NZ owned · 6,000+ systems installed
           </div>
 
-          <h1 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[15ch] font-display text-h1 leading-[0.92] font-bold tracking-[-0.042em] text-white text-balance animate-[rise_620ms_ease_220ms_both]">
-            Power your home. With the <em className="text-lime not-italic">sun</em>.
+          <h1 className="mt-[clamp(16px,1.8vw,24px)] mb-0 max-w-[16ch] font-display text-h1 leading-[0.98] font-extrabold tracking-[-0.04em] text-navy text-balance animate-[rise_600ms_ease_120ms_both]">
+            Cut up to <Flame>80%</Flame> off your power bill.
           </h1>
 
-          <div className="mt-[clamp(28px,3.4vw,44px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,56px)]">
-            <div className="max-w-[520px] grow basis-[380px] animate-[rise_560ms_ease_340ms_both]">
-              <p className="m-0 max-w-[440px] text-[clamp(16px,1.25vw,19px)] leading-[1.6] text-white/88 text-pretty">
-                Clean solar solutions designed around your home, your energy needs and your future.
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <a href="#quote" className={`${BTN_LIME} h-14 px-[30px] text-base shadow-cta`}>
-                  Get a Free Quote
-                  <Arrow />
-                </a>
-                <a
-                  href="#services"
-                  className={`${BTN} h-14 border border-white/55 bg-transparent px-[26px] text-base font-semibold text-white hover:border-orange hover:bg-orange hover:text-ink`}
-                >
-                  Explore Our Services
-                  <Arrow color="currentColor" />
-                </a>
-              </div>
-            </div>
+          <p className="mt-[clamp(16px,1.6vw,22px)] mb-0 max-w-[50ch] text-[clamp(16px,1.2vw,19px)] leading-[1.65] text-ink/72 text-pretty animate-[rise_560ms_ease_200ms_both]">
+            Solar and battery systems designed around your roof, your power use and your budget. Free on-site
+            assessment, a written estimate before you commit, and typical payback in around five years.
+          </p>
 
-            <div className="shrink basis-[320px] border-l border-white/28 pl-[clamp(0px,2vw,24px)] animate-[rise_560ms_ease_440ms_both]">
-              <div className="flex gap-[3px]" aria-label="Five star rating">
-                <Star />
-                <Star />
-                <Star />
-                <Star />
-                <Star />
-              </div>
-              <p className="mt-3 mb-0 text-[15px] leading-[1.55] text-white text-pretty">
-                Trusted solar guidance
-                <br />
-                from consultation to installation.
-              </p>
+          <ul
+            className="mt-6 mb-0 grid list-none gap-2.5 p-0 sm:grid-cols-2 animate-[rise_560ms_ease_280ms_both]"
+            aria-label="Why homeowners choose us"
+          >
+            {[
+              'Free roof assessment, no obligation',
+              '30-year panel performance warranty',
+              '7 solar hubs covering 70% of NZ homes',
+              'Installed by our own qualified crews',
+            ].map((t) => (
+              <li key={t} className="flex items-start gap-2.5 text-[15px] leading-[1.5] text-ink/78">
+                <span className="mt-0.5 shrink-0">
+                  <Check size={17} />
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3 animate-[rise_560ms_ease_340ms_both]">
+            <a href="#quote" className={`${BTN_CTA} h-14 px-7 text-[17px] shadow-cta`}>
+              Get My Free Quote
+              <Arrow color="#fff" />
+            </a>
+            <a href={COMPANY.phoneHref} className={`${BTN_GHOST} h-14 px-6 text-[17px]`}>
+              <Phone size={19} color="#EC5A2C" />
+              {COMPANY.phone}
+            </a>
+          </div>
+        </div>
+
+        {/* quick lead capture, above the fold */}
+        <div className="animate-[rise_640ms_ease_260ms_both]">
+          <div className={`${FRAME_LG} aspect-[16/10] w-full sm:aspect-[2/1] lg:aspect-[21/9]`}>
+            <div data-parallax="1" className={PARALLAX}>
+              <ImageSlot
+                {...PHOTOS.house}
+                eager
+                alt="A New Zealand home with a rooftop solar array in daylight"
+                placeholder="Drop a wide house photograph"
+              />
             </div>
           </div>
-          {showMobileBar && <div className="h-[88px]" aria-hidden="true" />}
-          </div>
 
-          <div id="hero-secondary" className="absolute inset-x-0 bottom-0 opacity-0 will-change-transform">
-            <div className="inline-flex min-h-[34px] items-center gap-[9px] rounded-full border border-white/40 bg-white/18 px-[15px] text-[13px] font-medium tracking-[0.02em] whitespace-nowrap text-white backdrop-blur-sm">
-              <Sun />
-              Consultation · Design · Install · Support
-            </div>
-            <h2 className="mt-[clamp(18px,2vw,28px)] mb-0 max-w-[14ch] font-display text-[clamp(36px,6.2vw,92px)] leading-[0.94] font-bold tracking-[-0.042em] text-white text-balance">
-              Designed around the way you <Orange>live</Orange>.
+          <form
+            onSubmit={submit}
+            className="relative z-[2] mx-auto -mt-[clamp(28px,3.2vw,44px)] w-[min(100%,560px)] rounded-3xl border border-line bg-white p-[clamp(20px,2.4vw,30px)] shadow-form"
+          >
+            <h2 className="m-0 font-display text-[clamp(19px,1.8vw,23px)] leading-tight font-bold tracking-[-0.025em] text-navy">
+              Book a free solar assessment
             </h2>
-            <div className="mt-[clamp(24px,3vw,40px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,56px)]">
-              <p className="m-0 max-w-[460px] text-[clamp(16px,1.25vw,19px)] leading-[1.6] text-white/88 text-pretty">
-                One team from the first roof visit to the last check-in — sizing the system to how much power you
-                use, when you use it, and what your roof can actually do.
-              </p>
-              <a href="#next" className={`${BTN_LIME} h-14 px-[30px] text-base shadow-cta`}>
-                See how it works
-                <Arrow />
-              </a>
+            <p className="mt-1.5 mb-5 text-[14px] leading-[1.55] text-ink/62">
+              Three details is all we need to call you back.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="sr-only">Your name</span>
+                <input
+                  type="text"
+                  name="name"
+                  autoComplete="name"
+                  placeholder="Your name"
+                  value={form.name}
+                  onChange={set('name')}
+                  className={INPUT}
+                />
+              </label>
+              <label className="block">
+                <span className="sr-only">Phone number</span>
+                <input
+                  type="tel"
+                  name="phone"
+                  autoComplete="tel"
+                  placeholder="Phone number"
+                  value={form.phone}
+                  onChange={set('phone')}
+                  className={INPUT}
+                />
+              </label>
+              <label className="block sm:col-span-2">
+                <span className="sr-only">Suburb</span>
+                <input
+                  type="text"
+                  name="suburb"
+                  autoComplete="address-level2"
+                  placeholder="Suburb or town"
+                  value={form.suburb}
+                  onChange={set('suburb')}
+                  className={INPUT}
+                />
+              </label>
             </div>
-            {showMobileBar && <div className="h-[88px]" aria-hidden="true" />}
-          </div>
+            <button type="submit" className={`${BTN_CTA} mt-4 h-[54px] w-full text-[16px] shadow-cta`}>
+              Request My Free Quote
+              <Arrow color="#fff" />
+            </button>
+            <p className="mt-3 mb-0 text-center text-[12.5px] leading-[1.5] text-ink/55">
+              No cost, no obligation. Your details are used only for this quote.
+            </p>
+          </form>
         </div>
       </div>
 
-      <a
-        href="#next"
-        aria-label="Scroll to next section"
-        className="absolute top-[calc(50svh-22px)] right-pad z-[6] grid h-11 w-11 place-items-center rounded-full bg-lime shadow-scroll transition-colors animate-[bob_3.4s_ease-in-out_infinite] hover:bg-orange"
-      >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#0E1011"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M12 5v14M6 13l6 6 6-6" />
-        </svg>
-      </a>
+      {showMobileBar && <div className="h-[72px]" aria-hidden="true" />}
+    </section>
+  )
+}
+
+function TrustBar() {
+  return (
+    <section aria-label="Company credentials" className="border-y border-line bg-grey px-pad py-[clamp(24px,3vw,40px)]">
+      <div data-stagger="1" className="mx-auto grid max-w-wrap grid-cols-2 gap-x-6 gap-y-7 lg:grid-cols-4">
+        {TRUST.map((t) => (
+          <div key={t.label} className="text-center lg:text-left">
+            <div className="font-display text-[clamp(26px,3vw,40px)] leading-none font-extrabold tracking-[-0.035em] text-orange tabular-nums">
+              {t.value}
+            </div>
+            <div className="mx-auto mt-2 max-w-[22ch] text-[13.5px] leading-[1.45] text-ink/65 lg:mx-0">{t.label}</div>
+          </div>
+        ))}
       </div>
     </section>
   )
 }
 
-/** Splits a headline into words that reveal one after another on scroll. */
+/**
+ * Section header: kicker and section index share one row, the heading sits under
+ * them. Keeps the top of every section to three tight lines on a laptop screen.
+ */
+function SectionHead({ kicker, index, children, lead }) {
+  return (
+    <header className="rvs">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+        <span className={KICKER}>{kicker}</span>
+        {index && <span className="text-[13px] text-ink/40 tabular-nums">{index}</span>}
+      </div>
+      <h2 className={`${H2} mt-3`}>{children}</h2>
+      {lead && <p className={LEAD}>{lead}</p>}
+    </header>
+  )
+}
+
 /** Headline words that reveal one after another; `accent` colours one of them. */
-function Words({ words, accent, accentClass = 'text-lime' }) {
-  return words.map((word) => (
-    <Fragment key={word}>
-      <span className={`wrd inline-block${word === accent ? ` ${accentClass}` : ''}`}>{word}</span>{' '}
+function Words({ words, accent }) {
+  return words.map((word, i) => (
+    <Fragment key={word + i}>
+      <span className={`wrd inline-block${word === accent ? ' text-orange' : ''}`}>{word}</span>{' '}
     </Fragment>
   ))
 }
 
-const Lime = ({ children }) => <em className="text-lime not-italic">{children}</em>
-const Orange = ({ children }) => <em className="text-orange not-italic">{children}</em>
-
 function Intro() {
   return (
-    <section id="next" className="relative z-[1] -mt-[100svh] bg-white px-pad pt-[clamp(96px,13vw,200px)] pb-[clamp(72px,9vw,140px)]">
+    <section className="bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
-          className="m-0 max-w-[19ch] font-display text-[clamp(34px,5.6vw,88px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
+          className="m-0 max-w-[20ch] font-display text-[clamp(30px,4.4vw,64px)] leading-[1.02] font-extrabold tracking-[-0.038em] text-navy text-balance"
         >
-          <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
+          <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." />
         </h2>
-        <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap gap-[clamp(28px,5vw,88px)]">
-          <div className="draw mt-3.5 h-0.5 w-[72px] shrink-0 bg-lime" />
-          <p className="rvs m-0 max-w-[620px] grow basis-[420px] text-[clamp(17px,1.5vw,22px)] leading-[1.6] text-ink/72 text-pretty">
-            We help homeowners understand their options and design a system around the way they live —{' '}
-            <Amber>how much power you use, when you use it</Amber>, and what your roof can actually do.
+        <div className="mt-[clamp(28px,3.5vw,52px)] flex flex-wrap gap-[clamp(24px,4vw,72px)]">
+          <div className="draw mt-3.5 h-0.5 w-[72px] shrink-0 bg-gold" />
+          <p className="rvs m-0 max-w-[620px] grow basis-[420px] text-[clamp(16px,1.4vw,20px)] leading-[1.65] text-ink/72 text-pretty">
+            We have put solar on more than six thousand New Zealand roofs. Every one started the same way:{' '}
+            <Amber>what does this household actually use, and when</Amber>. The system is designed around the
+            answer, not the other way round.
           </p>
         </div>
       </div>
@@ -925,47 +1071,80 @@ function Intro() {
   )
 }
 
-function DesignedAroundYou() {
-  const tag = 'inline-flex min-h-8 items-center rounded-full bg-grey px-[13px] text-[13px]'
+function PowerPrices() {
+  const max = Math.max(...POWER_PRICES.map((p) => p.cents))
   return (
-    <section className="bg-white px-pad pb-[clamp(96px,12vw,180px)]">
-      <div className="relative mx-auto max-w-wrap">
-        <div className={`${SEC_HEAD} rvs mb-[clamp(28px,3vw,44px)]`}>
-          <div className={KICKER}>Designed around your home</div>
-          <div className={IDX_MUTED}>01 — Site &amp; roof</div>
+    <section className="bg-sun px-pad py-sec">
+      <div className="mx-auto grid max-w-wrap items-center gap-[clamp(32px,4vw,72px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div>
+          <div className={KICKER}>Why now</div>
+          <h2 className={`${H2} rv mt-4`}>
+            Power prices have <Flame>doubled</Flame> since 2008.
+          </h2>
+          <p className={LEAD}>
+            New Zealand residential electricity went from <Amber>17 cents per kWh in 2008</Amber> to{' '}
+            <Amber>34 cents in 2024</Amber>. Every year you wait, the grid costs more and the case for
+            generating your own gets stronger.
+          </p>
+          <a href="#quote" className={`${BTN_CTA} mt-8 h-[54px] px-6 text-[16px] shadow-cta`}>
+            Lock in your own rate
+            <Arrow color="#fff" />
+          </a>
         </div>
 
-        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-video sm:min-h-[300px]`}>
-          <div data-parallax="1" className={PARALLAX}>
-            <ImageSlot
-              {...PHOTOS.house}
-              alt="A wide view of a house with a rooftop solar array"
-              placeholder="Drop a wide house photograph"
-            />
+        <figure className="rvs m-0 rounded-3xl border border-gold-soft bg-white p-[clamp(20px,2.4vw,32px)] shadow-frame">
+          <figcaption className="mb-6 flex items-baseline justify-between gap-4">
+            <span className="font-display text-[15px] font-bold text-navy">NZ residential power price</span>
+            <span className="text-[13px] text-ink/55">cents per kWh</span>
+          </figcaption>
+          <div className="flex h-[200px] items-end gap-[clamp(8px,1.6vw,20px)]">
+            {POWER_PRICES.map((p, i) => {
+              const last = i === POWER_PRICES.length - 1
+              return (
+                <div key={p.year} className="flex flex-1 flex-col items-center gap-2">
+                  <span
+                    className={`font-display text-[13px] font-bold tabular-nums ${last ? 'text-orange' : 'text-ink/55'}`}
+                  >
+                    {p.cents}c
+                  </span>
+                  <div
+                    className={`w-full rounded-t-lg transition-[height] duration-700 ${last ? 'bg-orange' : 'bg-gold-soft'}`}
+                    style={{ height: `${(p.cents / max) * 150}px` }}
+                  />
+                  <span className="text-[12px] text-ink/50 tabular-nums">{p.year}</span>
+                </div>
+              )
+            })}
           </div>
-        </div>
+          <p className="mt-5 mb-0 border-t border-line pt-4 text-[12.5px] leading-[1.5] text-ink/55">
+            2008 and 2024 figures supplied by The Solar Co.; intermediate years shown for shape.
+          </p>
+        </figure>
+      </div>
+    </section>
+  )
+}
 
-        <div className="relative z-[2] flex flex-wrap items-start justify-between gap-[clamp(20px,3vw,48px)]">
-          <div className="rvs pointer-events-none mt-[clamp(24px,3vw,40px)] min-w-0 shrink basis-[260px]">
-            <div className="draw h-px w-full bg-ink/14" />
-            <p className="mt-6 mb-0 font-display text-[clamp(18px,1.7vw,24px)] leading-[1.35] font-medium tracking-[-0.02em] text-pretty">
-              Two identical houses rarely need identical systems.
-            </p>
-          </div>
+function Benefits() {
+  return (
+    <section className="bg-white px-pad py-sec">
+      <div className="mx-auto max-w-wrap">
+        <SectionHead kicker="The difference it makes" index="01 — Benefits">
+          What solar actually does for a <Flame>New Zealand home</Flame>.
+        </SectionHead>
 
-          <div className="plate-rise mt-6 mr-[clamp(0px,2vw,32px)] min-w-0 max-w-[520px] grow basis-[380px] md:mt-[clamp(-96px,-6vw,-40px)] rounded-3xl bg-white p-[clamp(28px,3vw,44px)] shadow-card">
-            <h3 className={H3}>Every roof is <Orange>different</Orange>.</h3>
-            <p className="mt-[18px] mb-0 text-base leading-[1.65] text-ink/70 text-pretty">
-              Orientation, pitch, shading and usable area decide what your roof can generate.{' '}
-              <Amber>We map the sun across your roof</Amber> before anyone talks about price.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className={tag}>Orientation</span>
-              <span className={tag}>Pitch &amp; tilt</span>
-              <span className={tag}>Shading</span>
-              <span className={tag}>Usable area</span>
-            </div>
-          </div>
+        <div data-stagger="1" className="mt-[clamp(36px,4.5vw,64px)] grid gap-6 lg:grid-cols-3">
+          {BENEFITS.map((b) => (
+            <article key={b.title} className={`${CARD} overflow-hidden transition-shadow duration-300 hover:shadow-card`}>
+              <div className="relative aspect-[16/10]">
+                <ImageSlot {...PHOTOS[b.photo]} alt={b.alt} placeholder="Drop a photograph" />
+              </div>
+              <div className="p-[clamp(20px,2.2vw,30px)]">
+                <h3 className={H3}>{b.title}</h3>
+                <p className="mt-3.5 mb-0 text-[15px] leading-[1.65] text-ink/70 text-pretty">{b.body}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -974,345 +1153,293 @@ function DesignedAroundYou() {
 
 function HowSolarWorks() {
   return (
-    <section id="flow" className="bg-grey px-pad py-sec">
-      <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
-        <div className="min-w-0 max-w-[480px] grow basis-[360px] lg:sticky lg:top-[clamp(128px,12vw,150px)]">
-          <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
-          <h2 className="mt-5 mb-0 font-display text-[clamp(30px,4vw,60px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
-            Sunlight, all the way to your <Lime>switchboard</Lime>.
-          </h2>
-          <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
-            <Amber>Your appliances use solar power first.</Amber> Anything spare charges a battery or is exported
-            and measured — so the system keeps working whether you are home or not.
+    <section id="how" className="bg-grey px-pad py-sec">
+      <div className="mx-auto grid max-w-wrap gap-[clamp(28px,3.5vw,64px)] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+        {/* the heading column holds the width on wide screens so the timeline
+            is not a lone strip down the left edge */}
+        <div className="lg:sticky lg:top-[132px] lg:self-start">
+          <SectionHead kicker="How solar works" index="02 — How it works">
+            From <Flame>sunlight</Flame> to the socket, in six steps.
+          </SectionHead>
+          <p className={LEAD}>
+            No jargon and no black boxes. This is the whole chain, from the roof to the grid and back again.
           </p>
-          <a href="#quote" className={`${BTN_LIME} mt-9 h-14 px-7 text-base`}>
-            Get a Free Quote
-            <Arrow />
+
+          <div className={`${FRAME} rvs mt-8 hidden aspect-[4/3] lg:block`}>
+            <div data-parallax="1" className={PARALLAX}>
+              <ImageSlot
+                {...PHOTOS.benefit}
+                sizes="420px"
+                alt="Solar panels on a rooftop feeding a home"
+                placeholder="Drop a rooftop photograph"
+              />
+            </div>
+          </div>
+
+          <a href="#quote" className={`${BTN_CTA} mt-8 h-[52px] px-6 text-[16px] shadow-cta`}>
+            See it on your roof
+            <Arrow color="#fff" />
           </a>
         </div>
 
-        <div id="flow-track" className="relative min-w-0 grow basis-[420px] pl-1">
-          <div className="absolute top-7 bottom-7 left-[27px] w-0.5 bg-ink/12" />
-          <div
-            id="flow-fill"
-            className="absolute top-7 left-[27px] h-0 w-0.5 [background:linear-gradient(180deg,#EBD87A_0%,#B6E241_30%,#B6E241_100%)]"
-          />
-          {FLOW.map((f) => (
-            <div key={f.num} data-flow-step="1" className="relative flex gap-[clamp(20px,2.5vw,32px)] pb-[clamp(36px,4.5vw,64px)]">
-              <div
-                data-flow-dot="1"
-                className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-ink/14 bg-white transition-[transform,border-color,box-shadow] duration-[340ms]"
-              >
-                <span className="font-display text-[15px] font-bold tabular-nums">{f.num}</span>
-              </div>
-              <div data-flow-body="1" className="pt-1.5 transition-opacity duration-[340ms]">
-                <h3 className="m-0 font-display text-[clamp(22px,2.4vw,30px)] font-bold tracking-[-0.025em]">
-                  {f.title}
-                </h3>
-                <p className="mt-2.5 mb-0 max-w-[460px] text-base leading-[1.6] text-ink/66 text-pretty">{f.body}</p>
-              </div>
-            </div>
-          ))}
+        <div id="flow-track" className="relative pl-[46px] sm:pl-[60px] lg:pt-2">
+          <div className="absolute top-7 bottom-7 left-[15px] w-0.5 bg-line sm:left-[22px]" aria-hidden="true" />
+          <div id="flow-fill" className="absolute top-7 left-[15px] w-0.5 bg-orange sm:left-[22px]" aria-hidden="true" />
 
-          <div data-stagger="1" className="mt-2 grid gap-4 sm:grid-cols-2">
-            {SYSTEM_TYPES.map((t) => (
-              <div key={t.title} className="rounded-2xl border border-ink/8 bg-white p-6">
-                <span className={`inline-flex min-h-7 items-center rounded-full px-3 text-xs font-semibold ${t.tagClass}`}>
-                  {t.tag}
+          <ol className="m-0 grid list-none gap-[clamp(18px,2vw,28px)] p-0">
+            {FLOW.map((f) => (
+              <li key={f.num} data-flow-step="1" className="relative">
+                <span
+                  data-flow-dot="1"
+                  aria-hidden="true"
+                  className="absolute top-1 -left-[46px] grid h-8 w-8 place-items-center rounded-full border-2 border-line bg-white font-display text-[12px] font-bold text-navy tabular-nums sm:-left-[60px] sm:h-11 sm:w-11 sm:text-[14px]"
+                >
+                  {f.num}
                 </span>
-                <h4 className="mt-4 mb-0 font-display text-[20px] font-bold tracking-[-0.02em]">{t.title}</h4>
-                <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-ink/66 text-pretty">{t.body}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-5 mb-0 max-w-[560px] text-[14px] leading-[1.6] text-ink/55 text-pretty">
-            A common misconception is that solar means going off-grid. Most solar homes keep their grid
-            connection, and simply have a small <Amber>power station on the roof</Amber> doing the first shift.
-          </p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Benefits() {
-  const [active, setActive] = useState(0)
-  const listRef = useRef(null)
-
-  useEffect(() => {
-    const items = listRef.current ? [...listRef.current.querySelectorAll('[data-benefit]')] : []
-    if (!items.length) return
-    const ctx = gsap.context(() => {
-      items.forEach((el, i) =>
-        ScrollTrigger.create({
-          trigger: el,
-          start: 'top 55%',
-          end: 'bottom 55%',
-          onToggle: (self) => {
-            if (self.isActive) setActive(i)
-          },
-        }),
-      )
-    })
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <section className="relative isolate z-0 bg-white px-pad py-sec">
-      <div className="mx-auto max-w-wrap">
-        <div className={`${SEC_HEAD} rvs`}>
-          <h2 data-words="1" className={`${H2} max-w-[14ch]`}>
-            <Words words={['What', 'changes', 'when', 'you', 'go', 'solar.']} accent="solar." accentClass="text-orange" />
-          </h2>
-          <div className={IDX}>03 — Benefits</div>
-        </div>
-
-        <div className="mt-[clamp(40px,5vw,72px)] grid gap-x-[clamp(24px,4vw,64px)] lg:grid-cols-2">
-          <div className="sticky top-[112px] z-[1] h-[38vh] lg:top-[132px] lg:h-[calc(100svh-164px)] lg:self-start">
-            <div className={`${FRAME} h-full`}>
-              {BENEFITS.map((b, i) => (
-                <div
-                  key={b.title}
-                  aria-hidden={i !== active}
-                  className={`absolute inset-0 transition-opacity duration-700 ${i === active ? 'opacity-100' : 'opacity-0'}`}
-                >
-                  <ImageSlot {...PHOTOS[b.photo]} alt={b.alt} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div ref={listRef} className="pt-6 lg:pt-0">
-            {BENEFITS.map((b, i) => {
-              const on = i === active
-              return (
-                <div
-                  key={b.title}
-                  data-benefit="1"
-                  className="flex min-h-[54vh] flex-col justify-end py-8 max-lg:pb-[12vh] lg:min-h-[calc(100svh-164px)] lg:justify-center lg:py-10"
-                >
-                  <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
-                  <h3
-                    className={`${H3} mt-7 text-[clamp(30px,3.6vw,52px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
-                  >
-                    {b.title}
+                <div data-flow-body="1">
+                  <h3 className="m-0 font-display text-[clamp(17px,1.5vw,21px)] leading-tight font-bold tracking-[-0.02em] text-navy">
+                    {f.title}
                   </h3>
-                  <div
-                    className={`grid transition-[grid-template-rows,opacity] duration-500 ${on ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
-                  >
-                    <div className="min-h-0 overflow-hidden">
-                      <p className={`${LEAD} max-w-[460px]`}>{b.body}</p>
-                    </div>
-                  </div>
+                  <p className="mt-2 mb-0 max-w-[58ch] text-[14.5px] leading-[1.6] text-ink/70 text-pretty">{f.body}</p>
                 </div>
-              )
-            })}
-          </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </section>
   )
 }
+
+/* ── required section: Services ──────────────────────────────────────── */
 
 function Services() {
   return (
-    <section id="services" className="relative isolate z-[3] bg-grey px-pad pt-[clamp(64px,7vw,96px)] pb-[clamp(48px,6vw,80px)]">
+    <section id="services" className="relative isolate bg-white px-pad pt-[clamp(56px,6.5vw,92px)] pb-[clamp(44px,5vw,72px)]">
       <div className="mx-auto max-w-wrap">
-        <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} rv`}>Solar solutions for the way you <Lime>live</Lime>.</h2>
-          <div className={IDX}>04 — Services</div>
-        </div>
+        <SectionHead kicker="Services" index="03 — Services">
+          Everything from the first roof visit to <Flame>year thirty</Flame>.
+        </SectionHead>
 
-        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(36px,5vw,64px)] scroll-px-pad overflow-hidden">
-          <div id="svc-track" className="flex w-max gap-[clamp(16px,2vw,28px)] px-pad pt-1 pb-2 will-change-transform">
-            {SERVICES.map((sv) => {
-              const photo = PHOTOS[sv.photo]
-              return (
-                <a
-                  key={sv.num}
-                  href="#quote"
-                  className="group relative flex min-h-[380px] w-[clamp(250px,30vw,340px)] snap-start flex-col justify-between overflow-hidden rounded-3xl bg-ink p-[clamp(24px,2.6vw,36px)] text-white transition-[transform,box-shadow] duration-[320ms] hover:-translate-y-1.5 hover:text-white hover:shadow-svc"
-                >
-                  <img
-                    src={photo.src}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 [background:linear-gradient(180deg,rgba(14,16,17,.35)_0%,rgba(14,16,17,.05)_35%,rgba(14,16,17,.55)_65%,rgba(14,16,17,.9)_100%)]" />
-                  <div className="relative flex items-center justify-between">
-                    <span className="text-[13px] text-white/70 tabular-nums">{sv.num}</span>
-                    <span className="h-0.5 w-7 bg-orange transition-[width] duration-[320ms] group-hover:w-12" />
+        <div id="svc-scroller" className="noscroll -mx-pad mt-[clamp(32px,4vw,56px)] scroll-px-pad overflow-hidden">
+          <div id="svc-track" className="flex w-max gap-[clamp(16px,2vw,26px)] px-pad pt-1 pb-3 will-change-transform">
+            {SERVICES.map((sv) => (
+              <article
+                key={sv.num}
+                className={`${CARD} group flex min-h-[420px] w-[clamp(260px,29vw,340px)] shrink-0 snap-start flex-col overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-card`}
+              >
+                <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
+                  <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105">
+                    <ImageSlot {...PHOTOS[sv.photo]} credit={undefined} alt="" sizes="340px" />
                   </div>
-                  <div className="relative">
-                    <h3 className="m-0 font-display text-[clamp(24px,2.4vw,32px)] leading-[1.05] font-bold tracking-[-0.03em] text-balance">
-                      {sv.title}
-                    </h3>
-                    <p className="mt-3 mb-0 text-[15px] leading-[1.6] text-white/75 text-pretty">{sv.body}</p>
-                    <div className="mt-6 flex items-center gap-2.5 font-display text-[15px] font-semibold text-lime transition-colors duration-[320ms] group-hover:text-orange">
-                      Request a quote
-                      <span className="transition-transform duration-[320ms] group-hover:translate-x-1">
-                        <Arrow size={16} color="currentColor" />
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              )
-            })}
+                  <span className="absolute top-3 left-3 rounded-full bg-white/92 px-2.5 py-1 font-display text-[12px] font-bold text-navy tabular-nums backdrop-blur-sm">
+                    {sv.num}
+                  </span>
+                </div>
+                <div className="flex grow flex-col p-[clamp(20px,2.2vw,28px)]">
+                  <h3 className="m-0 font-display text-[clamp(19px,1.9vw,24px)] leading-tight font-bold tracking-[-0.025em] text-navy">
+                    {sv.title}
+                  </h3>
+                  <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.6] text-ink/68 text-pretty">{sv.body}</p>
+                  <ul className="mt-4 mb-0 grid list-none gap-2 p-0">
+                    {sv.points.map((p) => (
+                      <li key={p} className="flex items-start gap-2 text-[13.5px] leading-[1.5] text-ink/72">
+                        <span className="mt-0.5 shrink-0">
+                          <Check size={15} width={2.4} />
+                        </span>
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href="#quote"
+                    className="mt-auto flex items-center gap-2 pt-6 font-display text-[14.5px] font-bold text-orange transition-colors hover:text-orange-hover"
+                  >
+                    Request a quote
+                    <span className="transition-transform duration-300 group-hover:translate-x-1">
+                      <Arrow size={16} />
+                    </span>
+                  </a>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
+        <p className="mt-2 mb-0 text-[13px] text-ink/45 lg:hidden">Swipe to see all six services.</p>
       </div>
     </section>
   )
 }
 
-function CustomerStory() {
-  return (
-    <section id="stories" className="bg-white px-pad py-sec">
-      <div className="mx-auto max-w-wrap">
-        <div className={`${SEC_HEAD} rvs mb-[clamp(32px,4vw,56px)]`}>
-          <div className={KICKER}>Customer story</div>
-          <div className={IDX_MUTED}>05 — In their words</div>
-        </div>
-        <div className={`${FRAME_LG} aspect-[4/3] sm:aspect-[21/9] sm:min-h-[280px]`}>
-          <div data-parallax="1" className={PARALLAX}>
-            <ImageSlot
-              {...PHOTOS.story}
-              alt="Rooftop solar panels on a customer's home"
-              placeholder="Drop the customer's home photograph"
-            />
-          </div>
-        </div>
-        <blockquote className="rv mx-0 mt-[clamp(40px,5vw,72px)] mb-0 max-w-[15ch] font-display text-[clamp(28px,4vw,60px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
-          “[Approved customer quote goes here.]”
-        </blockquote>
-        <div className="rvs mt-[clamp(28px,3vw,40px)] flex flex-wrap items-center gap-4 text-[15px] leading-normal">
-          <div className="h-0.5 w-11 bg-lime" />
-          <div>
-            <strong className="font-semibold">[Customer name]</strong>
-            <span className="text-ink/55"> — [Suburb] · [System size]</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
+/* ── required section: About Us ──────────────────────────────────────── */
 
 function About() {
   return (
-    <section id="about-area" className="bg-white px-pad py-sec">
+    <section id="about" className="bg-white px-pad py-sec">
       <div className="mx-auto max-w-wrap">
-        <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={H2}>A solar <Orange>partner</Orange>, not a panel seller.</h2>
-          <div className={IDX}>06 — About us</div>
-        </div>
+        <SectionHead kicker="About us" index="04 — About us">
+          A New Zealand solar company, <Flame>owned and run here</Flame>.
+        </SectionHead>
 
-        <div className="mt-[clamp(48px,6vw,88px)] flex flex-wrap items-start gap-[clamp(20px,3vw,48px)]">
-          <div className="relative min-w-0 grow basis-[440px]">
+        <div className="mt-[clamp(36px,4.5vw,72px)] flex flex-wrap items-start gap-[clamp(24px,3vw,56px)]">
+          <div className="relative min-w-0 grow basis-[420px]">
             <div className={`${FRAME} rvs aspect-4/3`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
-                  alt="Technicians fitting panels on a roof"
+                  alt="Technicians fitting solar panels on a roof"
                   placeholder="Drop a team or install-crew photo"
                 />
               </div>
             </div>
-            <div className="rvs absolute -bottom-6 left-6 flex items-center gap-3.5 rounded-2xl bg-white p-4 pr-6 shadow-card sm:left-8">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-lime">
-                <Check color="#0E1011" size={20} width={2.4} />
+            <div className="rvs absolute -bottom-6 left-6 flex items-center gap-3.5 rounded-2xl border border-line bg-white p-4 pr-6 shadow-card sm:left-8">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-sun">
+                <Check color="#EC5A2C" size={20} width={2.4} />
               </span>
               <span className="leading-tight">
-                <span className="block font-display text-[15px] font-bold">Accredited installers</span>
-                <span className="block text-[13px] text-ink/55">[Accreditation body] · Est. [YYYY]</span>
+                <span className="block font-display text-[15px] font-bold text-navy">Our own install crews</span>
+                <span className="block text-[13px] text-ink/55">7 solar hubs · 70% of NZ homes</span>
               </span>
             </div>
           </div>
-          <div className="plate-rise mt-[clamp(40px,8vw,120px)] min-w-0 max-w-[460px] grow basis-[320px]">
+
+          <div className="mt-[clamp(32px,5vw,72px)] min-w-0 max-w-[520px] grow basis-[360px]">
             <div className="draw h-0.5 w-14 bg-orange" />
-            <p className="mt-7 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
-              There is no one-size-fits-all with solar. The right system depends on how you use energy, what your
-              roof can do and what you want solar to achieve. We start with those questions,{' '}
-              <Amber>then design around the answers</Amber>.
+            <p className="mt-7 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
+              The Solar Co. is <Amber>100% New Zealand owned and operated</Amber>. We have designed, supplied and
+              installed more than <Amber>6,000 solar systems</Amber> for homes, businesses and farms from
+              Northland to Otago.
             </p>
-            <p className="mt-4 mb-0 text-[17px] leading-[1.65] text-ink/72 text-pretty">
-              A system sits on your roof for decades, so the design work, the install and the person who answers
-              the phone in year six matter more than the badge on the panel.
+            <p className="mt-4 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
+              Seven solar hubs put a local team within reach of around 70% of New Zealand homes, so the people
+              who design your system are the people who install it and the people who pick up the phone in year
+              six.
             </p>
-            <p className="mt-4 mb-0 text-[15px] leading-[1.65] text-ink/55 text-pretty">
-              Company history, team size, accreditations and service area are placeholders until you confirm
-              them.
+            <p className="mt-4 mb-0 text-[17px] leading-[1.7] text-ink/74 text-pretty">
+              A system sits on your roof for decades. That is why we quote after we have seen the roof, put the
+              generation estimate in writing, and back the panels with a{' '}
+              <Amber>30-year performance warranty</Amber>.
             </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a href="#quote" className={`${BTN_CTA} h-[52px] px-6 text-[16px] shadow-cta`}>
+                Book a free assessment
+                <Arrow color="#fff" />
+              </a>
+              <a href={COMPANY.phoneHref} className={`${BTN_GHOST} h-[52px] px-5 text-[16px]`}>
+                <Phone size={18} color="#EC5A2C" />
+                {COMPANY.phone}
+              </a>
+            </div>
           </div>
         </div>
 
         <div
           data-stagger="1"
-          className="mt-[clamp(56px,7vw,104px)] grid grid-cols-2 gap-x-6 gap-y-10 border-y border-ink/12 py-[clamp(28px,3vw,44px)] lg:grid-cols-4"
+          className="mt-[clamp(48px,6vw,96px)] grid grid-cols-2 gap-x-6 gap-y-10 border-y border-line py-[clamp(26px,3vw,42px)] lg:grid-cols-4"
         >
           {STATS.map((st) => (
             <div key={st.label}>
-              <div className="font-display text-[clamp(36px,4vw,56px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
-                <span data-count={st.value} data-decimals={st.decimals || 0}>
-                  0
-                </span>
-                <span className="text-amber">{st.suffix}</span>
+              <div className="font-display text-[clamp(32px,3.6vw,52px)] leading-none font-extrabold tracking-[-0.04em] text-navy tabular-nums">
+                <span data-count={st.value}>0</span>
+                <span className="text-orange">{st.suffix}</span>
               </div>
-              <div className="mt-2 text-[13px] font-semibold tracking-[0.08em] text-ink/50 uppercase">{st.label}</div>
+              <div className="mt-2 max-w-[20ch] text-[13px] leading-[1.4] font-semibold tracking-[0.04em] text-ink/55 uppercase">
+                {st.label}
+              </div>
             </div>
           ))}
         </div>
-        <p className="mt-3 mb-0 text-[13px] text-ink/45">Placeholder figures until you confirm them.</p>
 
-        <div
-          data-stagger="1"
-          className="mt-[clamp(48px,6vw,88px)] grid grid-cols-[repeat(auto-fit,minmax(256px,1fr))] gap-6"
-        >
-          {VALUES.map((v, i) => (
-            <div
-              key={v.title}
-              className={`group relative flex min-h-[280px] flex-col overflow-hidden rounded-3xl ${v.bg} p-[clamp(24px,2.6vw,36px)] text-ink transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-frame`}
-            >
-              <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/25 blur-2xl" />
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-8 -bottom-10 h-52 w-52 text-ink/[0.08] transition-transform duration-700 ease-out group-hover:-rotate-6 group-hover:scale-110"
-              >
-                {ICON[v.icon]}
-              </svg>
-
-              <div className="relative flex items-start justify-between">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-ink text-white">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    {ICON[v.icon]}
-                  </svg>
-                </span>
-                <span className="font-display text-[13px] font-bold text-ink/55 tabular-nums">0{i + 1}</span>
-              </div>
-              <h3 className="relative mt-auto pt-10 font-display text-[24px] leading-[1.1] font-bold tracking-[-0.025em]">
+        <div data-stagger="1" className="mt-[clamp(40px,5vw,72px)] grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {VALUES.map((v) => (
+            <div key={v.title} className={`${CARD} p-[clamp(20px,2.2vw,28px)] transition-shadow duration-300 hover:shadow-card`}>
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-sun text-orange">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  {ICON[v.icon]}
+                </svg>
+              </span>
+              <h3 className="mt-6 mb-0 font-display text-[19px] leading-tight font-bold tracking-[-0.02em] text-navy">
                 {v.title}
               </h3>
-              <p className="relative mt-3 mb-0 max-w-[34ch] text-[15px] leading-[1.6] text-ink/75 text-pretty">{v.body}</p>
+              <p className="mt-2.5 mb-0 text-[14.5px] leading-[1.6] text-ink/68 text-pretty">{v.body}</p>
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── required section: Testimonials ──────────────────────────────────── */
+
+function Testimonials() {
+  return (
+    <section id="testimonials" className="bg-grey px-pad py-sec">
+      <div className="mx-auto max-w-wrap">
+        <SectionHead kicker="Testimonials" index="05 — Testimonials">
+          What our <Flame>customers</Flame> say.
+        </SectionHead>
+
+        <div className="mt-[clamp(28px,3vw,44px)] flex flex-wrap items-center gap-x-8 gap-y-4 rounded-3xl border border-line bg-white px-[clamp(20px,2.4vw,32px)] py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1" aria-label="Rated five stars">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <Star key={i} size={20} />
+              ))}
+            </div>
+            <span className="font-display text-[19px] font-extrabold text-navy tabular-nums">[X.X]</span>
+          </div>
+          <span className="text-[14.5px] text-ink/65">
+            from <strong className="font-semibold text-navy">[NN]</strong> verified reviews across Google and
+            Facebook
+          </span>
+          <a href="#quote" className="ml-auto font-display text-[14.5px] font-bold text-orange hover:text-orange-hover">
+            Join them — get a free quote →
+          </a>
+        </div>
+
+        <div data-stagger="1" className="mt-6 grid gap-5 lg:grid-cols-3">
+          {TESTIMONIAL_SLOTS.map((t, i) => (
+            <figure key={i} className={`${CARD} m-0 flex flex-col p-[clamp(20px,2.2vw,30px)]`}>
+              <div className="flex gap-1" aria-hidden="true">
+                {[0, 1, 2, 3, 4].map((s) => (
+                  <Star key={s} />
+                ))}
+              </div>
+              <blockquote className="m-0 mt-5 grow text-[16px] leading-[1.65] text-ink/72 text-pretty">
+                “[Customer review — supplied by The Solar Co. from their Google or Facebook reviews. Nothing in
+                this section is written for them.]”
+              </blockquote>
+              <figcaption className="mt-6 flex items-center gap-3.5 border-t border-line pt-5">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-sun font-display text-[15px] font-bold text-orange">
+                  [ ]
+                </span>
+                <span className="leading-tight">
+                  <span className="block font-display text-[15px] font-bold text-navy">[Customer name]</span>
+                  <span className="block text-[13px] text-ink/55">
+                    {t.location} · {t.system}
+                  </span>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <p className="mt-4 mb-0 text-[13px] leading-[1.6] text-ink/50">
+          Review slots are left empty on purpose. Send us your real Google and Facebook reviews and they drop
+          straight in — we will not write customer quotes on your behalf.
+        </p>
       </div>
     </section>
   )
@@ -1347,142 +1474,129 @@ function Estimator({ bill, onBill }) {
   const annualGen = sizeKw * yieldPerKw
   const offsetPct = Math.round(offsetShare * 100)
   const growth = 0.45 + 0.55 * (sizeKw / 15)
-  const assumptions = `$${rate.toFixed(2)} per kWh, ${yieldPerKw} kWh per kW each year, $${costPerKw} per kW installed, ${offsetPct}% of usage offset.`
 
-  const tile = 'rounded-[18px] border border-white/10 bg-white/6 p-4'
-  const tileLabel = 'text-xs font-semibold tracking-[0.08em] text-white/50 uppercase'
+  const tile = 'rounded-2xl border border-line bg-white p-4'
+  const tileLabel = 'text-[11.5px] font-semibold tracking-[0.08em] text-ink/50 uppercase'
   const tileValue =
-    'mt-1.5 font-display text-[clamp(26px,2.6vw,34px)] leading-none font-bold tracking-[-0.03em] tabular-nums'
-  const tileSub = 'mt-2 text-xs text-white/45'
+    'mt-1.5 font-display text-[clamp(24px,2.4vw,32px)] leading-none font-extrabold tracking-[-0.03em] text-navy tabular-nums'
+  const tileSub = 'mt-2 text-[12px] text-ink/50'
 
   return (
-    <section className="bg-white px-pad pt-[clamp(72px,9vw,140px)]">
+    <section id="estimate" className="bg-sky px-pad py-sec">
       <div className="mx-auto max-w-wrap">
-        <div className={`${SEC_HEAD} rvs`}>
-          <h2 className={`${H2} text-[clamp(28px,3.8vw,54px)] leading-none`}>What could solar do on <Lime>your roof</Lime>?</h2>
-          <div className={IDX}>07 — Estimate</div>
-        </div>
+        <SectionHead kicker="Savings estimator" index="06 — Estimate">
+          What could solar do on <Flame>your roof</Flame>?
+        </SectionHead>
 
-        <div
-          id="estimate-panel"
-          className="rvs relative mt-[clamp(28px,4vw,52px)] overflow-hidden rounded-[32px] bg-ink text-white"
-        >
-          <div className="pointer-events-none absolute -top-40 -right-32 h-[520px] w-[520px] rounded-full bg-lime/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-48 -left-24 h-[420px] w-[420px] rounded-full bg-sky/25 blur-3xl" />
+        <div className="rvs mt-[clamp(28px,3.5vw,48px)] grid gap-[clamp(20px,2.5vw,40px)] rounded-[28px] border border-line bg-white p-[clamp(20px,2.6vw,40px)] shadow-frame lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div>
+            <div className="text-[12.5px] font-semibold tracking-[0.1em] text-ink/55 uppercase">
+              Your average monthly power bill
+            </div>
+            <div className="mt-4 flex items-baseline gap-2">
+              <strong className="font-display text-[clamp(44px,4.6vw,66px)] leading-none font-extrabold tracking-[-0.04em] text-navy tabular-nums">
+                ${bill}
+              </strong>
+              <span className="text-[15px] text-ink/55">per month</span>
+            </div>
+            <input
+              type="range"
+              min="80"
+              max="600"
+              step="10"
+              value={bill}
+              onChange={(e) => onBill(Number(e.target.value))}
+              aria-label="Average monthly power bill"
+              className="mt-6 h-8 w-full cursor-pointer accent-orange"
+            />
+            <div className="mt-1 flex justify-between text-[12px] text-ink/45 tabular-nums">
+              <span>$80</span>
+              <span>$600</span>
+            </div>
+            <p className="mt-5 mb-0 max-w-[42ch] text-[14px] leading-[1.6] text-ink/60 text-pretty">
+              Indicative and rounded, based on 34c per kWh, {yieldPerKw} kWh per kW each year and {offsetPct}% of
+              your usage offset by solar and storage. <Amber>A real design</Amber> uses your own usage profile,
+              roof and tariff.
+            </p>
+            <a href="#quote" className={`${BTN_CTA} mt-6 h-[52px] px-6 text-[16px] shadow-cta`}>
+              Get an exact quote
+              <Arrow color="#fff" />
+            </a>
+          </div>
 
-          <div className="relative grid gap-[clamp(24px,3vw,48px)] p-[clamp(22px,3vw,40px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-            <div>
-              <div className="text-[13px] font-semibold tracking-[0.12em] text-white/55 uppercase">
-                Your average monthly power bill
+          <div className="grid content-start gap-3">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className={tile}>
+                <div className={tileLabel}>System size</div>
+                <div className={tileValue}>
+                  <AnimatedNumber value={sizeKw} format={fmtKw} />
+                </div>
+                <div className={tileSub}>sized to your usage</div>
               </div>
-              <div className="mt-4 flex items-baseline gap-2">
-                <strong className="font-display text-[clamp(48px,5vw,72px)] leading-none font-bold tracking-[-0.04em] tabular-nums">
-                  ${bill}
-                </strong>
-                <span className="text-[15px] text-white/55">per month</span>
+              <div className={tile}>
+                <div className={tileLabel}>Annual saving</div>
+                <div className={`${tileValue} text-orange`}>
+                  <AnimatedNumber value={saving} format={fmtMoney} />
+                </div>
+                <div className={tileSub}>at today&apos;s tariff</div>
               </div>
-              <input
-                type="range"
-                min="80"
-                max="600"
-                step="10"
-                value={bill}
-                onChange={(e) => onBill(Number(e.target.value))}
-                aria-label="Average monthly power bill"
-                className="mt-6 h-8 w-full cursor-pointer accent-lime"
-              />
-              <div className="mt-1 flex justify-between text-xs text-white/45 tabular-nums">
-                <span>$80</span>
-                <span>$600</span>
+              <div className={tile}>
+                <div className={tileLabel}>Payback</div>
+                <div className={tileValue}>
+                  <AnimatedNumber value={payback} format={fmtYears} />
+                </div>
+                <div className={tileSub}>simple, before incentives</div>
               </div>
-              <p className="mt-5 mb-0 max-w-[380px] text-sm leading-[1.6] text-white/60 text-pretty">
-                Indicative only, and rounded. <span className="text-orange">A real design</span> uses your usage
-                profile, roof and tariff.
-              </p>
-              <a href="#quote" className={`${BTN_LIME} mt-6 h-[52px] px-[24px] text-base`}>
-                Get an exact quote
-                <Arrow />
-              </a>
             </div>
 
-            <div className="grid content-start gap-3">
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className={tile}>
-                  <div className={tileLabel}>System size</div>
-                  <div className={tileValue}>
-                    <AnimatedNumber value={sizeKw} format={fmtKw} />
-                  </div>
-                  <div className={tileSub}>sized to your usage</div>
-                </div>
-                <div className={tile}>
-                  <div className={tileLabel}>Annual saving</div>
-                  <div className={`${tileValue} text-lime`}>
-                    <AnimatedNumber value={saving} format={fmtMoney} />
-                  </div>
-                  <div className={tileSub}>at today&apos;s tariff</div>
-                </div>
-                <div className={tile}>
-                  <div className={tileLabel}>Payback</div>
-                  <div className={tileValue}>
-                    <AnimatedNumber value={payback} format={fmtYears} />
-                  </div>
-                  <div className={tileSub}>simple, before rebates</div>
-                </div>
+            <div className={tile}>
+              <div className="flex items-center justify-between gap-4 text-[13px]">
+                <span className="font-semibold text-navy">Where your power comes from</span>
+                <span className="text-ink/55 tabular-nums">{offsetPct}% solar</span>
               </div>
+              <div className="mt-3 h-3 overflow-hidden rounded-full bg-grey">
+                <div
+                  className="h-full rounded-full bg-orange transition-[width] duration-500"
+                  style={{ width: `${offsetPct}%` }}
+                />
+              </div>
+              <div className="mt-2.5 flex gap-5 text-[12px] text-ink/55">
+                <span className="flex items-center gap-1.5">
+                  <i className="inline-block h-2 w-2 rounded-full bg-orange" />
+                  Solar {offsetPct}%
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <i className="inline-block h-2 w-2 rounded-full bg-line" />
+                  Grid {100 - offsetPct}%
+                </span>
+              </div>
+            </div>
 
-              <div className={tile}>
-                <div className="flex items-center justify-between gap-4 text-[13px]">
-                  <span className="font-semibold">Where your power comes from</span>
-                  <span className="text-white/55 tabular-nums">{offsetPct}% solar</span>
-                </div>
-                <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/12">
+            <div className={tile}>
+              <div className="flex items-baseline justify-between gap-4 text-[13px]">
+                <span className="font-semibold text-navy">Estimated generation through the year</span>
+                <span className="text-ink/55 tabular-nums">
+                  <AnimatedNumber value={annualGen} format={fmtKwh} />
+                </span>
+              </div>
+              <div className="mt-3 flex h-[64px] items-end gap-1.5" aria-hidden="true">
+                {SEASON.map((wgt, i) => (
                   <div
-                    className="h-full rounded-full bg-lime transition-[width] duration-500"
-                    style={{ width: `${offsetPct}%` }}
+                    key={MONTHS[i] + i}
+                    className="flex-1 rounded-t-md bg-gold transition-[height,opacity] duration-500"
+                    style={{
+                      height: `${(wgt / SEASON_MAX) * growth * 100}%`,
+                      opacity: 0.55 + 0.45 * (wgt / SEASON_MAX),
+                    }}
                   />
-                </div>
-                <div className="mt-2.5 flex gap-5 text-xs text-white/55">
-                  <span className="flex items-center gap-1.5">
-                    <i className="inline-block h-2 w-2 rounded-full bg-lime" />
-                    Solar {offsetPct}%
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <i className="inline-block h-2 w-2 rounded-full bg-white/30" />
-                    Grid {100 - offsetPct}%
-                  </span>
-                </div>
+                ))}
               </div>
-
-              <div className={tile}>
-                <div className="flex items-baseline justify-between gap-4 text-[13px]">
-                  <span className="font-semibold">Estimated generation through the year</span>
-                  <span className="text-white/55 tabular-nums">
-                    <AnimatedNumber value={annualGen} format={fmtKwh} />
+              <div className="mt-1.5 flex gap-1.5 text-[11px] text-ink/45" aria-hidden="true">
+                {MONTHS.map((m, i) => (
+                  <span key={m + i} className="flex-1 text-center">
+                    {m}
                   </span>
-                </div>
-                <div className="mt-3 flex h-[64px] items-end gap-1.5" aria-hidden="true">
-                  {SEASON.map((w, i) => (
-                    <div
-                      key={MONTHS[i] + i}
-                      className="flex-1 rounded-t-md bg-lime transition-[height,opacity] duration-500"
-                      style={{
-                        height: `${(w / SEASON_MAX) * growth * 100}%`,
-                        opacity: 0.5 + 0.5 * (w / SEASON_MAX),
-                      }}
-                    />
-                  ))}
-                </div>
-                <div className="mt-1.5 flex gap-1.5 text-[11px] text-white/45" aria-hidden="true">
-                  {MONTHS.map((m, i) => (
-                    <span key={m + i} className="flex-1 text-center">
-                      {m}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-dashed border-white/25 px-4 py-3 text-[12px] leading-[1.55] text-white/55">
-                Placeholder assumptions awaiting your confirmation: {assumptions}
+                ))}
               </div>
             </div>
           </div>
@@ -1492,24 +1606,119 @@ function Estimator({ bill, onBill }) {
   )
 }
 
-function Quote({ sent, onSent }) {
-  const [step, setStep] = useState(1)
-  const [band, setBand] = useState(null)
+function Checklist() {
+  return (
+    <section className="bg-white px-pad py-sec">
+      <div className="mx-auto max-w-wrap">
+        <SectionHead kicker="Before you sign anything" index="07 — Checklist"
+          lead={
+            <>
+              Print this and take it to every quote you get, including ours. A good installer will answer all ten
+              without hesitating.
+            </>
+          }>
+          Ten questions to ask <Flame>any</Flame> solar installer.
+        </SectionHead>
+
+        <ol
+          data-stagger="1"
+          className="mt-[clamp(32px,4vw,56px)] grid list-none gap-x-6 gap-y-4 p-0 md:grid-cols-2"
+        >
+          {CHECKLIST.map((item, i) => (
+            <li key={item} className="flex gap-4 rounded-2xl border border-line bg-grey/60 p-4">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white font-display text-[12.5px] font-bold text-orange tabular-nums">
+                {i + 1}
+              </span>
+              <span className="text-[14.5px] leading-[1.6] text-ink/75 text-pretty">{item}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )
+}
+
+function Faq() {
+  const [open, setOpen] = useState(0)
+  return (
+    <section id="faq" className="bg-grey px-pad py-sec">
+      <div className="mx-auto max-w-wrap">
+        <SectionHead kicker="Questions" index="08 — FAQ">
+          Solar, <Flame>answered</Flame>.
+        </SectionHead>
+
+        <div className="mt-[clamp(28px,3.5vw,52px)] grid gap-3 lg:grid-cols-2 lg:items-start">
+          <div className="grid gap-3">
+            {FAQS.filter((_, i) => i % 2 === 0).map((f) => (
+              <FaqItem key={f.q} item={f} open={open === f.q} onToggle={() => setOpen(open === f.q ? null : f.q)} />
+            ))}
+          </div>
+          <div className="grid gap-3">
+            {FAQS.filter((_, i) => i % 2 === 1).map((f) => (
+              <FaqItem key={f.q} item={f} open={open === f.q} onToggle={() => setOpen(open === f.q ? null : f.q)} />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4 rounded-3xl border border-gold-soft bg-sun px-[clamp(20px,2.4vw,32px)] py-5">
+          <p className="m-0 text-[15.5px] leading-[1.6] text-ink/75">
+            Still have a question? Talk to a solar designer, not a call centre.
+          </p>
+          <a href={COMPANY.phoneHref} className={`${BTN_CTA} ml-auto h-[50px] px-6 text-[15px] shadow-cta`}>
+            <Phone size={18} color="#fff" />
+            {COMPANY.phone}
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FaqItem({ item, open, onToggle }) {
+  return (
+    <div className={`${CARD} overflow-hidden`}>
+      <h3 className="m-0">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="flex w-full cursor-pointer items-start justify-between gap-4 border-0 bg-transparent p-[clamp(16px,1.8vw,22px)] text-left font-display text-[16px] leading-[1.45] font-bold text-navy transition-colors hover:text-orange"
+        >
+          {item.q}
+          <span
+            aria-hidden="true"
+            className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-sun text-orange transition-transform duration-300 ${open ? 'rotate-45' : ''}`}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </span>
+        </button>
+      </h3>
+      {open && (
+        <p className="m-0 px-[clamp(16px,1.8vw,22px)] pb-[clamp(16px,1.8vw,22px)] text-[14.5px] leading-[1.7] text-ink/70 text-pretty animate-[revealSoft_240ms_ease_both]">
+          {item.a}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/* ── lead capture: full consultation form ────────────────────────────── */
+
+function Quote({ sent, onSent, fields, onFields, bill }) {
   const [property, setProperty] = useState(null)
+  const [band, setBand] = useState(null)
   const formRef = useRef(null)
 
-  // keep the card's top on screen whenever the step changes
-  const goStep = (n) => {
-    setStep(n)
-    requestAnimationFrame(() => {
-      const el = formRef.current
-      if (!el) return
-      const top = el.getBoundingClientRect().top
-      if (top < 100 || top > window.innerHeight * 0.4) {
-        window.scrollTo({ top: window.scrollY + top - 120, behavior: 'smooth' })
-      }
-    })
-  }
+  const suggestedBand = useMemo(() => {
+    if (bill < 150) return BILL_BANDS[0]
+    if (bill < 250) return BILL_BANDS[1]
+    if (bill < 400) return BILL_BANDS[2]
+    return BILL_BANDS[3]
+  }, [bill])
+
+  const set = (k) => (e) => onFields((f) => ({ ...f, [k]: e.target.value }))
 
   const submit = (e) => {
     e.preventDefault()
@@ -1517,38 +1726,66 @@ function Quote({ sent, onSent }) {
   }
   const reset = () => {
     onSent(false)
-    setStep(1)
+    requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 
-  const stepLabel = 'font-display text-[13px] font-bold tabular-nums'
-  const stepBar = 'h-[3px] grow rounded-full bg-ink/10'
-  const stepFill = 'block h-[3px] rounded-full bg-lime'
-  const formH3 = 'mt-6 mb-0 font-display text-[clamp(22px,2.4vw,30px)] font-bold tracking-[-0.03em]'
-  const formSub = 'mt-2.5 mb-7 text-[15px] text-ink/60'
-  const point = 'flex items-center gap-3 text-base'
+  const aside = 'flex items-start gap-3.5 text-[15px] leading-[1.55] text-ink/75'
 
   return (
-    <section
-      id="quote"
-      className="px-pad pt-sec pb-[clamp(72px,9vw,120px)] [background:linear-gradient(180deg,#FFFFFF_0%,#F6F6F6_40%,#F6F6F6_100%)]"
-    >
-      <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
-        <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-none text-[clamp(34px,4.8vw,72px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
-          <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
-            Let's design a solar solution <Amber>around your home</Amber>.
+    <section id="quote" className="bg-white px-pad py-sec">
+      <div className="mx-auto grid max-w-wrap items-start gap-[clamp(32px,4vw,64px)] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div>
+          <div className={KICKER}>Free quote</div>
+          <h2 className={`${H2} rv mt-4`}>
+            Book your free solar <Flame>assessment</Flame>.
+          </h2>
+          <p className={LEAD}>
+            Tell us about your property and a solar designer will call you back to arrange a site visit. No cost,
+            no obligation, and a written estimate before you decide anything.
           </p>
-          <div className="rvs mt-10 flex flex-col gap-3.5 border-t border-ink/14 pt-8">
-            <div className={point}>
+
+          <div className="mt-9 grid gap-4 border-t border-line pt-8">
+            <div className={aside}>
               <Check />
-              No cost and no obligation
+              Free on-site roof assessment and sun mapping
             </div>
-            <div className={point}>
-              <Check />A designer replies within [XX] working hours
-            </div>
-            <div className={point}>
+            <div className={aside}>
               <Check />
-              Your details are only used for the quote
+              Itemised, written quote with generation estimates
+            </div>
+            <div className={aside}>
+              <Check />A designer replies within one working day
+            </div>
+            <div className={aside}>
+              <Check />
+              Your details are used only for this quote
+            </div>
+          </div>
+
+          <div className="mt-9 grid gap-4 rounded-3xl border border-line bg-grey p-[clamp(20px,2.2vw,28px)]">
+            <a href={COMPANY.phoneHref} className="flex items-center gap-3.5 font-display text-[19px] font-extrabold text-navy hover:text-orange">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white">
+                <Phone size={19} color="#EC5A2C" />
+              </span>
+              {COMPANY.phone}
+            </a>
+            <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-3.5 text-[15px] text-ink/75 hover:text-orange">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white">
+                <Mail size={18} color="#3D5171" />
+              </span>
+              {COMPANY.email}
+            </a>
+            <div className="flex items-start gap-3.5 text-[15px] leading-[1.55] text-ink/75">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white">
+                <Pin size={18} color="#3D5171" />
+              </span>
+              <span>
+                {COMPANY.street}, {COMPANY.suburb}
+                <br />
+                {COMPANY.city}
+                <br />
+                <span className="text-ink/55">{COMPANY.hours}</span>
+              </span>
             </div>
           </div>
         </div>
@@ -1556,128 +1793,87 @@ function Quote({ sent, onSent }) {
         <form
           ref={formRef}
           onSubmit={submit}
-          className="rvs min-w-0 max-w-[600px] grow basis-[420px] rounded-[28px] bg-white p-[clamp(24px,3vw,44px)] shadow-form"
+          className="rvs rounded-[28px] border border-line bg-white p-[clamp(22px,2.8vw,40px)] shadow-form"
         >
-          {!sent && step === 1 && (
-            <div>
-              <div className="flex items-center gap-3">
-                <span className={stepLabel}>Step 1 of 3</span>
-                <span className={stepBar}>
-                  <i className={`${stepFill} w-1/3`} />
-                </span>
-              </div>
-              <h3 className={formH3}>Where is the roof?</h3>
-              <p className={formSub}>Two answers and we can size a system.</p>
-
-              <label className="block">
-                <span className={FIELD_LABEL}>Postcode or suburb</span>
-                <input
-                  type="text"
-                  name="postcode"
-                  autoComplete="postal-code"
-                  placeholder="e.g. 3011"
-                  className={INPUT}
-                />
-              </label>
-
-              <div className="mt-6">
-                <span className={`${FIELD_LABEL} mb-3`}>Average monthly power bill</span>
-                <div className="flex flex-wrap gap-2">
-                  {BILL_BANDS.map((label) => (
-                    <button
-                      key={label}
-                      type="button"
-                      aria-pressed={band === label}
-                      onClick={() => setBand(label)}
-                      className={`${CHIP} ${band === label ? CHIP_ON : CHIP_OFF}`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button type="button" onClick={() => goStep(2)} className={`${BTN_LIME} mt-8 h-[60px] w-full text-[17px]`}>
-                Continue
-                <Arrow />
-              </button>
-            </div>
-          )}
-
-          {!sent && step === 2 && (
-            <div key="step2" className="animate-[revealSoft_300ms_ease_both]">
-              <div className="flex items-center gap-3">
-                <span className={stepLabel}>Step 2 of 3</span>
-                <span className={stepBar}>
-                  <i className={`${stepFill} w-2/3`} />
-                </span>
-              </div>
-              <h3 className={formH3}>Where should we send it?</h3>
-              <p className={formSub}>
-                {band
-                  ? `Sized for a bill around ${band} a month.`
-                  : 'Name and a number is enough to get started.'}
+          {!sent ? (
+            <>
+              <h3 className="m-0 font-display text-[clamp(21px,2.2vw,27px)] leading-tight font-extrabold tracking-[-0.03em] text-navy">
+                Request your free quote
+              </h3>
+              <p className="mt-2 mb-7 text-[14.5px] leading-[1.55] text-ink/62">
+                Fields marked with an asterisk are required.
               </p>
 
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
-                  <span className={FIELD_LABEL}>Name</span>
-                  <input type="text" name="name" autoComplete="name" placeholder="Your full name" className={INPUT} />
+                  <span className={FIELD_LABEL}>Full name *</span>
+                  <input
+                    required
+                    type="text"
+                    name="name"
+                    autoComplete="name"
+                    placeholder="Jane Smith"
+                    value={fields.name}
+                    onChange={set('name')}
+                    className={INPUT}
+                  />
                 </label>
                 <label className="block">
-                  <span className={FIELD_LABEL}>Phone</span>
+                  <span className={FIELD_LABEL}>Phone *</span>
                   <input
+                    required
                     type="tel"
                     name="phone"
                     autoComplete="tel"
-                    placeholder="Best number to reach you"
+                    placeholder="021 123 4567"
+                    value={fields.phone}
+                    onChange={set('phone')}
                     className={INPUT}
                   />
                 </label>
                 <label className="block">
-                  <span className={FIELD_LABEL}>Email</span>
-                  <input type="email" name="email" autoComplete="email" placeholder="you@email.com" className={INPUT} />
+                  <span className={FIELD_LABEL}>Email *</span>
+                  <input
+                    required
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    placeholder="you@email.co.nz"
+                    value={fields.email}
+                    onChange={set('email')}
+                    className={INPUT}
+                  />
                 </label>
                 <label className="block">
-                  <span className={FIELD_LABEL}>Postcode</span>
+                  <span className={FIELD_LABEL}>Suburb or town *</span>
+                  <input
+                    required
+                    type="text"
+                    name="suburb"
+                    autoComplete="address-level2"
+                    placeholder="Mt Eden, Auckland"
+                    value={fields.suburb}
+                    onChange={set('suburb')}
+                    className={INPUT}
+                  />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className={FIELD_LABEL}>Street address of the property</span>
                   <input
                     type="text"
-                    name="postcode"
-                    autoComplete="postal-code"
-                    placeholder="Where is the roof?"
+                    name="address"
+                    autoComplete="street-address"
+                    placeholder="So we can check the roof before we visit"
+                    value={fields.address}
+                    onChange={set('address')}
                     className={INPUT}
                   />
                 </label>
               </div>
 
-              <button type="button" onClick={() => goStep(3)} className={`${BTN_LIME} mt-7 h-[60px] w-full text-[17px]`}>
-                Continue
-                <Arrow />
-              </button>
-              <button
-                type="button"
-                onClick={() => goStep(1)}
-                className="mt-2.5 block h-12 w-full cursor-pointer rounded-full border-0 bg-transparent font-body text-sm text-ink/60 hover:text-ink"
-              >
-                Back
-              </button>
-            </div>
-          )}
-
-          {!sent && step === 3 && (
-            <div key="step3" className="animate-[revealSoft_300ms_ease_both]">
-              <div className="flex items-center gap-3">
-                <span className={stepLabel}>Step 3 of 3</span>
-                <span className={stepBar}>
-                  <i className={`${stepFill} w-full`} />
-                </span>
-              </div>
-              <h3 className={formH3}>A little about the property</h3>
-              <p className={formSub}>This helps us bring the right options to the first conversation.</p>
-
-              <div>
-                <span className={`${FIELD_LABEL} mb-3`}>Property type</span>
-                <div className="flex flex-wrap gap-2">
+              <fieldset className="mt-7 border-0 p-0">
+                <legend className={`${FIELD_LABEL} p-0`}>Property type *</legend>
+                <div className="mt-3 flex flex-wrap gap-2">
                   {PROPERTY_TYPES.map((label) => {
                     const on = property === label
                     return (
@@ -1691,58 +1887,122 @@ function Quote({ sent, onSent }) {
                           className="absolute h-0 w-0 opacity-0"
                         />
                         <span
-                          className={`grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border ${on ? 'border-ink' : 'border-ink/16'}`}
+                          className={`grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border ${on ? 'border-orange' : 'border-line'}`}
                         >
-                          <i className={`h-2 w-2 rounded-full ${on ? 'bg-ink' : 'bg-transparent'}`} />
+                          <i className={`h-2 w-2 rounded-full ${on ? 'bg-orange' : 'bg-transparent'}`} />
                         </span>
                         {label}
                       </label>
                     )
                   })}
                 </div>
+              </fieldset>
+
+              <fieldset className="mt-6 border-0 p-0">
+                <legend className={`${FIELD_LABEL} p-0`}>Average monthly power bill</legend>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {BILL_BANDS.map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      aria-pressed={band === label}
+                      onClick={() => setBand(label)}
+                      className={`${CHIP} ${band === label ? CHIP_ON : CHIP_OFF}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {!band && (
+                  <p className="mt-2.5 mb-0 text-[13px] text-ink/55">
+                    From the estimator above, yours looks like {suggestedBand}.
+                  </p>
+                )}
+              </fieldset>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                <label className="block">
+                  <span className={FIELD_LABEL}>Roof type</span>
+                  <select name="roof" value={fields.roof} onChange={set('roof')} className={SELECT}>
+                    {ROOF_TYPES.map((r) => (
+                      <option key={r}>{r}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className={FIELD_LABEL}>Timeframe</span>
+                  <select name="timeframe" value={fields.timeframe} onChange={set('timeframe')} className={SELECT}>
+                    {TIMEFRAMES.map((t) => (
+                      <option key={t}>{t}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className={FIELD_LABEL}>Best time to call</span>
+                  <select name="contactTime" value={fields.contactTime} onChange={set('contactTime')} className={SELECT}>
+                    {CONTACT_TIMES.map((t) => (
+                      <option key={t}>{t}</option>
+                    ))}
+                  </select>
+                </label>
               </div>
 
               <label className="mt-6 block">
                 <span className={FIELD_LABEL}>
-                  Message <span className="font-normal text-ink/50">(optional)</span>
+                  Anything else? <span className="font-normal text-ink/50">(optional)</span>
                 </span>
                 <textarea
                   name="message"
                   rows="3"
-                  placeholder="Anything we should know about your roof or your power use?"
+                  placeholder="Shading, an EV on the way, a planned re-roof, a battery you already own…"
+                  value={fields.message}
+                  onChange={set('message')}
                   className={`${INPUT} h-auto resize-y px-4 py-3.5 leading-[1.55]`}
                 />
               </label>
 
-              <button type="submit" className={`${BTN_LIME} mt-7 h-[60px] w-full text-[17px]`}>
-                Request My Quote
-                <Arrow />
-              </button>
-              <button
-                type="button"
-                onClick={() => goStep(2)}
-                className="mt-2.5 block h-12 w-full cursor-pointer rounded-full border-0 bg-transparent font-body text-sm text-ink/60 hover:text-ink"
-              >
-                Back
-              </button>
-            </div>
-          )}
+              <label className="mt-6 flex items-start gap-3 text-[13.5px] leading-[1.55] text-ink/65">
+                <input
+                  required
+                  type="checkbox"
+                  name="consent"
+                  className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer accent-orange"
+                />
+                <span>
+                  I am happy for {COMPANY.name} to contact me about this quote. We never sell or share your
+                  details. *
+                </span>
+              </label>
 
-          {sent && (
-            <div className="px-2 py-10 text-center animate-[rise_360ms_ease_both]">
-              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-lime">
-                <Check color="#0E1011" size={30} width={2.4} />
-              </div>
-              <h3 className="mt-6 mb-0 font-display text-[26px] font-bold tracking-[-0.03em]">Request received</h3>
-              <p className="mx-auto mt-3 mb-0 max-w-[340px] text-[15px] leading-[1.65] text-ink/68">
-                A designer will be in touch within [XX] working hours to talk through your roof and your
-                options.
+              <button type="submit" className={`${BTN_CTA} mt-7 h-[58px] w-full text-[17px] shadow-cta`}>
+                Request My Free Quote
+                <Arrow color="#fff" />
+              </button>
+              <p className="mt-3 mb-0 text-center text-[13px] text-ink/55">
+                Prefer to talk? Call{' '}
+                <a href={COMPANY.phoneHref} className="font-semibold text-orange hover:text-orange-hover">
+                  {COMPANY.phone}
+                </a>{' '}
+                — {COMPANY.hours}.
               </p>
-              <button
-                type="button"
-                onClick={reset}
-                className="mt-7 h-12 cursor-pointer rounded-full border border-ink/18 bg-transparent px-6 font-display text-[15px] font-semibold transition-colors hover:border-orange hover:text-orange"
-              >
+            </>
+          ) : (
+            <div className="px-2 py-12 text-center animate-[rise_340ms_ease_both]">
+              <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sun">
+                <Check color="#EC5A2C" size={30} width={2.4} />
+              </div>
+              <h3 className="mt-6 mb-0 font-display text-[26px] font-extrabold tracking-[-0.03em] text-navy">
+                Request received
+              </h3>
+              <p className="mx-auto mt-3 mb-0 max-w-[38ch] text-[15px] leading-[1.7] text-ink/68">
+                A solar designer will call you within one working day to talk through your roof and arrange the
+                free assessment. If it is urgent, call{' '}
+                <a href={COMPANY.phoneHref} className="font-semibold text-orange">
+                  {COMPANY.phone}
+                </a>
+                .
+              </p>
+              <button type="button" onClick={reset} className={`${BTN_GHOST} mt-8 h-12 px-6 text-[15px]`}>
                 Send another request
               </button>
             </div>
@@ -1757,58 +2017,72 @@ function Footer({ go }) {
   const heading = 'm-0 text-[13px] font-semibold uppercase tracking-[0.1em] text-ink/45'
   const links = 'mt-5 flex flex-col gap-3 text-[15px] text-ink/66'
   return (
-    <footer className="border-t border-ink/12 bg-white px-pad pt-[clamp(56px,7vw,96px)] pb-10">
+    <footer className="border-t border-line bg-grey px-pad pt-[clamp(48px,6vw,88px)] pb-10">
       <div className="mx-auto max-w-wrap">
-        <div className="flex flex-wrap justify-between gap-[clamp(32px,5vw,80px)]">
-          <div className="max-w-[360px] grow basis-[280px]">
-            <Logo className="block h-auto w-[145px]" />
+        <div className="flex flex-wrap justify-between gap-[clamp(28px,5vw,72px)]">
+          <div className="max-w-[340px] grow basis-[280px]">
+            <Logo className="block h-auto w-[148px]" />
             <p className="mt-5 mb-0 text-[15px] leading-[1.7] text-ink/66 text-pretty">
-              Solar design, supply and installation for homes that want to run on their own energy.
+              100% New Zealand owned and operated. Solar design, supply and installation for homes, businesses
+              and farms — 6,000 systems and counting.
             </p>
+            <a href="#quote" onClick={go('quote')} className={`${BTN_CTA} mt-6 h-[48px] px-5 text-[15px]`}>
+              Get a Free Quote
+              <Arrow color="#fff" />
+            </a>
           </div>
+
           <div className="shrink basis-[160px]">
             <h4 className={heading}>Pages</h4>
             <div className={links}>
-              <a href="#home" onClick={go(null)}>
-                Home
-              </a>
-              <a href="#about" onClick={go('about-area')}>
-                About
-              </a>
-              <a href="#services" onClick={go('services')}>
-                Services
-              </a>
-              <a href="#stories" onClick={go('stories')}>
-                Testimonials
+              {NAV.map((n) => (
+                <a key={n.label} href={n.id ? `#${n.id}` : '#home'} onClick={go(n.id)}>
+                  {n.label}
+                </a>
+              ))}
+              <a href="#quote" onClick={go('quote')}>
+                Contact
               </a>
             </div>
           </div>
-          <div className="shrink basis-[200px]">
+
+          <div className="shrink basis-[190px]">
+            <h4 className={heading}>Services</h4>
+            <div className={links}>
+              {SERVICES.slice(0, 5).map((s) => (
+                <a key={s.title} href="#services" onClick={go('services')}>
+                  {s.title}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="shrink basis-[230px]">
             <h4 className={heading}>Contact</h4>
             <div className={links}>
-              <a href="tel:">[XX] XXX XXXX</a>
-              <a href="mailto:">hello@[domain]</a>
-              <div>
-                [Street address]
+              <a href={COMPANY.phoneHref} className="font-display text-[17px] font-bold text-navy hover:text-orange">
+                {COMPANY.phone}
+              </a>
+              <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
+              <div className="leading-[1.7]">
+                {COMPANY.street}
                 <br />
-                [City], [Region]
+                {COMPANY.suburb}
+                <br />
+                {COMPANY.city}
               </div>
-            </div>
-          </div>
-          <div className="shrink basis-[200px]">
-            <h4 className={heading}>Service area</h4>
-            <div className="mt-5 text-[15px] leading-[1.7] text-ink/66">
-              [Regions served — confirm and we will list them here.]
+              <div className="text-ink/50">{COMPANY.hours}</div>
             </div>
           </div>
         </div>
-        <div className="mt-14 flex flex-wrap justify-between gap-4 border-t border-ink/12 pt-6 text-[13px] text-ink/50">
-          <div>© [YYYY] The Solar Co. All rights reserved.</div>
+
+        <div className="mt-12 flex flex-wrap justify-between gap-4 border-t border-line pt-6 text-[13px] text-ink/50">
+          <div>© {new Date().getFullYear()} {COMPANY.name}. All rights reserved.</div>
           <div className="flex gap-5">
-            <a href="#" className="text-ink/50 hover:text-ink">
+            <a href="#" className="text-ink/50 hover:text-orange">
               Privacy
             </a>
-            <a href="#" className="text-ink/50 hover:text-ink">
+            <a href="#" className="text-ink/50 hover:text-orange">
               Terms
             </a>
           </div>
@@ -1821,18 +2095,19 @@ function Footer({ go }) {
 function MobileBar() {
   return (
     <>
-      <div className="h-[calc(88px+env(safe-area-inset-bottom))] bg-white" aria-hidden="true" />
-      <div className="fixed inset-x-0 bottom-0 z-[18] flex items-center gap-2.5 bg-white/96 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] shadow-bar backdrop-blur-xl">
+      <div className="h-[calc(84px+env(safe-area-inset-bottom))] bg-white" aria-hidden="true" />
+      <div className="fixed inset-x-0 bottom-0 z-[18] flex items-center gap-2.5 border-t border-line bg-white/96 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] shadow-bar backdrop-blur-xl">
         <a
-          href="tel:"
-          aria-label="Call us"
-          className="grid h-[52px] w-[52px] shrink-0 place-items-center rounded-full bg-grey transition-colors hover:bg-grey-hover"
+          href={COMPANY.phoneHref}
+          aria-label={`Call ${COMPANY.phone}`}
+          className="flex h-[52px] shrink-0 items-center gap-2 rounded-full border border-line bg-white px-4 font-display text-[15px] font-bold text-navy transition-colors hover:bg-grey"
         >
-          <Phone />
+          <Phone size={18} color="#EC5A2C" />
+          Call
         </a>
-        <a href="#quote" className={`${BTN_LIME} h-[52px] grow text-base`}>
+        <a href="#quote" className={`${BTN_CTA} h-[52px] grow text-[16px]`}>
           Get a Free Quote
-          <Arrow />
+          <Arrow color="#fff" />
         </a>
       </div>
     </>

@@ -1,41 +1,50 @@
 @import 'tailwindcss';
 
-/* ── design tokens from the Home v2 artboard ─────────────────────────── */
+/* ── design tokens ───────────────────────────────────────────────────────
+   Palette taken from the brand mark: navy wordmark (#273750) and the orange
+   → gold dot-arc gradient (#EC5A2C → #F4863A → #F9B637). The site is light
+   throughout: white and warm off-white grounds, navy type, orange actions.
+   ─────────────────────────────────────────────────────────────────────── */
 @theme {
-  --color-ink: #0e1011;
-  --color-lime: #b6e241;
-  --color-lime-hover: #c8ee66;
-  --color-lime-deep: #8fb52c;
-  --color-olive: #5e7a17;
-  --color-gold: #ebd87a;
-  --color-amber: #c2691a;
-  --color-orange: #f2913a;
-  --color-sky: #368dc4;
-  --color-grey: #f6f6f6;
-  --color-grey-hover: #ececec;
+  --color-ink: #1e2a3a;
+  --color-navy: #273750;
+  --color-navy-soft: #3d5171;
+
+  --color-orange: #ec5a2c;
+  --color-orange-hover: #d94a1f;
+  --color-flame: #f4863a;
+  --color-gold: #f9b637;
+  --color-gold-soft: #fde2ad;
+
+  --color-sun: #fff6ea;
+  --color-sky: #eaf2f8;
+  --color-mint: #e7f3ec;
+  --color-green: #2e7d52;
+
+  --color-grey: #f5f6f8;
+  --color-grey-hover: #eaecf0;
+  --color-line: #e3e6eb;
 
   --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
 
   /* fluid rhythm: px-pad, py-sec, gap-pad, -mx-pad … */
   --spacing-pad: clamp(20px, 3.6vw, 56px);
-  --spacing-sec: clamp(72px, 9vw, 132px);
+  --spacing-sec: clamp(52px, 5.4vw, 84px);
   --container-wrap: 1240px;
 
-  --text-h1: clamp(42px, 7.6vw, 112px);
-  --text-h2: clamp(30px, 4.6vw, 68px);
-  --text-h3: clamp(24px, 2.6vw, 34px);
+  --text-h1: clamp(34px, 4.4vw, 60px);
+  --text-h2: clamp(26px, 2.9vw, 42px);
+  --text-h3: clamp(19px, 1.8vw, 24px);
 
-  --shadow-pill: 0 12px 36px rgba(14, 16, 17, 0.14);
-  --shadow-menu: 0 18px 44px rgba(14, 16, 17, 0.18);
-  --shadow-frame: 0 24px 60px rgba(14, 16, 17, 0.12);
-  --shadow-frame-lg: 0 30px 80px rgba(14, 16, 17, 0.14);
-  --shadow-card: 0 24px 64px rgba(14, 16, 17, 0.16);
-  --shadow-form: 0 30px 70px rgba(14, 16, 17, 0.12);
-  --shadow-cta: 0 12px 30px rgba(14, 16, 17, 0.22);
-  --shadow-scroll: 0 10px 24px rgba(14, 16, 17, 0.24);
-  --shadow-svc: 0 26px 60px rgba(14, 16, 17, 0.14);
-  --shadow-bar: 0 -10px 30px rgba(14, 16, 17, 0.14);
+  --shadow-pill: 0 10px 30px rgba(30, 42, 58, 0.1);
+  --shadow-menu: 0 18px 44px rgba(30, 42, 58, 0.16);
+  --shadow-frame: 0 20px 50px rgba(30, 42, 58, 0.1);
+  --shadow-frame-lg: 0 28px 70px rgba(30, 42, 58, 0.12);
+  --shadow-card: 0 16px 44px rgba(30, 42, 58, 0.12);
+  --shadow-form: 0 24px 64px rgba(30, 42, 58, 0.1);
+  --shadow-cta: 0 10px 26px rgba(236, 90, 44, 0.32);
+  --shadow-bar: 0 -8px 26px rgba(30, 42, 58, 0.12);
 }
 
 @layer base {
@@ -46,10 +55,10 @@
     @apply m-0 bg-white font-body text-ink antialiased;
   }
   a {
-    @apply text-ink no-underline hover:text-olive;
+    @apply text-ink no-underline hover:text-orange;
   }
   *:focus-visible {
-    @apply rounded-md outline-2 outline-offset-[3px] outline-lime;
+    @apply rounded-md outline-2 outline-offset-[3px] outline-orange;
   }
 }
 
@@ -57,7 +66,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -81,46 +90,20 @@
     transform: translateY(5px);
   }
 }
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 @keyframes revealSoft {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
     transform: none;
-  }
-}
-@keyframes drawLine {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes floatUp {
-  from {
-    transform: translateY(40px);
-  }
-  to {
-    transform: translateY(0);
   }
 }
 
 /* Scroll-driven motion (reveals, parallax, the energy line, the services track)
-   is driven by GSAP ScrollTrigger in App.jsx; the .rv / .rvs / .draw / .plate-rise /
-   .wrd class names are plain markers it selects. */
+   is driven by GSAP ScrollTrigger in App.jsx; the .rv / .rvs / .draw / .wrd
+   class names are plain markers it selects. */
 @utility noscroll {
   scrollbar-width: none;
   -ms-overflow-style: none;
