@@ -781,7 +781,11 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
 function Hero({ showMobileBar }) {
   return (
     <section id="home" className="relative z-[2] h-[320svh]">
-      <div id="hero-stage" className="sticky top-0 flex h-svh flex-col justify-end overflow-hidden bg-sky pt-[clamp(104px,14vw,128px)] will-change-transform">
+      <div
+        id="hero-stage"
+        style={{ backgroundImage: 'url(/hero-poster.jpg)' }}
+        className="sticky top-0 flex h-svh flex-col justify-end overflow-hidden bg-grey bg-cover bg-center pt-[clamp(104px,14vw,128px)] will-change-transform"
+      >
       <div id="hero-media" className="absolute -inset-[3%] will-change-transform animate-[fade_900ms_ease_both]">
         <div id="hero-media-inner" className="absolute inset-0 will-change-transform">
           <HeroVideo />
@@ -911,7 +915,7 @@ function Intro() {
       <div className="mx-auto max-w-wrap">
         <h2
           data-words="1"
-          className="m-0 max-w-[19ch] font-display text-[clamp(34px,5.6vw,88px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
+          className="m-0 max-w-[16ch] font-display text-[clamp(28px,3.4vw,46px)] leading-[1] font-bold tracking-[-0.04em] text-balance"
         >
           <Words words={['Solar', "shouldn't", 'feel', 'complicated.']} accent="complicated." accentClass="text-lime" />
         </h2>
@@ -980,7 +984,7 @@ function HowSolarWorks() {
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,88px)]">
         <div className="min-w-0 max-w-[480px] grow basis-[360px] lg:sticky lg:top-[clamp(128px,12vw,150px)]">
           <div className="text-sm text-amber tabular-nums">02 — How solar works</div>
-          <h2 className="mt-5 mb-0 font-display text-[clamp(30px,4vw,60px)] leading-[0.98] font-bold tracking-[-0.04em] text-balance">
+          <h2 className="mt-5 mb-0 max-w-[16ch] font-display text-[clamp(26px,3.2vw,44px)] leading-[1] font-bold tracking-[-0.04em] text-balance">
             Sunlight, all the way to your <Lime>switchboard</Lime>.
           </h2>
           <p className="mt-6 mb-0 max-w-[420px] text-[17px] leading-[1.65] text-ink/70 text-pretty">
@@ -1095,7 +1099,7 @@ function Benefits() {
                 >
                   <div className={`h-0.5 w-14 transition-opacity duration-500 ${b.rule} ${on ? 'opacity-100' : 'opacity-0'}`} />
                   <h3
-                    className={`${H3} mt-7 text-[clamp(30px,3.6vw,52px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
+                    className={`${H3} mt-6 max-w-[15ch] text-[clamp(24px,2.7vw,38px)] transition-colors duration-500 ${on ? 'text-ink' : 'text-ink/25'}`}
                   >
                     {b.title}
                   </h3>
@@ -1189,7 +1193,7 @@ function CustomerStory() {
         {/* the quote runs across the width instead of hugging the left edge, and
             the attribution fills the space beside it */}
         <div className="mt-[clamp(40px,5vw,72px)] flex flex-wrap items-end justify-between gap-[clamp(24px,4vw,64px)]">
-          <blockquote className="rv mx-0 mb-0 max-w-[24ch] grow basis-[520px] font-display text-[clamp(28px,4vw,60px)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
+          <blockquote className="rv mx-0 mb-0 max-w-[18ch] grow basis-[420px] font-display text-[clamp(24px,2.8vw,38px)] leading-[1.06] font-medium tracking-[-0.04em] text-balance">
             “[Their words go here — a real review, supplied by you. We have not
             written one on your behalf.]”
           </blockquote>
@@ -1225,9 +1229,9 @@ function About() {
           <div className={IDX}>06 — About us</div>
         </div>
 
-        <div className="mt-[clamp(28px,3.5vw,56px)] grid items-start gap-[clamp(24px,3vw,44px)] lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)]">
+        <div className="mt-[clamp(28px,3.5vw,56px)] grid items-start gap-[clamp(24px,3vw,44px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="relative min-w-0">
-            <div className={`${FRAME} rvs aspect-[3/2]`}>
+            <div className={`${FRAME} rvs aspect-[16/9]`}>
               <div data-parallax="1" className={PARALLAX}>
                 <ImageSlot
                   {...PHOTOS.crew}
@@ -1551,7 +1555,7 @@ function Quote({ sent, onSent }) {
     >
       <div className="mx-auto flex max-w-wrap flex-wrap items-start gap-[clamp(40px,5vw,80px)]">
         <div className="min-w-0 max-w-[520px] grow basis-[380px]">
-          <h2 className={`${H2} rv max-w-none text-[clamp(34px,4.8vw,72px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
+          <h2 className={`${H2} rv max-w-[14ch] text-[clamp(28px,3.4vw,46px)]`}>Ready to make the <Orange>switch</Orange>?</h2>
           <p className="rvs mt-6 mb-0 max-w-[420px] text-[clamp(17px,1.5vw,21px)] leading-[1.6] text-ink/70 text-pretty">
             Let's design a solar solution <Amber>around your home</Amber>.
           </p>
