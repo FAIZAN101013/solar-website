@@ -630,7 +630,7 @@ function HeroVideo() {
   return (
     <video
       ref={ref}
-      className="absolute inset-0 block h-full w-full object-cover brightness-[1.26] saturate-[1.12] contrast-[0.96]"
+      className="absolute inset-0 block h-full w-full object-cover brightness-[1.14] saturate-[1.14] contrast-[1.05]"
       autoPlay
       muted
       loop
@@ -742,19 +742,39 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         hidden && !menuOpen ? 'pointer-events-none -translate-y-[160%] opacity-0' : 'translate-y-0 opacity-100'
       }`}
     >
-      <div ref={rootRef} className="flex w-max max-w-full flex-col items-stretch gap-2.5">
+      <div
+        ref={rootRef}
+        className={`flex flex-col items-stretch gap-2.5 transition-[width] duration-300 ${
+          scrolled ? 'w-full' : 'mx-auto w-max max-w-full'
+        }`}
+      >
+        {/* At rest this is one pill. Once scrolled the shell drops its surface
+            and the two halves take their own, so the logo becomes a capsule of
+            its own at the left and the controls sit apart at the right. */}
         <div
           id="nav-pill"
-          className={`flex items-center gap-[clamp(16px,2vw,32px)] rounded-full border pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] backdrop-blur-2xl backdrop-saturate-150 transition-[height,box-shadow,background-color,border-color] duration-300 animate-[rise_520ms_ease_both] ${
+          className={`flex items-center transition-[gap,padding,background-color,border-color,box-shadow] duration-300 animate-[rise_520ms_ease_both] ${
             scrolled
-              ? 'h-[72px] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)]'
-              : 'h-[76px] border-white/60 bg-white/88 shadow-pill'
+              ? 'w-full justify-between gap-4 rounded-full border border-transparent bg-transparent p-0 shadow-none'
+              : 'gap-[clamp(16px,2vw,32px)] rounded-full border border-white/60 bg-white/88 pr-[clamp(14px,1.6vw,22px)] pl-[clamp(18px,2vw,26px)] shadow-pill backdrop-blur-2xl backdrop-saturate-150'
           }`}
         >
-          <a href="#home" onClick={go(null)} aria-label="The Solar Co. home" className="flex shrink-0 items-center">
+          <a
+            href="#home"
+            onClick={go(null)}
+            aria-label="The Solar Co. home"
+            className={`flex shrink-0 items-center rounded-full transition-[height,padding,background-color,border-color,box-shadow] duration-300 ${
+              scrolled ? 'h-[72px] border px-[clamp(18px,2vw,26px)] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)] backdrop-blur-2xl backdrop-saturate-150' : 'h-[76px] border border-transparent px-0'
+            }`}
+          >
             <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
           </a>
-          <div className="flex shrink-0 items-center gap-2">
+
+          <div
+            className={`flex shrink-0 items-center gap-2 rounded-full transition-[height,padding,background-color,border-color,box-shadow] duration-300 ${
+              scrolled ? 'h-[72px] border pr-2.5 pl-[clamp(14px,1.6vw,20px)] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)] backdrop-blur-2xl backdrop-saturate-150' : 'h-[76px] border border-transparent p-0'
+            }`}
+          >
             <a
               href="#quote"
               className={`${BTN_LIME} transition-[height,padding,font-size] duration-300 max-sm:hidden ${
@@ -780,7 +800,7 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
         </div>
 
         {menuOpen && (
-          <nav className="flex min-w-[260px] flex-col rounded-[28px] border border-white/60 bg-white/92 p-3 shadow-menu backdrop-blur-2xl backdrop-saturate-150 animate-[rise_240ms_ease_both]">
+          <nav className={`flex min-w-[260px] flex-col rounded-[28px] border border-white/60 bg-white/92 p-3 shadow-menu backdrop-blur-2xl backdrop-saturate-150 animate-[rise_240ms_ease_both] ${scrolled ? 'ml-auto' : ''}`}>
             <a href="#home" onClick={go(null)} className={menuLink}>
               Home
             </a>
@@ -818,7 +838,7 @@ function Hero({ showMobileBar }) {
         id="hero-glow"
         className="pointer-events-none absolute -top-[18%] -right-[6%] h-[70vw] max-h-[900px] w-[70vw] max-w-[900px] rounded-full mix-blend-screen animate-[fade_1400ms_ease_both] [background:radial-gradient(circle,rgba(255,232,160,.62)_0%,rgba(255,232,160,.2)_44%,rgba(255,232,160,0)_72%)]"
       />
-      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(255,255,255,.22)_0%,rgba(255,255,255,.06)_38%,rgba(255,255,255,0)_66%)]" />
+      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(180deg,rgba(255,255,255,.1)_0%,rgba(255,255,255,.02)_34%,rgba(255,255,255,0)_58%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] [background:linear-gradient(180deg,rgba(14,16,17,0)_0%,rgba(14,16,17,.12)_46%,rgba(14,16,17,.4)_100%)]" />
 
       <div id="hero-copy" className="relative z-[5] w-full px-pad pb-[clamp(36px,5vw,72px)] [text-shadow:0_2px_20px_rgba(14,16,17,.5)]">
