@@ -46,12 +46,16 @@ const NAVY = '#273750'
 /**
  * The Solar Co. brand mark: a sunburst arc of orange dots beside the wordmark.
  * Rendered inline so the wordmark uses the page's display font.
+ *
+ * `symbol` crops to the dot arc alone and drops the wordmark — used where the
+ * full lockup would take more width than the space can give, such as the
+ * scrolled nav capsule.
  */
-export default function Logo({ className = '', title = 'The Solar Co.' }) {
+export default function Logo({ className = '', title = 'The Solar Co.', symbol = false }) {
   const gradId = useId()
   return (
     <svg
-      viewBox="0 0 448 185"
+      viewBox={symbol ? '30 0 96 185' : '0 0 448 185'}
       role="img"
       aria-label={title}
       className={className}
@@ -71,6 +75,8 @@ export default function Logo({ className = '', title = 'The Solar Co.' }) {
         ))}
       </g>
 
+      {!symbol && (
+        <>
       <text
         y="121"
         fill={NAVY}
@@ -91,6 +97,8 @@ export default function Logo({ className = '', title = 'The Solar Co.' }) {
       {/* the raised "o" ring and its dot */}
       <circle cx="432.5" cy="100.5" r="9.5" fill="none" stroke={NAVY} strokeWidth="3.6" />
       <circle cx="433" cy="118" r="3" fill={NAVY} />
+        </>
+      )}
     </svg>
   )
 }

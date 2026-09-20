@@ -763,11 +763,19 @@ function Header({ menuOpen, onToggleMenu, onCloseMenu, go }) {
             href="#home"
             onClick={go(null)}
             aria-label="The Solar Co. home"
-            className={`flex shrink-0 items-center rounded-full transition-[height,padding,background-color,border-color,box-shadow] duration-300 ${
-              scrolled ? 'h-[72px] border px-[clamp(18px,2vw,26px)] border-white/70 bg-white/74 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)] backdrop-blur-2xl backdrop-saturate-150' : 'h-[76px] border border-transparent px-0'
+            className={`flex shrink-0 items-center justify-center rounded-full transition-[height,width,padding,background-color,border-color,box-shadow] duration-300 ${
+              scrolled
+                ? 'h-[72px] w-[72px] border border-white/70 bg-white/74 px-0 shadow-[0_8px_32px_rgba(14,16,17,.14),inset_0_1px_0_rgba(255,255,255,.75)] backdrop-blur-2xl backdrop-saturate-150'
+                : 'h-[76px] w-auto border border-transparent px-0'
             }`}
           >
-            <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
+            {/* scrolled, the lockup drops to its dot arc: a 72px circle sits on
+                far less of the heading underneath than a 230px wordmark does */}
+            {scrolled ? (
+              <Logo symbol className="block h-[38px] w-auto" />
+            ) : (
+              <Logo className="block h-auto w-[clamp(112px,11vw,145px)]" />
+            )}
           </a>
 
           <div
