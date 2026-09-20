@@ -23,7 +23,7 @@
   --container-wrap: 1240px;
 
   --text-h1: clamp(42px, 7.6vw, 112px);
-  --text-h2: clamp(30px, 4.1vw, 56px);
+  --text-h2: clamp(28px, 3.5vw, 48px);
   --text-h3: clamp(24px, 2.6vw, 34px);
 
   --shadow-pill: 0 12px 36px rgba(14, 16, 17, 0.14);
